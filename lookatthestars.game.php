@@ -19,11 +19,21 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
+require_once('modules/php/constants.inc.php');
+require_once('modules/php/utils.php');
+require_once('modules/php/actions.php');
+require_once('modules/php/states.php');
+require_once('modules/php/args.php');
+require_once('modules/php/debug-util.php');
 
-class LookAtTheStars extends Table
-{
-	function __construct( )
-	{
+class LookAtTheStars extends Table {
+    use UtilTrait;
+    use ActionTrait;
+    use StateTrait;
+    use ArgsTrait;
+    use DebugUtilTrait;
+
+	function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -32,18 +42,20 @@ class LookAtTheStars extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels( array( 
+        self::initGameStateLabels([
             //    "my_first_global_variable" => 10,
             //    "my_second_global_variable" => 11,
             //      ...
-            //    "my_first_game_variant" => 100,
+            "objectives" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
+        ]); 
+
+        $this->shapes = self::getNew("module.common.deck");
+        $this->shapes->init("shape");       
 	}
 	
-    protected function getGameName( )
-    {
+    protected function getGameName() {
 		// Used for translations and stuff. Please do not modify.
         return "lookatthestars";
     }	
@@ -55,26 +67,31 @@ class LookAtTheStars extends Table
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame($players, $options = []) {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
+
+        $sheetTypes = [1, 2, 3, 4, 5, 6, 7, 8];
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_sheet_type) VALUES ";
+        $values = [];
+        foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
+
+            $sheetTypeIndex = bga_rand(0, count($sheetTypes) - 1);
+            $sheetType = array_splice($sheetTypes, $sheetTypeIndex, 1)[0];
+            $sheetTypes = array_values($sheetTypes);
+
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $sheetType)";
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
@@ -105,18 +122,24 @@ class LookAtTheStars extends Table
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
-        $result = array();
+    protected function getAllDatas() {
+        $result = [];
     
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType FROM player ";
+        $result['players'] = self::getCollectionFromDb($sql);
   
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        $commonObjectives = $this->getCommonObjectives();
+
+        foreach ($result['players'] as $playerId => &$playerDb) {
+            $playerDb['playerNo'] = intval($playerDb['playerNo']);
+            $playerDb['sheetType'] = intval($playerDb['sheetType']);
+        }
+
+        $result['commonObjectives'] = $this->getCommonObjectives();
   
         return $result;
     }
@@ -131,108 +154,11 @@ class LookAtTheStars extends Table
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
+    function getGameProgression() {
         // TODO: compute and return the game progression
 
         return 0;
     }
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////    
-
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-//////////// 
-
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in lookatthestars.action.php)
-    */
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
-
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
@@ -251,8 +177,7 @@ class LookAtTheStars extends Table
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
-    {
+    function zombieTurn($state, $active_player) {
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
@@ -290,8 +215,7 @@ class LookAtTheStars extends Table
     
     */
     
-    function upgradeTableDb( $from_version )
-    {
+    function upgradeTableDb($from_version) {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345

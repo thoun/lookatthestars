@@ -1,0 +1,16 @@
+{
+  "name": "lookatthestars",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lookatthestars.js",
+  "scripts": {
+    "build:ts": "tsc",
+    "build:scss": "sass --no-source-map src/lookatthestars.scss lookatthestars.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.32.6",
+    "typescript": "^4.1.3"
+  }
+}
