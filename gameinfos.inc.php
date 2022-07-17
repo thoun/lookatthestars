@@ -10,35 +10,35 @@
 
 */
 
-$gameinfos = array( 
+$gameinfos = [
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "My Great Game",
+'game_name' => "Look at the Stars",
 
 // Game designer (or game designers, separated by commas)
-'designer' => 'John Doe',       
+'designer' => 'Romain Caterdjian',       
 
 // Game artist (or game artists, separated by commas)
-'artist' => 'Jane Doe',         
+'artist' => 'Adrien Le Coz',         
 
 // Year of FIRST publication of this game. Can be negative.
-'year' => 2000,                 
+'year' => 2022,                 
 
 // Game publisher (use empty string if there is no publisher)
-'publisher' => 'My Publishing Company',                     
+'publisher' => 'Bombyx',
 
 // Url of game publisher website
-'publisher_website' => 'http://www.mypublishingcompany.com/',   
+'publisher_website' => 'https://studiobombyx.com',
 
 // Board Game Geek ID of the publisher
-'publisher_bgg_id' => 1234,
+'publisher_bgg_id' => 19260,
 
 // Board game geek ID of the game
 'bgg_id' => 365453,
 
 
 // Players configuration that can be played (ex: 2 to 4 players)
-'players' => array( 2,3,4 ),    
+'players' => [2,3,4,5,6,7,8],    
 
 // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
 // NB: the automatic lobby will try first the lowest number of players if this is not specified. So you _have to_ specify this parameter if the lowest player number is not compatible with the default options.
@@ -131,11 +131,11 @@ $gameinfos = array(
 // Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
 // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
 // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
-'presentation' => array(
-//    totranslate("This wonderful game is about geometric shapes!"),
-//    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
-//    ...
-),
+'presentation' => [
+    totranslate("Tonight the sky is full of stars. How about drawing the constellations before daybreak?"),
+    totranslate("Reveal a night card, and then simultaneously all draw the shape on your card."),
+    totranslate("At the end of the game, score points for the constellations of different sizes that you have created, as well as planets, shooting stars and other bonuses..."),
+],
 
 // Games tags (categories)
 //  You can attribute a maximum of ten "tags" for your game.
@@ -157,4 +157,4 @@ $gameinfos = array(
 'turnControl' => 'simple'
 
 ////////
-);
+];
