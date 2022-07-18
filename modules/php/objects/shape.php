@@ -1,6 +1,6 @@
 <?php
 
-class Card {
+class Shape {
     public int $id;
     public string $location;
     public int $location_arg;

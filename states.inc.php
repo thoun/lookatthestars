@@ -49,63 +49,73 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
- 
-$machinestates = array(
+$basicGameStates = [
 
     // The initial state. Please do not modify.
-    1 => array(
+    ST_BGA_GAME_SETUP => [
         "name" => "gameSetup",
-        "description" => "",
+        "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
-    ),
-    
-    // Note: ID=2 => your first state
-
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/    
+        "transitions" => [ "" => ST_MULTIPLAYER_PLACE_SHAPE ]
+    ],
    
     // Final state.
-    // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    // Please do not modify.
+    ST_END_GAME => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
         "action" => "stGameEnd",
-        "args" => "argGameEnd"
-    )
+        "args" => "argGameEnd",
+    ],
+];
 
-);
+
+$playerActionsGameStates = [
+
+    ST_MULTIPLAYER_PLACE_SHAPE => [
+        "name" => "placeShape",
+        "description" => clienttranslate('Players must place the shape'),
+        "descriptionmyturn" => clienttranslate('${you} must place the shape'),
+        "type" => "multipleactiveplayer",
+        "args" => "argPlaceShape",
+        "action" => "stPlaceShape",
+        "possibleactions" => [ "placeShape" ],
+        "transitions" => [
+            "next" => ST_NEXT_SHAPE,
+        ],
+    ],
+];
+
+
+$gameGameStates = [
+
+    ST_NEXT_SHAPE => [
+        "name" => "nextShape",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextShape",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "next" => ST_MULTIPLAYER_PLACE_SHAPE, 
+            "endScore" => ST_END_SCORE,
+        ],
+    ],
+
+    ST_END_SCORE => [
+        "name" => "endScore",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndScore",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "endGame" => ST_END_GAME,
+        ],
+    ],
+];
+ 
+$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
 
 
 

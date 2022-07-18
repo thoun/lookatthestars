@@ -104,8 +104,9 @@ class LookAtTheStars extends Table {
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // TODO: setup the initial game situation here
-       
+        $this->setupShapes();       
+        // pick the first shape
+        $this->shapes->pickCardsForLocation(1, 'deck', 'current');
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -125,21 +126,21 @@ class LookAtTheStars extends Table {
     protected function getAllDatas() {
         $result = [];
     
-        $currentPlayerId = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-    
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
-        $commonObjectives = $this->getCommonObjectives();
+        $shape = $this->getCurrentShape();
+        $remainingShapes = intval($this->shapes->countCardInLocation('deck'));
 
         foreach ($result['players'] as $playerId => &$playerDb) {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
         }
 
-        $result['commonObjectives'] = $this->getCommonObjectives();
+        $result['currentShape'] = $shape;
+        $result['remainingShapes'] = $remainingShapes;
   
         return $result;
     }
@@ -155,9 +156,9 @@ class LookAtTheStars extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        // TODO: compute and return the game progression
+        $remainingShapes = intval($this->shapes->countCardInLocation('deck')) + 1;
 
-        return 0;
+        return 100 - ($remainingShapes * 18 / 100);
     }
 
 //////////////////////////////////////////////////////////////////////////////

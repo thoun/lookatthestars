@@ -1,9 +1,6 @@
 <?php
 
-require_once(__DIR__.'/objects/ticket.php');
-require_once(__DIR__.'/objects/placed-route.php');
-require_once(__DIR__.'/objects/possible-route.php');
-require_once(__DIR__.'/objects/common-objective.php');
+require_once(__DIR__.'/objects/shape.php');
 
 trait UtilTrait {
 
@@ -82,36 +79,20 @@ trait UtilTrait {
         if (!$dbCard || !array_key_exists('location', $dbCard)) {
             throw new \Error('location doesn\'t exists '.json_encode($dbCard));
         }
-        return new Card($dbCard);
+        return new Shape($dbCard);
     }
 
     function getCardsFromDb(array $dbCards) {
         return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
     }
 
-    function getMap() {
-        return count($this->getPlayersIds()) > 3 ? 'big' : 'small';
-    }
-
-    function setupTickets(int $playerNumber) {
-        // 12 bus ticket cards
-        $tickets = [];
-        for ($i = 1; $i <= 6; $i++) {
-            $tickets[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 1 ];
+    function setupShapes() {
+        $shapes = [];
+        for ($i = 1; $i <= 18; $i++) {
+            $shapes[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 1 ];
         }
-        $this->tickets->createCards($tickets, 'deck');
-        $tickets = [];
-        for ($i = 7; $i <= 12; $i++) {
-            $tickets[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 1 ];
-        }
-        $this->tickets->createCards($tickets, $playerNumber > 3 ? 'deck' : 'discard');
-        $this->tickets->shuffle('deck');
-    }
-
-    function dealTickets(array $playersIds) {
-        foreach ($playersIds as $playerId) {
-            $this->tickets->pickCards(2, 'deck', $playerId);
-        }
+        $this->shapes->createCards($shapes, 'deck');
+        $this->shapes->shuffle('deck');
     }
 
     function setupCommonObjectives() {
@@ -256,14 +237,9 @@ trait UtilTrait {
         return array_map(fn($ticket) => $ticket->type, $tickets);
     }
 
-    function getCurrentTicketForRound() {
-        $stateId = intval($this->gamestate->state_id());
-        if ($stateId < ST_START_GAME) {
-            return null;
-        }
-
-        $tickets = $this->getCardsFromDb($this->tickets->getCardsInLocation('turn'));
-        return count($tickets) > 0 ? $tickets[0]->type : null;
+    function getCurrentShape() {
+        $shape = $this->getCardsFromDb($this->shapes->getCardsInLocation('current'))[0];
+        return $shape;
     }
 
     function getPersonalObjectiveType(int $playerId) {

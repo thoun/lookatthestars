@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `shape` (
    `card_type` varchar(16) NOT NULL,
    `card_type_arg` int(11) NULL,
    `card_location` varchar(16) NOT NULL,
-   `card_location_arg` int(11) NOT NULL,
+   `card_location_arg` int(11) NULL,
    PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
