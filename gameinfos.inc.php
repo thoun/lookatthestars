@@ -100,7 +100,7 @@ $gameinfos = [
 'diplomacy' => 3,    
 
 // Colors attributed to players
-'player_colors' => array( "ff0000", "008000", "0000ff", "ffa500", "773300" ),
+'player_colors' => ['ff0000', '008000', '0000ff', 'ffa500', '000000', 'e94190', '982fff', '72c3b1', 'f07f16', 'bdd002', '7b7b7b'],
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
@@ -112,20 +112,20 @@ $gameinfos = [
 
 // Game interface width range (pixels)
 // Note: game interface = space on the left side, without the column on the right
-'game_interface_width' => array(
+'game_interface_width' => [
 
     // Minimum width
     //  default: 740
     //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
     //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
-    'min' => 740,
+    'min' => 560,
 
     // Maximum width
     //  default: null (ie: no limit, the game interface is as big as the player's screen allows it).
     //  maximum possible value: unlimited
     //  minimum possible value: 740
     'max' => null
-),
+],
 
 // Game presentation
 // Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
@@ -145,7 +145,7 @@ $gameinfos = [
 //  IMPORTANT: this list should be ORDERED, with the most important tag first.
 //  NOTE: tags are only read during the first deploy from the file gameinfos.inc.php; afterwards, BGA is responsible for setting tags for a game.
 
-'tags' => array( 2 ),
+'tags' => [2],
 
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)

@@ -43,12 +43,10 @@ class LookAtTheStars extends Table {
         parent::__construct();
         
         self::initGameStateLabels([
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            "objectives" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
+            STAR1 => STAR1,
+            STAR2 => STAR2,
+
+            OBJECTIVES => 100,
         ]); 
 
         $this->shapes = self::getNew("module.common.deck");
@@ -104,6 +102,7 @@ class LookAtTheStars extends Table {
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
+        $this->setupObjectives();
         $this->setupShapes();       
         // pick the first shape
         $this->shapes->pickCardsForLocation(1, 'deck', 'current');
@@ -141,6 +140,8 @@ class LookAtTheStars extends Table {
 
         $result['currentShape'] = $shape;
         $result['remainingShapes'] = $remainingShapes;
+        $result['star1'] = intval($this->getGameStateValue(STAR1));
+        $result['star2'] = intval($this->getGameStateValue(STAR2));
   
         return $result;
     }

@@ -56,10 +56,6 @@ trait UtilTrait {
         return true;
     }
 
-    function getFirstPlayerId() {
-        return intval(self::getGameStateValue(FIRST_PLAYER));
-    }
-
     function getPlayersIds() {
         return array_keys($this->loadPlayersBasicInfos());
     }
@@ -95,16 +91,15 @@ trait UtilTrait {
         $this->shapes->shuffle('deck');
     }
 
-    function setupCommonObjectives() {
-        $commonObjectives = [1, 2, 3, 4, 5, 6];
+    function setupObjectives() {
+        $default = $this->getGameStateValue(OBJECTIVES) == '1';
 
-        for ($i = 1; $i <= 2; $i++) {
-            $commonObjectiveIndex = bga_rand(0, count($commonObjectives) - 1);
-            $commonObjective = array_splice($commonObjectives, $commonObjectiveIndex, 1)[0];
-            $commonObjectives = array_values($commonObjectives);
 
-            $this->DbQuery("INSERT INTO common_objectives(`id`, `number`) VALUES ($commonObjective, $i)");
-        }
+        $star1 = $default ? 3 : bga_rand(1, 10);
+        $star2 = $default ? 4 : bga_rand(1, 9);
+        
+        $this->setGameStateInitialValue(STAR1, $star1);
+        $this->setGameStateInitialValue(STAR2, $star2);
     }
 
     function getPlacedRoutes(/*int | null*/ $playerId = null) {
@@ -251,7 +246,7 @@ trait UtilTrait {
     }
 
     function getCommonObjectives() {
-        $sql = "SELECT * FROM `common_objectives`";
+        $sql = "SELECT * FROM `bonus_cards`";
         $dbResult = self::getCollectionFromDb($sql);
 
         return array_map(fn($dbCard) => new CommonObjective($dbCard), array_values($dbResult));
@@ -299,7 +294,7 @@ trait UtilTrait {
         foreach ($objectives as $objective) {
             if (!$objective->completed && $this->array_some($scoreSheets, fn($scoreSheet) => $scoreSheet->validated->commonObjectives->subTotals[$objective->number - 1] != null)) {
                 $round = $this->getRoundNumber();
-                $this->DbQuery("UPDATE common_objectives SET `completed_at_round` = $round WHERE `id` = $objective->id");
+                $this->DbQuery("UPDATE bonus_cards SET `completed_at_round` = $round WHERE `id` = $objective->id");
 
                 $this->notifyAllPlayers('flipObjective', clienttranslate('A common objective have been completed'), [
                     'objective' => $objective,

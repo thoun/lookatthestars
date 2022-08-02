@@ -1,0 +1,52 @@
+#cards {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 20px;
+
+  .card {
+    display: inline-block;
+    width: 240px;
+    height: 240px;
+    border-radius: 8px;
+  }
+
+  #shapes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+
+    // TEMP
+    color: white
+  }
+
+  #objectives {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 20px;
+
+    #star1 {
+      background: url('img/stars1.png');
+
+      @for $index from 1 through 10 {
+        &[data-index="#{$index}"] { 
+            background-position-x: #{($index - 1) * 100% / 9};
+        }
+      }
+    }
+
+    #star2 {
+      background: url('img/stars2.png');
+
+      @for $index from 1 through 9 {
+        &[data-index="#{$index}"] { 
+            background-position-x: #{($index - 1) * 100% / 8};
+        }
+      }
+    }
+  }
+}

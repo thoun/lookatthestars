@@ -2,16 +2,20 @@
 
 <div id="zoom-wrapper">
     <div id="full-table">
-        <div id="map">
-            <div id="round-panel"></div>
-            <div id="map-elements">
-                <div id="ticket-slot-1" class="ticket-slot"></div>
-                <div id="ticket-slot-2" class="ticket-slot"></div>
-                <div id="common-objective-slot-1" class="common-objective-slot"></div>
-                <div id="common-objective-slot-2" class="common-objective-slot"></div>
+        <div id="cards">
+            <div id="shapes">
+            PILE1
+            PILE2
+            PILE3
+            CURRENT
             </div>
-            <div id="pips-top" class="pips"></div>
-            <div id="pips-bottom" class="pips"></div>
+            <div id="objectives">
+                <div id="star1" class="card"></div>
+                <div id="star2" class="card"></div>
+            </div>
+        </div>
+        <div id="tables">
+            TODO
         </div>
     </div>
     <div id="zoom-controls">

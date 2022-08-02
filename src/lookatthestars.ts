@@ -7,8 +7,8 @@ declare const g_gamethemeurl;
 
 const ANIMATION_MS = 500;
 
-const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5];
-const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0, 20, 33.34];
+const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1/*, 1.25, 1.5*/];
+const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0/*, 20, 33.34*/];
 const LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
 
 const COMMON_OBJECTIVES = [
@@ -39,9 +39,10 @@ function formatTextIcons(rawText: string) {
 }
 
 class LookAtTheStars implements LookAtTheStarsGame {
-    public zoom: number = 1;
+    public zoom: number = 0.75;
 
     private gamedatas: LookAtTheStarsGamedatas;
+    private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private registeredTablesByPlayerId: PlayerTable[][] = [];
     private roundNumberCounter: Counter;
@@ -69,35 +70,27 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public setup(gamedatas: LookAtTheStarsGamedatas) {
         const players = Object.values(gamedatas.players);
         // ignore loading of some pictures
-        if (players.length > 3) {
-            (this as any).dontPreloadImage(`map-small-no-grid.jpg`);
-        } else {
-            (this as any).dontPreloadImage(`map-big-no-grid.jpg`);
-        }
-        (this as any).dontPreloadImage(`map-small.jpg`);
-        (this as any).dontPreloadImage(`map-big.jpg`);
-        (this as any).dontPreloadImage(`map-small-no-grid-no-building.jpg`);
-        (this as any).dontPreloadImage(`map-big-no-grid-no-building.jpg`);
-        (this as any).dontPreloadImage(`map-small-no-building.jpg`);
-        (this as any).dontPreloadImage(`map-big-no-building.jpg`);
+        [1,2,3,4,5,6,7,8].filter(i => !players.some(player => Number(player.sheetType) === i)).forEach(i => {
+            (this as any).dontPreloadImage(`sheet-${i}.png`);
+        });
 
         log( "Starting game setup" );
         
         this.gamedatas = gamedatas;
 
         log('gamedatas', gamedatas);
-        this.createPlayerTables(gamedatas);
+        this.tableCenter = new TableCenter(this, gamedatas);
+        this.createPlayerTables(gamedatas, 0); // TODO
         this.createPlayerJumps(gamedatas);
         Object.values(gamedatas.players).forEach(player => {
             //this.highlightObjectiveLetters(player);
             //this.setObjectivesCounters(Number(player.id), player.scoreSheets.current);
         });
 
-        //this.placeFirstPlayerToken(gamedatas.firstPlayerTokenPlayerId);
-        document.getElementById('round-panel').innerHTML = `${_('Round')}&nbsp;<span id="round-number-counter"></span>&nbsp;/&nbsp;12`;
+        /*document.getElementById('round-panel').innerHTML = `${_('Round')}&nbsp;<span id="round-number-counter"></span>&nbsp;/&nbsp;12`;
         this.roundNumberCounter = new ebg.counter();
         this.roundNumberCounter.create(`round-number-counter`);
-        this.roundNumberCounter.setValue(gamedatas.roundNumber);
+        this.roundNumberCounter.setValue(gamedatas.roundNumber);*/
 
         this.setupNotifications();
         this.setupPreferences();
@@ -256,8 +249,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
             div.style.transform = `scale(${zoom})`;
             div.style.margin = `0 ${ZOOM_LEVELS_MARGIN[newIndex]}% ${(1-zoom)*-100}% 0`;
         }
-        
-        document.getElementById('map').classList.toggle('hd', zoom > 1);
 
         document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
     }
@@ -337,7 +328,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             <div class="personal-objective collapsed">
                 ${player.personalObjectiveLetters.map((letter, letterIndex) => `<div class="letter" data-player-id="${playerId}" data-position="${player.personalObjectivePositions[letterIndex]}">${letter}</div>`).join('')}
             </div>
-            <div class="personal-objective expanded ${ this.gamedatas.map}" data-type="${player.personalObjective}"></div>
+            <div class="personal-objective expanded" data-type="${player.personalObjective}"></div>
             <div id="toggle-objective-expand-${playerId}" class="arrow"></div>
         `;
         dojo.place(html, `personal-objective-wrapper-${playerId}`);
@@ -352,17 +343,16 @@ class LookAtTheStars implements LookAtTheStarsGame {
         return orderedPlayers;
     }
 
-    private createPlayerTables(gamedatas: LookAtTheStarsGamedatas) {
+    private createPlayerTables(gamedatas: LookAtTheStarsGamedatas, day: number) {
         const orderedPlayers = this.getOrderedPlayers(gamedatas);
 
         orderedPlayers.forEach(player => 
-            this.createPlayerTable(gamedatas, Number(player.id))
+            this.createPlayerTable(gamedatas, Number(player.id), day)
         );
     }
 
-    private createPlayerTable(gamedatas: LookAtTheStarsGamedatas, playerId: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId]);
-        table.setRound(gamedatas.validatedTickets, gamedatas.currentTicket);
+    private createPlayerTable(gamedatas: LookAtTheStarsGamedatas, playerId: number, day: number) {
+        const table = new PlayerTable(this, gamedatas.players[playerId], day);
         this.playersTables.push(table);
         this.registeredTablesByPlayerId[playerId] = [table];
     }
@@ -391,26 +381,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
     
     private jumpToPlayer(playerId: number): void {
         document.getElementById(`player-table-${playerId}`).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-    }
-
-    private placeFirstPlayerToken(playerId: number) {
-        const firstPlayerBoardToken = document.getElementById('firstPlayerBoardToken');
-        if (firstPlayerBoardToken) {
-            slideToObjectAndAttach(this, firstPlayerBoardToken, `player_board_${playerId}_firstPlayerWrapper`);
-        } else {
-            dojo.place('<div id="firstPlayerBoardToken" class="first-player-token"></div>', `player_board_${playerId}_firstPlayerWrapper`);
-
-            (this as any).addTooltipHtml('firstPlayerBoardToken', _("Inspector pawn. This player is the first player of the round."));
-        }
-
-        const firstPlayerTableToken = document.getElementById('firstPlayerTableToken');
-        if (firstPlayerTableToken) {
-            slideToObjectAndAttach(this, firstPlayerTableToken, `player-table-${playerId}-first-player-wrapper`, this.zoom);
-        } else {
-            dojo.place('<div id="firstPlayerTableToken" class="first-player-token"></div>', `player-table-${playerId}-first-player-wrapper`);
-
-            (this as any).addTooltipHtml('firstPlayerTableToken', _("Inspector pawn. This player is the first player of the round."));
-        }
     }
 
     public getTooltip(element: number) {
@@ -630,7 +600,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
         const notifs = [
             ['newRound', ANIMATION_MS],
-            ['newFirstPlayer', ANIMATION_MS],
             ['placedRoute', ANIMATION_MS*2],
             ['confirmTurn', ANIMATION_MS],
             ['flipObjective', ANIMATION_MS],
@@ -648,10 +617,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
     notif_newRound(notif: Notif<NotifNewRoundArgs>) {
         this.playersTables.forEach(playerTable => playerTable.setRound(notif.args.validatedTickets, notif.args.currentTicket));
         this.roundNumberCounter.toValue(notif.args.round);
-    }
-
-    notif_newFirstPlayer(notif: Notif<NotifNewFirstPlayerArgs>) {
-        this.placeFirstPlayerToken(notif.args.playerId);
     }
 
     notif_updateScoreSheet(notif: Notif<NotifUpdateScoreSheetArgs>) {

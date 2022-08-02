@@ -22,7 +22,7 @@ trait DebugUtilTrait {
         //$this->gamestate->jumpToState(ST_START_GAME);
 
         $this->debugSetCommonObjective(1, 3);
-        //$this->DbQuery("UPDATE common_objectives SET `completed_at_round` = 1");
+        //$this->DbQuery("UPDATE bonus_cards SET `completed_at_round` = 1");
         //$this->debugSetCommonObjective(2, 5);
     }
 
@@ -81,7 +81,7 @@ trait DebugUtilTrait {
     }
 
     function debugSetCommonObjective(int $number, int $objective) {
-        $this->DbQuery("UPDATE common_objectives SET `id` = $objective WHERE `number` = $number");
+        $this->DbQuery("UPDATE bonus_cards SET `id` = $objective WHERE `number` = $number");
     }
 
     function debugLastRound() {

@@ -105,17 +105,10 @@ interface LookAtTheStarsGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    roundNumber: number;
-    commonObjectives: CommonObjective[];
-    firstPlayerTokenPlayerId: number;
-    validatedTickets: number[];
-    currentTicket: number | null;
-    round: number;
-    map: 'small' | 'big';
-    hiddenScore: boolean;
-    
-    MAP_POSITIONS: { [position: number]: number[] };
-    MAP_ROUTES: { [position: number]: number[] };
+    currentShape: any; // TODO
+    remainingShapes: number;
+    star1: number;
+    star2: number;
 }
 
 interface LookAtTheStarsGame extends Game {
@@ -147,10 +140,6 @@ interface NotifNewRoundArgs {
     round: number;
     validatedTickets: number[];
     currentTicket: number | null;
-}
-
-interface NotifNewFirstPlayerArgs {
-    playerId: number;
 }
 
 interface NotifUpdateScoreSheetArgs {

@@ -1,3 +1,5 @@
+$tableWidth: 546px;
+
 /*#player-tables {
   display: flex;
   justify-content: center;
@@ -9,64 +11,44 @@
 }*/
 
 .player-table {
-  width: 700px;
-  height: 700px;
+  width: $tableWidth;
+  height: 800px;
   position: relative;
   font-size: 16pt;
+  border-radius: #{$tableWidth / 2} #{$tableWidth / 2} 0 0;
 
-  &.eliminated {
-      filter: grayscale(1);
-  }
-
-  .first-player-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 77px;
-
-    @for $i from 1 through 5 {
-      &[data-type="#{$i}"] {
-        background: url('img/score-pad-top-#{$i}.png');
-      }
-    }
-
-    .checkmark {
-      position: absolute;
-      text-align: center;
-      top: 31px;
-      width: 15px;
-      height: 14px;
-      font-size: 20pt;
-      margin-top: -12px;
-      margin-left: -3px;
-
-      @for $i from 0 through 11 {
-        &[data-number="#{$i + 1}"] {
-          left: #{75 + ($i % 6) * 100 + floor($i / 6) * 46}px;
-        }
-      }
+  @for $i from 1 through 8 {
+    &[data-type="#{$i}"] {
+      background: url('img/sheet-#{$i}.png');
     }
   }
 
   .main {
     position: absolute;
-    top: 77px;
+    top: 0px;
     left: 0;
     width: 100%;
-    height: 623px;
-    background: url('img/score-pad.png');
+    height: 600px;
+
+    .day {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.2) 18px, rgba(255, 255, 255, 0.4) 36px);
+
+      &[data-level="1"] {
+        height: 125px;
+      }
+
+      &[data-level="2"] {
+        height: 231px;
+      }
+    }
 
     .block {
       position: absolute;
-
-      @import 'score-sheet-main';
 
       .checkmark {
         position: absolute;
@@ -111,20 +93,16 @@
 
   .name {
     position: absolute;
-    top: 99px;
-    left: 62px;
+    bottom: 151px;
+    right: 0px;
     width: 133px;
     height: 32px;
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
   [data-unvalidated="true"] {
     color: red;
   }
-}
-
-#firstPlayerTableToken {
-  width: 64px;
-  height: 64px;
 }

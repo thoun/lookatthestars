@@ -14,4 +14,17 @@ define('ST_END_SCORE', 90);
 define('ST_END_GAME', 99);
 define('END_SCORE', 100);
 
+
+/*
+ * Constants
+ */
+define('STAR1', 10);
+define('STAR2', 11);
+
+/*
+ * Game options
+ */
+define('OBJECTIVES', 'OBJECTIVES');
+
+
 ?>

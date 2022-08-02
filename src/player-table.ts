@@ -2,7 +2,7 @@ const isDebug = window.location.host == 'studio.boardgamearena.com' || window.lo
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class PlayerTable {
-    public playerId: string;
+    public playerId: number;
     
     private oldLadies: PlayerTableOldLadiesBlock;
     private students: PlayerTableStudentsBlock;
@@ -13,29 +13,21 @@ class PlayerTable {
     private turnZones: PlayerTableTurnZonesBlock;
     private trafficJam: PlayerTableTrafficJamBlock;
 
-    constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, id: string = player.id, insertIn: HTMLElement = document.getElementById('full-table')) {
-        this.playerId = id;
+    constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
+        this.playerId = Number(player.id);
 
-        /*let html = `
-        <div id="player-table-${this.playerId}" class="player-table ${eliminated ? 'eliminated' : ''}" style="box-shadow: 0 0 3px 3px #${player.color};">
-            <div id="player-table-${this.playerId}-top" data-tooltip="[95]" class="top" data-type="${player.sheetType}">
-            `;
-        for(let i=1; i<=12; i++) {
-            html += `
-                    <div id="player-table-${this.playerId}-top-checkmark${i}" class="checkmark" data-number="${i}"></div>`;
-        }
-        html += ` 
-            </div>
+        let html = `
+        <div id="player-table-${this.playerId}" class="player-table " style="box-shadow: 0 0 3px 3px #${player.color};" data-type="${player.sheetType}">
             <div id="player-table-${this.playerId}-main" class="main">
-                <div id="player-table-${this.playerId}-total-score" data-tooltip="[94]" class="total score"></div>
+                <div id="player-table-${this.playerId}-day" class="day" data-level="${day}">
+                </div>
             </div>
             <div class="name" style="color: #${player.color};">${player.name}</div>
-            <div id="player-table-${this.playerId}-first-player-wrapper" class="first-player-wrapper"></div>
         </div>
         `;
-        dojo.place(html, insertIn);
+        dojo.place(html, document.getElementById('tables'));
 
-        this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
+        /*this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.students = new PlayerTableStudentsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.tourists = new PlayerTableTouristsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.businessmen = new PlayerTableBusinessmenBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
@@ -47,14 +39,8 @@ class PlayerTable {
         this.updateScoreSheet(player.scoreSheets, game.isVisibleScoring());*/
     }
 
-    public setRound(validatedTickets: number[], currentTicket: number) {
-        if (!currentTicket) {
-            return;
-        }
-
-        for(let i=1; i<=12; i++) {
-            this.setContentAndValidation(`top-checkmark${i}`, currentTicket === i || validatedTickets.includes(i) ? '✔' : '', currentTicket === i);
-        }
+    public setDay(day: number) {
+        document.getElementById(`player-table-${this.playerId}-day`).dataset.level = ''+day;
     }
 
     public updateScoreSheet(scoreSheets: ScoreSheets, visibleScoring: boolean) {

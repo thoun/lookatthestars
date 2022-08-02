@@ -1,8 +1,9 @@
 @import 'playerboards';
+@import 'table-center';
 @import 'player-table';
 
 html, .mode_3d #game_play_area_background {
-  background: black;
+  background: #101010;
 }
 
 #zoom-wrapper {
@@ -78,22 +79,18 @@ html, .mode_3d #game_play_area_background {
   #full-table {
     transform-origin: left top;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    #tables {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
   }
 }
 
-.first-player-token {
-    position: relative;
-    background: url('img/first-player.png');
-    background-size: contain;
-}
-
 .shape {
-  background: url('img/shapes.png'); // ratio 3,258
+  background: url('img/shapes.png'); // ratio 3,24625
   width: 101px;
   height: 31px;
   display: inline-block;

@@ -364,34 +364,193 @@ var PlayerTableTrafficJamBlock = /** @class */ (function (_super) {
     };
     return PlayerTableTrafficJamBlock;
 }(PlayerTableBlock));
+var TableCenter = /** @class */ (function () {
+    function TableCenter(game, gamedatas) {
+        this.game = game;
+        this.gamedatas = gamedatas;
+        [1, 2].forEach(function (number) { return document.getElementById("star".concat(number)).dataset.index = '' + gamedatas["star".concat(number)]; });
+        /*const map = document.getElementById('map');
+        map.dataset.size = gamedatas.map;
+        const mapElements = document.getElementById('map-elements');
+
+        // intersections
+        Object.keys(gamedatas.MAP_POSITIONS).forEach(key => {
+            const position = Number(key);
+            const elements = gamedatas.MAP_POSITIONS[position];
+            const tooltipsIds = [];
+            if (elements.includes(0)) { tooltipsIds.push(0); }
+            if (elements.some(element => element >= 1 && element <= 12)) { tooltipsIds.push(1); }
+            if (elements.includes(20)) { tooltipsIds.push(20); }
+            if (elements.includes(30)) { tooltipsIds.push(30); }
+            if (elements.includes(32)) { tooltipsIds.push(32); }
+            if (elements.includes(40)) { tooltipsIds.push(40); }
+            if (elements.includes(41) || elements.includes(42)) { tooltipsIds.push(41); }
+            if (elements.includes(50)) { tooltipsIds.push(50); }
+            if (elements.includes(51)) { tooltipsIds.push(51); }
+            if (elements.some(element => element >= 97 && element <= 122)) { tooltipsIds.push(97); }
+
+            const departure = elements.find(element => element >= 1 && element <= 12);
+            const coordinates = this.getCoordinatesFromPosition(position);
+
+            let html = `<div id="intersection${position}" class="intersection ${elements.some(element => element == 0) ? 'green-light' : ''}`;
+            if (departure > 0) {
+                html += ` departure" data-departure=${departure}`;
+            }
+            html += `" data-tooltip="${JSON.stringify(tooltipsIds)}" style="left: ${coordinates[0]}px; top: ${coordinates[1]}px;"></div>`;
+            dojo.place(html, mapElements);
+            
+            if (departure > 0) {
+                document.getElementById(`intersection${position}`).addEventListener('click', () => this.game.placeDeparturePawn(position));
+            }
+        });
+
+        // routes
+        Object.keys(gamedatas.MAP_ROUTES).forEach(key => {
+            const position = Number(key);
+            const destinations = gamedatas.MAP_ROUTES[position];
+
+            destinations.forEach(destination => {
+                const coordinates = this.getCoordinatesFromPositions(position, destination);
+
+                let html = `<div id="route${position}-${destination}" class="route" style="left: ${coordinates[0]}px; top: ${coordinates[1]}px;" data-direction="${Math.abs(position-destination) <= 1 ? 0 : 1}"></div>`;
+                dojo.place(html, mapElements);
+                document.getElementById(`route${position}-${destination}`).addEventListener('click', () => this.game.placeRoute(position, destination));
+            });
+        });
+
+        // departure pawns
+        Object.values(gamedatas.players).filter(player => player.departurePosition).forEach(player => this.addDeparturePawn(Number(player.id), player.departurePosition));
+
+        // markers
+        Object.values(gamedatas.players).forEach(player => player.markers.forEach(marker => this.addMarker(Number(player.id), marker)));
+
+        const currentPlayer = gamedatas.players[this.game.getPlayerId()];
+
+        // common objectives
+        gamedatas.commonObjectives.forEach(commonObjective => this.placeCommonObjective(commonObjective, !!currentPlayer));
+
+        // personal objective
+        Object.keys(gamedatas.MAP_POSITIONS).filter(key => gamedatas.MAP_POSITIONS[key].some(element => element >= 97 && element <= 122)).forEach(position =>
+        //currentPlayer?.personalObjectivePositions.forEach(position =>
+            dojo.place(`<div class="objective-letter" data-position="${position}"></div>`, `intersection${position}`)
+        );
+
+        // tickets
+        this.setRound(gamedatas.validatedTickets, gamedatas.currentTicket, true);*/
+    }
+    TableCenter.prototype.addDeparturePawn = function (playerId, position) {
+        dojo.place("<div id=\"departure-pawn-".concat(playerId, "\" class=\"departure-pawn\"></div>"), "intersection".concat(position));
+        document.getElementById("departure-pawn-".concat(playerId)).style.setProperty('--background', "#".concat(this.game.getPlayerColor(playerId)));
+    };
+    TableCenter.prototype.addMarker = function (playerId, marker) {
+        var _a;
+        var min = Math.min(marker.from, marker.to);
+        var max = Math.max(marker.from, marker.to);
+        dojo.place("<div id=\"marker-".concat(playerId, "-").concat(min, "-").concat(max, "\" class=\"marker ").concat(marker.validated ? '' : 'unvalidated', "\" style=\"background: #").concat(this.game.getPlayerColor(playerId), ";\"></div>"), "route".concat(min, "-").concat(max));
+        var ghost = document.getElementById("ghost-marker-".concat(min, "-").concat(max));
+        (_a = ghost === null || ghost === void 0 ? void 0 : ghost.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(ghost);
+    };
+    TableCenter.prototype.setMarkerValidated = function (playerId, marker) {
+        var min = Math.min(marker.from, marker.to);
+        var max = Math.max(marker.from, marker.to);
+        document.getElementById("marker-".concat(playerId, "-").concat(min, "-").concat(max)).classList.remove('unvalidated');
+    };
+    TableCenter.prototype.removeMarker = function (playerId, marker) {
+        var min = Math.min(marker.from, marker.to);
+        var max = Math.max(marker.from, marker.to);
+        var div = document.getElementById("marker-".concat(playerId, "-").concat(min, "-").concat(max));
+        div === null || div === void 0 ? void 0 : div.parentElement.removeChild(div);
+    };
+    TableCenter.prototype.addGhostMarker = function (route) {
+        var min = Math.min(route.from, route.to);
+        var max = Math.max(route.from, route.to);
+        var ghostClass = '';
+        if (route.isElimination) {
+            ghostClass = 'elimination';
+        }
+        else if (route.useTurnZone) {
+            ghostClass = 'turn-zone';
+        }
+        else if (route.trafficJam > 0) {
+            ghostClass = 'traffic-jam';
+        }
+        dojo.place("<div id=\"ghost-marker-".concat(min, "-").concat(max, "\" class=\"ghost marker ").concat(ghostClass, "\"></div>"), "route".concat(min, "-").concat(max));
+    };
+    TableCenter.prototype.removeGhostMarkers = function () {
+        Array.from(document.getElementsByClassName('ghost')).forEach(function (element) { var _a; return (_a = element.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(element); });
+    };
+    TableCenter.prototype.getCoordinatesFromNumberAndDigit = function (number, digit) {
+        if (this.gamedatas.map === 'big') {
+            var space = 63.2;
+            return [
+                38 + space * number,
+                179 + space * digit,
+            ];
+        }
+        else if (this.gamedatas.map === 'small') {
+            var space = 57.4;
+            return [
+                213 + space * digit,
+                20 + space * number,
+            ];
+        }
+    };
+    TableCenter.prototype.getCoordinatesFromPosition = function (position) {
+        var number = Math.floor(position / 10) - 1;
+        var digit = (position % 10) - 1;
+        return this.getCoordinatesFromNumberAndDigit(number, digit);
+    };
+    TableCenter.prototype.getCoordinatesFromPositions = function (from, to) {
+        var fromNumber = Math.floor(from / 10) - 1;
+        var fromDigit = (from % 10) - 1;
+        var toNumber = Math.floor(to / 10) - 1;
+        var toDigit = (to % 10) - 1;
+        return this.getCoordinatesFromNumberAndDigit((fromNumber + toNumber) / 2, (fromDigit + toDigit) / 2);
+    };
+    TableCenter.prototype.getSide = function (position) {
+        if (this.gamedatas.map === 'big') {
+            return this.getCoordinatesFromPosition(position)[0] > 370 ? 'right' : 'left';
+        }
+        else if (this.gamedatas.map === 'small') {
+            // TODO handle angle
+            return this.getCoordinatesFromPosition(position)[0] > 370 ? 'right' : 'left';
+        }
+    };
+    TableCenter.prototype.placeCommonObjective = function (objective, isPlayer) {
+        dojo.place("<div id=\"common-objective-".concat(objective.id, "\" class=\"common-objective card-inner\" data-side=\"").concat(objective.completed ? '1' : '0', "\">\n            <div class=\"card-side front\"></div>\n            <div class=\"card-side back\"></div>\n        </div>\n        "), "common-objective-slot-".concat(objective.number));
+        var commonObjectiveInfos = COMMON_OBJECTIVES[objective.id];
+        this.game.addTooltipHtml("common-objective-slot-".concat(objective.number), "".concat(this.game.getTooltip(90), "<br><br>").concat(_("To complete this objective, you need to check ${number} ${element}").replace('${number}', "<strong>".concat(commonObjectiveInfos[1], "</strong>")).replace('${element}', "<div class=\"map-icon\" data-element=\"".concat(commonObjectiveInfos[0], "\"></div>"))));
+        if (isPlayer) { // objective progress counter only if player is not a spectator
+            dojo.place("\n            <div class=\"common-objective-counter\"><span id=\"common-objective-".concat(objective.number, "-counter\" data-type=\"").concat(objective.id, "\">0</span>/").concat(commonObjectiveInfos[1], "</div>\n            "), "common-objective-slot-".concat(objective.number));
+        }
+    };
+    TableCenter.prototype.setRound = function (validatedTickets, currentTicket, initialization) {
+        if (initialization === void 0) { initialization = false; }
+        var roundNumber = Math.min(12, validatedTickets.length + (!currentTicket ? 0 : 1));
+        if (initialization) {
+            for (var i = 1; i <= 12; i++) {
+                var visible = i <= roundNumber;
+                dojo.place("<div id=\"ticket-".concat(i, "\" class=\"ticket card-inner\" data-side=\"").concat(visible ? '1' : '0', "\" data-ticket=\"").concat(i === roundNumber ? currentTicket : 0, "\">\n                    <div class=\"card-side front\"></div>\n                    <div class=\"card-side back\"></div>\n                </div>"), "ticket-slot-".concat(visible ? 2 : 1));
+            }
+        }
+        else {
+            var roundTicketDiv = document.getElementById("ticket-".concat(roundNumber));
+            roundTicketDiv.dataset.ticket = "".concat(currentTicket);
+            slideToObjectTicketSlot2(this.game, roundTicketDiv, "ticket-slot-2", "rotateY(180deg)");
+            roundTicketDiv.dataset.side = "1";
+        }
+    };
+    return TableCenter;
+}());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var PlayerTable = /** @class */ (function () {
-    function PlayerTable(game, player, id, insertIn) {
-        if (id === void 0) { id = player.id; }
-        if (insertIn === void 0) { insertIn = document.getElementById('full-table'); }
-        this.playerId = id;
-        /*let html = `
-        <div id="player-table-${this.playerId}" class="player-table ${eliminated ? 'eliminated' : ''}" style="box-shadow: 0 0 3px 3px #${player.color};">
-            <div id="player-table-${this.playerId}-top" data-tooltip="[95]" class="top" data-type="${player.sheetType}">
-            `;
-        for(let i=1; i<=12; i++) {
-            html += `
-                    <div id="player-table-${this.playerId}-top-checkmark${i}" class="checkmark" data-number="${i}"></div>`;
-        }
-        html += `
-            </div>
-            <div id="player-table-${this.playerId}-main" class="main">
-                <div id="player-table-${this.playerId}-total-score" data-tooltip="[94]" class="total score"></div>
-            </div>
-            <div class="name" style="color: #${player.color};">${player.name}</div>
-            <div id="player-table-${this.playerId}-first-player-wrapper" class="first-player-wrapper"></div>
-        </div>
-        `;
-        dojo.place(html, insertIn);
-
-        this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
+    function PlayerTable(game, player, day) {
+        this.playerId = Number(player.id);
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n        </div>\n        ");
+        dojo.place(html, document.getElementById('tables'));
+        /*this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.students = new PlayerTableStudentsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.tourists = new PlayerTableTouristsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
         this.businessmen = new PlayerTableBusinessmenBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
@@ -402,13 +561,8 @@ var PlayerTable = /** @class */ (function () {
 
         this.updateScoreSheet(player.scoreSheets, game.isVisibleScoring());*/
     }
-    PlayerTable.prototype.setRound = function (validatedTickets, currentTicket) {
-        if (!currentTicket) {
-            return;
-        }
-        for (var i = 1; i <= 12; i++) {
-            this.setContentAndValidation("top-checkmark".concat(i), currentTicket === i || validatedTickets.includes(i) ? '✔' : '', currentTicket === i);
-        }
+    PlayerTable.prototype.setDay = function (day) {
+        document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
     };
     PlayerTable.prototype.updateScoreSheet = function (scoreSheets, visibleScoring) {
         this.oldLadies.updateScoreSheet(scoreSheets, visibleScoring);
@@ -447,8 +601,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 var ANIMATION_MS = 500;
-var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5];
-var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0, 20, 33.34];
+var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
+var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
 var COMMON_OBJECTIVES = [
     null,
@@ -476,7 +630,7 @@ function formatTextIcons(rawText) {
 }
 var LookAtTheStars = /** @class */ (function () {
     function LookAtTheStars() {
-        this.zoom = 1;
+        this.zoom = 0.75;
         this.playersTables = [];
         this.registeredTablesByPlayerId = [];
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -500,32 +654,23 @@ var LookAtTheStars = /** @class */ (function () {
         var _this = this;
         var players = Object.values(gamedatas.players);
         // ignore loading of some pictures
-        if (players.length > 3) {
-            this.dontPreloadImage("map-small-no-grid.jpg");
-        }
-        else {
-            this.dontPreloadImage("map-big-no-grid.jpg");
-        }
-        this.dontPreloadImage("map-small.jpg");
-        this.dontPreloadImage("map-big.jpg");
-        this.dontPreloadImage("map-small-no-grid-no-building.jpg");
-        this.dontPreloadImage("map-big-no-grid-no-building.jpg");
-        this.dontPreloadImage("map-small-no-building.jpg");
-        this.dontPreloadImage("map-big-no-building.jpg");
+        [1, 2, 3, 4, 5, 6, 7, 8].filter(function (i) { return !players.some(function (player) { return Number(player.sheetType) === i; }); }).forEach(function (i) {
+            _this.dontPreloadImage("sheet-".concat(i, ".png"));
+        });
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        this.createPlayerTables(gamedatas);
+        this.tableCenter = new TableCenter(this, gamedatas);
+        this.createPlayerTables(gamedatas, 0); // TODO
         this.createPlayerJumps(gamedatas);
         Object.values(gamedatas.players).forEach(function (player) {
             //this.highlightObjectiveLetters(player);
             //this.setObjectivesCounters(Number(player.id), player.scoreSheets.current);
         });
-        //this.placeFirstPlayerToken(gamedatas.firstPlayerTokenPlayerId);
-        document.getElementById('round-panel').innerHTML = "".concat(_('Round'), "&nbsp;<span id=\"round-number-counter\"></span>&nbsp;/&nbsp;12");
+        /*document.getElementById('round-panel').innerHTML = `${_('Round')}&nbsp;<span id="round-number-counter"></span>&nbsp;/&nbsp;12`;
         this.roundNumberCounter = new ebg.counter();
-        this.roundNumberCounter.create("round-number-counter");
-        this.roundNumberCounter.setValue(gamedatas.roundNumber);
+        this.roundNumberCounter.create(`round-number-counter`);
+        this.roundNumberCounter.setValue(gamedatas.roundNumber);*/
         this.setupNotifications();
         this.setupPreferences();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
@@ -662,7 +807,6 @@ var LookAtTheStars = /** @class */ (function () {
             div.style.transform = "scale(".concat(zoom, ")");
             div.style.margin = "0 ".concat(ZOOM_LEVELS_MARGIN[newIndex], "% ").concat((1 - zoom) * -100, "% 0");
         }
-        document.getElementById('map').classList.toggle('hd', zoom > 1);
         document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
     };
     LookAtTheStars.prototype.zoomIn = function () {
@@ -726,7 +870,7 @@ var LookAtTheStars = /** @class */ (function () {
             return;
         }
         var player = this.gamedatas.players[playerId];
-        var html = "\n            <div class=\"personal-objective collapsed\">\n                ".concat(player.personalObjectiveLetters.map(function (letter, letterIndex) { return "<div class=\"letter\" data-player-id=\"".concat(playerId, "\" data-position=\"").concat(player.personalObjectivePositions[letterIndex], "\">").concat(letter, "</div>"); }).join(''), "\n            </div>\n            <div class=\"personal-objective expanded ").concat(this.gamedatas.map, "\" data-type=\"").concat(player.personalObjective, "\"></div>\n            <div id=\"toggle-objective-expand-").concat(playerId, "\" class=\"arrow\"></div>\n        ");
+        var html = "\n            <div class=\"personal-objective collapsed\">\n                ".concat(player.personalObjectiveLetters.map(function (letter, letterIndex) { return "<div class=\"letter\" data-player-id=\"".concat(playerId, "\" data-position=\"").concat(player.personalObjectivePositions[letterIndex], "\">").concat(letter, "</div>"); }).join(''), "\n            </div>\n            <div class=\"personal-objective expanded\" data-type=\"").concat(player.personalObjective, "\"></div>\n            <div id=\"toggle-objective-expand-").concat(playerId, "\" class=\"arrow\"></div>\n        ");
         dojo.place(html, "personal-objective-wrapper-".concat(playerId));
         document.getElementById("toggle-objective-expand-".concat(playerId)).addEventListener('click', function () { return _this.expandObjectiveClick(); });
     };
@@ -737,16 +881,15 @@ var LookAtTheStars = /** @class */ (function () {
         var orderedPlayers = playerIndex > 0 ? __spreadArray(__spreadArray([], players.slice(playerIndex), true), players.slice(0, playerIndex), true) : players;
         return orderedPlayers;
     };
-    LookAtTheStars.prototype.createPlayerTables = function (gamedatas) {
+    LookAtTheStars.prototype.createPlayerTables = function (gamedatas, day) {
         var _this = this;
         var orderedPlayers = this.getOrderedPlayers(gamedatas);
         orderedPlayers.forEach(function (player) {
-            return _this.createPlayerTable(gamedatas, Number(player.id));
+            return _this.createPlayerTable(gamedatas, Number(player.id), day);
         });
     };
-    LookAtTheStars.prototype.createPlayerTable = function (gamedatas, playerId) {
-        var table = new PlayerTable(this, gamedatas.players[playerId]);
-        table.setRound(gamedatas.validatedTickets, gamedatas.currentTicket);
+    LookAtTheStars.prototype.createPlayerTable = function (gamedatas, playerId, day) {
+        var table = new PlayerTable(this, gamedatas.players[playerId], day);
         this.playersTables.push(table);
         this.registeredTablesByPlayerId[playerId] = [table];
     };
@@ -767,24 +910,6 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.jumpToPlayer = function (playerId) {
         document.getElementById("player-table-".concat(playerId)).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-    };
-    LookAtTheStars.prototype.placeFirstPlayerToken = function (playerId) {
-        var firstPlayerBoardToken = document.getElementById('firstPlayerBoardToken');
-        if (firstPlayerBoardToken) {
-            slideToObjectAndAttach(this, firstPlayerBoardToken, "player_board_".concat(playerId, "_firstPlayerWrapper"));
-        }
-        else {
-            dojo.place('<div id="firstPlayerBoardToken" class="first-player-token"></div>', "player_board_".concat(playerId, "_firstPlayerWrapper"));
-            this.addTooltipHtml('firstPlayerBoardToken', _("Inspector pawn. This player is the first player of the round."));
-        }
-        var firstPlayerTableToken = document.getElementById('firstPlayerTableToken');
-        if (firstPlayerTableToken) {
-            slideToObjectAndAttach(this, firstPlayerTableToken, "player-table-".concat(playerId, "-first-player-wrapper"), this.zoom);
-        }
-        else {
-            dojo.place('<div id="firstPlayerTableToken" class="first-player-token"></div>', "player-table-".concat(playerId, "-first-player-wrapper"));
-            this.addTooltipHtml('firstPlayerTableToken', _("Inspector pawn. This player is the first player of the round."));
-        }
     };
     LookAtTheStars.prototype.getTooltip = function (element) {
         switch (element) {
@@ -985,7 +1110,6 @@ var LookAtTheStars = /** @class */ (function () {
         var _this = this;
         var notifs = [
             ['newRound', ANIMATION_MS],
-            ['newFirstPlayer', ANIMATION_MS],
             ['placedRoute', ANIMATION_MS * 2],
             ['confirmTurn', ANIMATION_MS],
             ['flipObjective', ANIMATION_MS],
@@ -1001,9 +1125,6 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.notif_newRound = function (notif) {
         this.playersTables.forEach(function (playerTable) { return playerTable.setRound(notif.args.validatedTickets, notif.args.currentTicket); });
         this.roundNumberCounter.toValue(notif.args.round);
-    };
-    LookAtTheStars.prototype.notif_newFirstPlayer = function (notif) {
-        this.placeFirstPlayerToken(notif.args.playerId);
     };
     LookAtTheStars.prototype.notif_updateScoreSheet = function (notif) {
         var _this = this;
