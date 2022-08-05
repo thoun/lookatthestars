@@ -20,18 +20,43 @@
  */
 
 
-/*
-
-Example:
-
-$this->card_types = array(
-    1 => array( "card_name" => ...,
-                ...
-              )
-);
-
-*/
+require_once('modules/php/objects/card.php');
 
 
-
+$this->CARDS = [
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+  new CardType([]),
+];
 

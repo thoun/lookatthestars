@@ -22,7 +22,9 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-day" class="day" data-level="${day}">
                 </div>
             </div>
-            <div class="name" style="color: #${player.color};">${player.name}</div>
+            <div class="name" style="color: #${player.color};">
+                <span>${player.name}</span>
+            </div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));

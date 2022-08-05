@@ -197,13 +197,17 @@
 }
 .player-table .name {
   position: absolute;
-  bottom: 151px;
-  right: 0px;
-  width: 133px;
-  height: 32px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+.player-table .name span {
+  background: white;
+  box-shadow: 0 0 10px 10px white;
 }
 .player-table [data-unvalidated=true] {
   color: red;

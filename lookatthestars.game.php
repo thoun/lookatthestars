@@ -103,9 +103,7 @@ class LookAtTheStars extends Table {
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         $this->setupObjectives();
-        $this->setupShapes();       
-        // pick the first shape
-        $this->shapes->pickCardsForLocation(1, 'deck', 'current');
+        $this->setupCards();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -130,15 +128,16 @@ class LookAtTheStars extends Table {
         $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
-        $shape = $this->getCurrentShape();
-        $remainingShapes = intval($this->shapes->countCardInLocation('deck'));
+        $shapes = $this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg'));
+        $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
 
         foreach ($result['players'] as $playerId => &$playerDb) {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
         }
 
-        $result['currentShape'] = $shape;
+        $result['shapes'] = $shapes;
+        $result['currentShape'] = $this->getCurrentShape();
         $result['remainingShapes'] = $remainingShapes;
         $result['star1'] = intval($this->getGameStateValue(STAR1));
         $result['star2'] = intval($this->getGameStateValue(STAR2));
