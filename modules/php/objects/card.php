@@ -7,6 +7,14 @@ class CardType {
         $this->lines = $lines;
     } 
 }
+class Star1Type extends CardType {
+    public int $points;
+  
+    public function __construct(int $points, array $lines) {
+        $this->points = $points;
+        $this->lines = $lines;
+    } 
+}
 
 class Card extends CardType {
     public int $id;

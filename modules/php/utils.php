@@ -93,9 +93,8 @@ trait UtilTrait {
     function setupObjectives() {
         $default = $this->getGameStateValue(OBJECTIVES) == '1';
 
-
-        $star1 = $default ? 3 : bga_rand(1, 10);
-        $star2 = $default ? 4 : bga_rand(1, 9);
+        $star1 = $default ? 2 : bga_rand(0, 9);
+        $star2 = $default ? 3 : bga_rand(0, 8);
         
         $this->setGameStateInitialValue(STAR1, $star1);
         $this->setGameStateInitialValue(STAR2, $star2);
