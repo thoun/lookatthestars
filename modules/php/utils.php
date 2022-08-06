@@ -68,7 +68,7 @@ trait UtilTrait {
         if ($dbCard == null) {
             return null;
         }
-        return new CARD($dbCard, $this->CARDS);
+        return new CARD($dbCard, $this->SHAPES);
     }
 
     function getCardsFromDb(array $dbCards) {
@@ -80,7 +80,7 @@ trait UtilTrait {
             [ 'type' => 1, 'type_arg' => null, 'nbr' => 3 ] // shooting stars
         ];
         // shapes
-        foreach ($this->CARDS as $typeArg => $card) {
+        foreach ($this->SHAPES as $typeArg => $shape) {
             $shapes[] = [ 'type' => 2, 'type_arg' => $typeArg, 'nbr' => 1 ];
         }
         $this->shapes->createCards($shapes, 'deck');

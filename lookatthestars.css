@@ -112,28 +112,28 @@
   font-size: 16pt;
   border-radius: 273px 273px 0 0;
 }
-.player-table[data-type="1"] {
+.player-table[data-type="0"] {
   background: url("img/sheet-1.png");
 }
-.player-table[data-type="2"] {
+.player-table[data-type="1"] {
   background: url("img/sheet-2.png");
 }
-.player-table[data-type="3"] {
+.player-table[data-type="2"] {
   background: url("img/sheet-3.png");
 }
-.player-table[data-type="4"] {
+.player-table[data-type="3"] {
   background: url("img/sheet-4.png");
 }
-.player-table[data-type="5"] {
+.player-table[data-type="4"] {
   background: url("img/sheet-5.png");
 }
-.player-table[data-type="6"] {
+.player-table[data-type="5"] {
   background: url("img/sheet-6.png");
 }
-.player-table[data-type="7"] {
+.player-table[data-type="6"] {
   background: url("img/sheet-7.png");
 }
-.player-table[data-type="8"] {
+.player-table[data-type="7"] {
   background: url("img/sheet-8.png");
 }
 .player-table .main {

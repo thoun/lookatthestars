@@ -17,9 +17,9 @@ $tableWidth: 546px;
   font-size: 16pt;
   border-radius: #{$tableWidth / 2} #{$tableWidth / 2} 0 0;
 
-  @for $i from 1 through 8 {
+  @for $i from 0 through 7 {
     &[data-type="#{$i}"] {
-      background: url('img/sheet-#{$i}.png');
+      background: url('img/sheet-#{$i + 1}.png');
     }
   }
 

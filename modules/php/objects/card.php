@@ -11,14 +11,13 @@ class CardType {
 class Card extends CardType {
     public int $id;
 
-    public function __construct($dbCard, $CARDS) {
+    public function __construct($dbCard, $SHAPES) {
         $this->id = intval($dbCard['id']);
-        $type = intval($dbCard['type']);
-        if ($type == 1) {
-            $this->shootingStar = true;
-        } else if ($type == 2) {
+        $this->type = intval($dbCard['type']);
+        if ($this->type == 1) {
+        } else if ($this->type == 2) {
             $typeArg = intval($dbCard['type_arg']);
-            $card = $CARDS[$typeArg];
+            $card = $SHAPES[$typeArg];
             $this->lines = $card->lines;
         }
     } 

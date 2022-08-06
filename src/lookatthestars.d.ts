@@ -2,94 +2,24 @@
  * Your game interfaces
  */
 
-interface CommonObjective {
+interface Shape {
+    lines: number[][][];
+}
+
+interface Card extends Shape {
     id: number;
-    number: number;
-    completed: boolean;
+    type: number;
 }
 
-interface PossibleRoute {
-    from: number;
-    to: number;
-    trafficJam: number;
-    useTurnZone: boolean;
-    isElimination: boolean;
-}
-
-interface PlacedRoute {
-    from: number;
-    to: number;
-    validated: boolean;
-}
-
-interface SimpleZoneScoreSheet {
-    checked: number;
-
-    total: number;
-}
-
-interface StudentsScoreSheet {
-    checkedStudents: number;
-    checkedInternships: number;
-    checkedSchools: number;
-    specialSchool: number;
-
-    subTotal: number;
-    total: number;
-}
-
-interface TouristsScoreSheet {
-    checkedTourists: number[];
-    checkedMonumentsLight: number;
-    checkedMonumentsDark: number; 
-    specialMonumentLight: number;
-    specialMonumentDark: number;
-    specialMonumentMax: number;
-
-    subTotals: number[];
-    total: number;
-}
-
-interface BusinessmenScoreSheet {
-    checkedBusinessmen: number[];
-    specialOffice: number;
-
-    subTotals: number[];
-    total: number;
-}
-
-interface ObjectivesScoreSheet {
-    subTotals: number[];
-    total: number;
-}
-
-interface ScoreSheet {
-    oldLadies: SimpleZoneScoreSheet;
-    students: StudentsScoreSheet;
-    tourists: TouristsScoreSheet;
-    businessmen: BusinessmenScoreSheet;
-    commonObjectives: ObjectivesScoreSheet;
-    personalObjective: ObjectivesScoreSheet;
-    turnZones: SimpleZoneScoreSheet;
-    trafficJam: SimpleZoneScoreSheet;
-
-    total: number;
-}
-
-interface ScoreSheets {
-    validated: ScoreSheet;
-    current: ScoreSheet;
+interface Sheet {
+    lines: number[][][];    
+    planets: number[][];
+    forbiddenStars: number[][];
 }
 
 interface LookAtTheStarsPlayer extends Player {
     playerNo: number;
     sheetType: number;
-    departurePosition: number;
-    personalObjective?: number;
-    personalObjectiveLetters?: number[];
-    personalObjectivePositions?: number[];
-    scoreSheets: ScoreSheets;
-    markers: PlacedRoute[];
 }
 
 interface LookAtTheStarsGamedatas {
@@ -105,20 +35,16 @@ interface LookAtTheStarsGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    currentShape: any; // TODO
-    remainingShapes: number;
+    cards: Card[];
     star1: number;
     star2: number;
+    SHAPES: Shape[];
+    SHEETS: Sheet[];
 }
 
 interface LookAtTheStarsGame extends Game {
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
-
-    placeDeparturePawn(position: number): void;
-    placeRoute(from: number, to: number): void;
-    isVisibleScoring(): boolean;
-    getTooltip(element: number): string;
 }
 
 interface EnteringPlaceDeparturePawnArgs {

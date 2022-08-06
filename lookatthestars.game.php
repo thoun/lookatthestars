@@ -72,7 +72,7 @@ class LookAtTheStars extends Table {
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
 
-        $sheetTypes = [1, 2, 3, 4, 5, 6, 7, 8];
+        $sheetTypes = [0, 11, 2, 3, 4, 5, 6, 7];
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
@@ -128,19 +128,18 @@ class LookAtTheStars extends Table {
         $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
-        $shapes = $this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg'));
-        $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
+        $cards = $this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg'));
 
         foreach ($result['players'] as $playerId => &$playerDb) {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
         }
 
-        $result['shapes'] = $shapes;
-        $result['currentShape'] = $this->getCurrentShape();
-        $result['remainingShapes'] = $remainingShapes;
+        $result['cards'] = $cards;
         $result['star1'] = intval($this->getGameStateValue(STAR1));
         $result['star2'] = intval($this->getGameStateValue(STAR2));
+        $result['SHAPES'] = $this->SHAPES;
+        $result['SHEETS'] = $this->SHEETS;
   
         return $result;
     }
