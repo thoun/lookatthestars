@@ -26,5 +26,18 @@ define('STAR2', 11);
  */
 define('OBJECTIVES', 'OBJECTIVES');
 
+/*
+ * Powers
+ */
+
+define('POWER_LUMINOUS_AURA', 1);
+define('POWER_PLANET', 2);
+define('POWER_NEW_STARS', 3);
+define('POWER_NEW_LINE', 4);
+define('POWER_GALAXY', 5);
+define('POWER_BLACK_HOLE', 6);
+define('POWER_NOVA', 7);
+define('POWER_TWINKLING_STAR', 8);
+define('POWER_CRESCENT_MOON', 9);
 
 ?>

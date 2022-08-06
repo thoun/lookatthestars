@@ -15,6 +15,14 @@ class Star1Type extends CardType {
         $this->lines = $lines;
     } 
 }
+class Star2Type extends CardType {
+    public int $power;
+  
+    public function __construct(int $power, array $lines) {
+        $this->power = $power;
+        $this->lines = $lines;
+    } 
+}
 
 class Card extends CardType {
     public int $id;
