@@ -125,17 +125,23 @@ class LookAtTheStars extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_objects objects FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
         $cards = $this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg'));
+        $maskedCards = [];
+        for ($i=0; $i<count($cards); $i++) {
+            $maskedCards[] = ($i == count($cards) - 1) ? $cards[$i] : Card::onlyId($cards[$i]);
+        }
 
         foreach ($result['players'] as $playerId => &$playerDb) {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
+            $playerDb['lines'] = $playerDb['lines'] ?? [];
+            $playerDb['objects'] = $playerDb['objects'] ?? json_decode('{}');
         }
 
-        $result['cards'] = $cards;
+        $result['cards'] = $maskedCards;
         $result['star1'] = intval($this->getGameStateValue(STAR1));
         $result['star2'] = intval($this->getGameStateValue(STAR2));
         $result['SHAPES'] = $this->SHAPES;
@@ -155,9 +161,9 @@ class LookAtTheStars extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        $remainingShapes = intval($this->shapes->countCardInLocation('deck')) + 1;
+        $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
 
-        return 100 - ($remainingShapes * 18 / 100);
+        return 100 - ($remainingShapes * 100 / 18);
     }
 
 //////////////////////////////////////////////////////////////////////////////

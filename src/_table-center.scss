@@ -19,8 +19,17 @@
     justify-content: center;
     gap: 20px;
 
-    // TEMP
-    color: white
+    .pile {
+      width: 240px;
+      min-height: 240px;
+
+      display: flex;
+      flex-direction: column;
+
+      .card:not(:first-child) {
+        margin-top: -230px;
+      }
+    }
   }
 
   #objectives {

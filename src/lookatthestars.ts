@@ -40,12 +40,15 @@ function formatTextIcons(rawText: string) {
 
 class LookAtTheStars implements LookAtTheStarsGame {
     public zoom: number = 0.75;
+    public cards: Cards;
 
     private gamedatas: LookAtTheStarsGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private registeredTablesByPlayerId: PlayerTable[][] = [];
     private roundNumberCounter: Counter;
+    
+    private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
     constructor() {
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -79,8 +82,17 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.gamedatas = gamedatas;
 
         log('gamedatas', gamedatas);
+
+        let day = 0;
+        if (gamedatas.cards.length <= 6) {
+            day = 2;
+        } else if (gamedatas.cards.length <= 12) {
+            day = 1;
+        }
+
+        this.cards = new Cards(this);
         this.tableCenter = new TableCenter(this, gamedatas);
-        this.createPlayerTables(gamedatas, 0); // TODO
+        this.createPlayerTables(gamedatas, day);
         this.createPlayerJumps(gamedatas);
         Object.values(gamedatas.players).forEach(player => {
             //this.highlightObjectiveLetters(player);
@@ -232,6 +244,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     public getPlayerColor(playerId: number): string {
         return this.gamedatas.players[playerId].color;
+    }    
+    
+    public setTooltip(id: string, html: string) {
+        (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     }
 
     private setZoom(zoom: number = 1) {

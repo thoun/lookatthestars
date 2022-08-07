@@ -64,6 +64,18 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
+    function getPlayer(int $id) {
+        $sql = "SELECT * FROM player WHERE player_id = $id";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbResult) => new Player($dbResult), array_values($dbResults))[0];
+    }
+
+    function getPlayers() {
+        $sql = "SELECT * FROM player ORDER BY player_no";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbResult) => new Player($dbResult), array_values($dbResults));
+    }
+
     function getCardFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;

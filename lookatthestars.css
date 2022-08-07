@@ -1,3 +1,63 @@
+.card {
+  display: inline-block;
+  position: relative;
+  width: 240px;
+  height: 240px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px 2px #666666;
+  /*
+      &[data-category="PAIR"] {
+          &[data-family="CRAB"] {
+              @for $index from 0 through 1 {
+                  &[data-color="DARK_BLUE"][data-index="index"] .front {
+                      background-position-x: (index + 1) * 100% / 9};
+                      background-position-y: 0%;
+                  }
+              }*/
+}
+.card[data-side=back] .card-sides {
+  transform: rotateY(180deg);
+}
+.card .card-sides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.card .card-sides .card-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  transform-origin: center center;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+}
+.card .card-sides .card-side.front {
+  background-size: auto 300%;
+  background-image: url("img/cards.png");
+}
+.card .card-sides .card-side.back {
+  background-size: auto 100%;
+  background-image: url("img/cards-back.png");
+  transform: rotateY(180deg);
+}
+.card[data-type="1"] .front {
+  background-position-x: 77.7777777778%;
+  background-position-y: 100%;
+}
+.card[data-type="2"] .front {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
 .player-board {
   background-color: white;
 }
@@ -24,7 +84,15 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  color: white;
+}
+#cards #shapes .pile {
+  width: 240px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+#cards #shapes .pile .card:not(:first-child) {
+  margin-top: -230px;
 }
 #cards #objectives {
   display: flex;

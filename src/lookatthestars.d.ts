@@ -17,9 +17,20 @@ interface Sheet {
     forbiddenStars: number[][];
 }
 
+interface PlayerScore {
+    checkedConstellations: number[];
+    constellations: number;
+    planets: number;
+    shootingStars: number;
+    star1: number;
+    star2: number;
+    total: number;
+}
+
 interface LookAtTheStarsPlayer extends Player {
     playerNo: number;
     sheetType: number;
+    playerScore?: PlayerScore;
 }
 
 interface LookAtTheStarsGamedatas {
@@ -43,8 +54,11 @@ interface LookAtTheStarsGamedatas {
 }
 
 interface LookAtTheStarsGame extends Game {
+    cards: Cards;
+
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
+    setTooltip(id: string, html: string): void;
 }
 
 interface EnteringPlaceDeparturePawnArgs {

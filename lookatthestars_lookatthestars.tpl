@@ -4,10 +4,9 @@
     <div id="full-table">
         <div id="cards">
             <div id="shapes">
-            PILE1
-            PILE2
-            PILE3
-            CURRENT
+                <div id="pile1" class="pile"></div>
+                <div id="pile2" class="pile"></div>
+                <div id="pile3" class="pile"></div>
             </div>
             <div id="objectives">
                 <div id="star1" class="card"></div>
