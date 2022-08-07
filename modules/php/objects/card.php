@@ -26,14 +26,16 @@ class Star2Type extends CardType {
 
 class Card extends CardType {
     public int $id;
+    public int $type;
+    public int $typeArg;
 
     public function __construct($dbCard, $SHAPES) {
         $this->id = intval($dbCard['id']);
         $this->type = intval($dbCard['type']);
         if ($this->type == 1) {
         } else if ($this->type == 2) {
-            $typeArg = intval($dbCard['type_arg']);
-            $card = $SHAPES[$typeArg];
+            $this->typeArg = intval($dbCard['type_arg']);
+            $card = $SHAPES[$this->typeArg];
             $this->lines = $card->lines;
         }
     } 

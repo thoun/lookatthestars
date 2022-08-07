@@ -42,4 +42,12 @@ trait ActionTrait {
 
         $this->gamestate->setPlayersMultiactive([$playerId], 'next', false);
     }
+
+    public function skipShape() {
+        $playerId = intval($this->getCurrentPlayerId());
+
+        // TODO
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    }
 }

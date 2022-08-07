@@ -132,8 +132,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
         log('Entering state: ' + stateName, args.args);
 
         switch (stateName) {
-            case 'placeRoute':
-                this.onEnteringPlaceRoute(args.args);
+            case 'placeShape':
+                this.onEnteringPlaceShape(args.args);
                 break;
             case 'endScore':
                 this.onEnteringShowScore();
@@ -141,54 +141,27 @@ class LookAtTheStars implements LookAtTheStarsGame {
         }
     }
     
-    private setGamestateDescription(property: string = '') {
-        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
-        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`;
-        (this as any).updatePageTitle();
-    }
-    
-    private onEnteringPlaceRoute(args: EnteringPlaceRouteArgs) {
-        if (args.canConfirm) {
-            this.setGamestateDescription('Confirm');
-        }
-
-        const currentPositionIntersection = document.getElementById(`intersection${args.currentPosition}`);
-        currentPositionIntersection.classList.add('glow');
-        currentPositionIntersection.style.setProperty('--background-lighter', `#${this.getPlayerColor((this as any).getActivePlayerId())}66`);
-        currentPositionIntersection.style.setProperty('--background-darker', `#${this.getPlayerColor((this as any).getActivePlayerId())}CC`);
+    private onEnteringPlaceShape(args: EnteringPlaceShapeArgs) {
+        // TODO
     }
 
     onEnteringShowScore() {
         Object.keys(this.gamedatas.players).forEach(playerId => (this as any).scoreCtrl[playerId]?.setValue(0));
-        this.gamedatas.hiddenScore = false;
     }
 
     public onLeavingState(stateName: string) {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'placeDeparturePawn':
-                this.onLeavingPlaceDeparturePawn();
-                break;
-            case 'placeRoute':                
-                this.onLeavingPlaceRoute();
+            case 'placeShape':             
+                this.onLeavingPlaceShape();
                 break;
         }
     }
-
-    private onLeavingPlaceDeparturePawn() {
-        Array.from(document.getElementsByClassName('intersection')).forEach(element => element.classList.remove('selectable'));
-    }
     
-    private onLeavingPlaceRoute() {
-        document.querySelectorAll('.intersection.glow').forEach(element => element.classList.remove('glow'));
+    private onLeavingPlaceShape() {
+       // TODO
     }
-    
-    /*private onLeavingStepEvolution() {
-            const playerId = this.getPlayerId();
-            this.getPlayerTable(playerId)?.unhighlightHiddenEvolutions();
-    }*/
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -196,34 +169,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public onUpdateActionButtons(stateName: string, args: any) {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'placeDeparturePawn':
-                    const placeDeparturePawnArgs = args as EnteringPlaceDeparturePawnArgs;
-                    placeDeparturePawnArgs._private.positions.forEach((position, index) => {
-                        document.getElementById(`intersection${position}`).classList.add('selectable');
-                        
-                        const ticketDiv = `<div class="ticket" data-ticket="${placeDeparturePawnArgs._private.tickets[index]}"></div>`;
-                        (this as any).addActionButton(`placeDeparturePawn${position}_button`, dojo.string.substitute(_("Start at ${ticket}"), {ticket: ticketDiv}), () => this.placeDeparturePawn(position));
-                    });
-                    break;
-                case 'placeRoute':
+                case 'placeShape':
                     (this as any).addActionButton(`confirmTurn_button`, _("Confirm turn"), () => this.confirmTurn());
-                    const placeRouteArgs = args as EnteringPlaceRouteArgs;
-                    if (placeRouteArgs.canConfirm) {
-                        this.startActionTimer(`confirmTurn_button`, 8);
-                    } else {
-                        dojo.addClass(`confirmTurn_button`, `disabled`);
-                    }
-                    (this as any).addActionButton(`cancelLast_button`, _("Cancel last marker"), () => this.cancelLast(), null, null, 'gray');
-                    (this as any).addActionButton(`resetTurn_button`, _("Reset the whole turn"), () => this.resetTurn(), null, null, 'gray');
-                    if (!placeRouteArgs.canCancel) {
-                        dojo.addClass(`cancelLast_button`, `disabled`);
-                        dojo.addClass(`resetTurn_button`, `disabled`);
-                    }
+                    (this as any).addActionButton(`skipShape_button`, _("Skip turn"), () => this.skipShape());
                     break;
             }
-
-        } else {
-            this.onLeavingPlaceDeparturePawn();
         }
     } 
     
@@ -568,6 +518,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('confirmTurn');
     }
 
+    public skipShape() {
+        if(!(this as any).checkAction('skipShape')) {
+            return;
+        }
+
+        this.takeAction('skipShape');
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
@@ -615,13 +573,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['newRound', ANIMATION_MS],
-            ['placedRoute', ANIMATION_MS*2],
-            ['confirmTurn', ANIMATION_MS],
-            ['flipObjective', ANIMATION_MS],
-            ['removeMarkers', 1],
-            ['revealPersonalObjective', 1],
-            ['updateScoreSheet', 1],
+            ['discardShape', ANIMATION_MS],
+            ['newShape', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -630,59 +583,12 @@ class LookAtTheStars implements LookAtTheStarsGame {
         });
     }
 
-    notif_newRound(notif: Notif<NotifNewRoundArgs>) {
-        this.playersTables.forEach(playerTable => playerTable.setRound(notif.args.validatedTickets, notif.args.currentTicket));
-        this.roundNumberCounter.toValue(notif.args.round);
+    notif_discardShape(notif: Notif<NotifCardArgs>) {
+        (this as any).slideToObjectAndDestroy(`card-${notif.args.card.id}`, 'topbar');
     }
 
-    notif_updateScoreSheet(notif: Notif<NotifUpdateScoreSheetArgs>) {
-        const playerId = notif.args.playerId;
-        this.registeredTablesByPlayerId[playerId].forEach(table => table.updateScoreSheet(notif.args.scoreSheets, !this.gamedatas.hiddenScore));        
-        this.setNewScore(playerId, notif.args.scoreSheets.current.total);
-        this.setObjectivesCounters(playerId, notif.args.scoreSheets.current);
-    }
-
-    notif_placedRoute(notif: Notif<NotifPlacedRouteArgs>) {
-        const playerId = notif.args.playerId;
-        this.gamedatas.players[notif.args.playerId].markers.push(notif.args.marker);
-        const player = this.gamedatas.players[notif.args.playerId];
-        this.highlightObjectiveLetters(player);
-    }
-
-    notif_confirmTurn(notif: Notif<NotifConfirmTurnArgs>) {
-        //notif.args.markers.forEach(marker => this.tableCenter.setMarkerValidated(notif.args.playerId, marker));
-    }
-
-    notif_removeMarkers(notif: Notif<NotifConfirmTurnArgs>) {
-        notif.args.markers.forEach(marker => {
-            const markerIndex = this.gamedatas.players[notif.args.playerId].markers.findIndex(m => m.from == marker.from && m.to == marker.to);
-            if (markerIndex !== -1) {
-                this.gamedatas.players[notif.args.playerId].markers.splice(markerIndex, 1);
-            }
-        });
-        const player = this.gamedatas.players[notif.args.playerId];
-        this.highlightObjectiveLetters(player);
-    }
-
-    notif_playerEliminated(notif: Notif<any>) {
-        const playerId = Number(notif.args.who_quits);
-        this.setNewScore(playerId, 0);
-        this.eliminatePlayer(playerId);
-    }
-
-    notif_flipObjective(notif: Notif<NotifFlipObjectiveArgs>) {
-        document.getElementById(`common-objective-${notif.args.objective.id}`).dataset.side = '1';
-    }
-
-    notif_revealPersonalObjective(notif: Notif<NotifRevealPersonalObjectiveArgs>) {
-        const playerId = notif.args.playerId;
-        const player = this.gamedatas.players[playerId];
-        player.personalObjective = notif.args.personalObjective;
-        player.personalObjectiveLetters = notif.args.personalObjectiveLetters;
-        player.personalObjectivePositions = notif.args.personalObjectivePositions;
-
-        this.showPersonalObjective(playerId);
-        this.highlightObjectiveLetters(player);
+    notif_newShape(notif: Notif<NotifCardArgs>) {
+        this.cards.createMoveOrUpdateCard(notif.args.card);
     }
     
 
@@ -691,7 +597,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                if (args.shape && args.shape[0] != '<') {
+                /*if (args.shape && args.shape[0] != '<') {
                     args.shape = `<div class="shape" data-shape="${JSON.stringify(args.shape)}" data-step="${args.step}"></div>`
                 }
 
@@ -703,7 +609,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
                 if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
                     args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
-                }
+                }*/
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);

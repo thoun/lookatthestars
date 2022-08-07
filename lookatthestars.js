@@ -78,18 +78,8 @@ var Cards = /** @class */ (function () {
         var existingDiv = document.getElementById("card-".concat(card.id));
         var side = card.type ? 'front' : 'back';
         if (existingDiv) {
-            if (existingDiv.parentElement.id == destinationId) {
-                return;
-            }
             this.game.removeTooltip("card-".concat(card.id));
             var oldType = Number(existingDiv.dataset.category);
-            existingDiv.classList.remove('selectable', 'selected', 'disabled');
-            if (init) {
-                document.getElementById(destinationId).appendChild(existingDiv);
-            }
-            else {
-                slideToObjectAndAttach(this.game, existingDiv, destinationId);
-            }
             existingDiv.dataset.side = '' + side;
             if (!oldType && card.type) {
                 this.setVisibleInformations(existingDiv, card);
@@ -98,6 +88,15 @@ var Cards = /** @class */ (function () {
                 setTimeout(function () { return _this.removeVisibleInformations(existingDiv); }, 500); // so we don't change face while it is still visible
             }
             this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.family));
+            if (!destinationId || existingDiv.parentElement.id == destinationId) {
+                return;
+            }
+            if (init) {
+                document.getElementById(destinationId).appendChild(existingDiv);
+            }
+            else {
+                slideToObjectAndAttach(this.game, existingDiv, destinationId);
+            }
         }
         else {
             var div = document.createElement('div');
@@ -121,7 +120,7 @@ var Cards = /** @class */ (function () {
     };
     Cards.prototype.setVisibleInformations = function (div, card) {
         div.dataset.type = '' + card.type;
-        // TODO
+        div.dataset.typeArg = '' + card.typeArg;
     };
     Cards.prototype.removeVisibleInformations = function (div) {
         div.removeAttribute('data-type');
@@ -257,49 +256,75 @@ var TableCenter = /** @class */ (function () {
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
+var SVG_LEFT_MARGIN = 37.5;
+var SVG_BOTTOM_MARGIN = 577;
+var SVG_LINE_WIDTH = 52.3;
+var SVG_LINE_HEIGHT = 53.5;
+function isSafari() {
+    return !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+}
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, day) {
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n        </div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
-        /*this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.students = new PlayerTableStudentsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.tourists = new PlayerTableTouristsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.businessmen = new PlayerTableBusinessmenBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.commonObjectives = new PlayerTableCommonObjectivesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.personalObjective = new PlayerTablePersonalObjectiveBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.turnZones = new PlayerTableTurnZonesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.trafficJam = new PlayerTableTrafficJamBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-
-        this.updateScoreSheet(player.scoreSheets, game.isVisibleScoring());*/
+        this.placeLines(player.lines);
+        //refresh hack
+        /*// TODO ? if (!isSafari()) {
+            const svg = document.getElementById(`lats-svg-${this.playerId}`);
+            svg.setAttribute('filter',"");
+            setTimeout(()=>{
+                    svg.setAttribute('filter',"url(#PencilTexture)");
+            },800);
+        }*/
     }
     PlayerTable.prototype.setDay = function (day) {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
     };
-    PlayerTable.prototype.updateScoreSheet = function (scoreSheets, visibleScoring) {
-        this.oldLadies.updateScoreSheet(scoreSheets, visibleScoring);
-        this.students.updateScoreSheet(scoreSheets, visibleScoring);
-        this.tourists.updateScoreSheet(scoreSheets, visibleScoring);
-        this.businessmen.updateScoreSheet(scoreSheets, visibleScoring);
-        this.commonObjectives.updateScoreSheet(scoreSheets, visibleScoring);
-        this.personalObjective.updateScoreSheet(scoreSheets, visibleScoring);
-        this.turnZones.updateScoreSheet(scoreSheets, visibleScoring);
-        this.trafficJam.updateScoreSheet(scoreSheets, visibleScoring);
-        if (visibleScoring) {
-            this.setContentAndValidation("total-score", scoreSheets.current.total, scoreSheets.current.total != scoreSheets.validated.total);
-        }
+    PlayerTable.prototype.makeSVG = function () {
+        return "\n        <svg viewBox=\"0 0 546 612\" preserveAspectRatio=\"none\"> \n            <defs>\n                <filter x=\"-2%\" y=\"-2%\" width=\"104%\" height=\"104%\" filterUnits=\"objectBoundingBox\" id=\"PencilTexture\">\n                <feTurbulence type=\"fractalNoise\" baseFrequency=\"3.4\" numOctaves=\"2\" result=\"noise\">\n                </feTurbulence>\n                <feDisplacementMap xChannelSelector=\"R\" yChannelSelector=\"G\" scale=\"4\" in=\"SourceGraphic\" result=\"newSource\">\n                </feDisplacementMap>\n                </filter>\n            </defs>\n            <g id=\"lats-svg-".concat(this.playerId, "\" ").concat(isSafari() ? '' : 'filter="url(#PencilTexture)"', ">\n                <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"0\"  stroke=\"red\" stroke-width=\"1\" stroke-opacity=\"1\"></line>\n            </g>\n        </svg>");
     };
-    PlayerTable.prototype.setContentAndValidation = function (id, content, unvalidated) {
-        var div = document.getElementById("player-table-".concat(this.playerId, "-").concat(id));
-        var contentStr = '';
-        if (typeof content === 'string') {
-            contentStr = content;
-        }
-        else if (typeof content === 'number') {
-            contentStr = '' + content;
-        }
-        div.innerHTML = contentStr;
-        div.dataset.unvalidated = unvalidated.toString();
+    PlayerTable.prototype.placeLines = function (lines, color) {
+        var _this = this;
+        lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), color); });
+    };
+    /*private moveLine(from: string, to: string) {
+
+    }*/
+    PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, color) {
+        var _this = this;
+        var lineid = "line-".concat(this.playerId, "-").concat(line);
+        var c1 = {
+            x: SVG_LEFT_MARGIN + (xfrom * SVG_LINE_WIDTH),
+            y: SVG_BOTTOM_MARGIN - (yfrom * SVG_LINE_HEIGHT),
+        };
+        var c2 = {
+            x: SVG_LEFT_MARGIN + (xto * SVG_LINE_WIDTH),
+            y: SVG_BOTTOM_MARGIN - (yto * SVG_LINE_HEIGHT),
+        };
+        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newLine.setAttribute('id', lineid);
+        newLine.setAttribute('d', "M".concat(c1.x, " ").concat(c1.y, " L").concat(c2.x, " ").concat(c2.y, " Z"));
+        newLine.setAttribute('stroke', color !== null && color !== void 0 ? color : '#FFFFFFDD');
+        newLine.setAttribute('stroke-width', '8');
+        newLine.setAttribute('stroke-opacity', '1');
+        newLine.setAttribute('stroke-linecap', 'round');
+        //newLine.setAttribute('vector-effect','non-scaling-stroke');
+        $('lats-svg-' + this.playerId).append(newLine);
+        // TODO ? newLine.setAttribute('style', 'stroke-dasharray:'+newLine.getTotalLength()+';stroke-dashoffset:'+newLine.getTotalLength());
+        //force refresh hack
+        setTimeout(function () {
+            newLine === null || newLine === void 0 ? void 0 : newLine.setAttribute('style', '');
+            var svgDiv = document.getElementById("player-table-".concat(_this.playerId, "-svg"));
+            if (svgDiv) {
+                if (svgDiv.getAttribute('style') == 'opacity:0.9999;') {
+                    svgDiv.setAttribute('style', 'opacity:1');
+                }
+                else {
+                    svgDiv.setAttribute('style', 'opacity:0.9999;');
+                }
+            }
+        }, 1500);
     };
     return PlayerTable;
 }());
@@ -413,56 +438,32 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
-            case 'placeRoute':
-                this.onEnteringPlaceRoute(args.args);
+            case 'placeShape':
+                this.onEnteringPlaceShape(args.args);
                 break;
             case 'endScore':
                 this.onEnteringShowScore();
                 break;
         }
     };
-    LookAtTheStars.prototype.setGamestateDescription = function (property) {
-        if (property === void 0) { property = ''; }
-        var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = "".concat(originalState['description' + property]);
-        this.gamedatas.gamestate.descriptionmyturn = "".concat(originalState['descriptionmyturn' + property]);
-        this.updatePageTitle();
-    };
-    LookAtTheStars.prototype.onEnteringPlaceRoute = function (args) {
-        if (args.canConfirm) {
-            this.setGamestateDescription('Confirm');
-        }
-        var currentPositionIntersection = document.getElementById("intersection".concat(args.currentPosition));
-        currentPositionIntersection.classList.add('glow');
-        currentPositionIntersection.style.setProperty('--background-lighter', "#".concat(this.getPlayerColor(this.getActivePlayerId()), "66"));
-        currentPositionIntersection.style.setProperty('--background-darker', "#".concat(this.getPlayerColor(this.getActivePlayerId()), "CC"));
+    LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
+        // TODO
     };
     LookAtTheStars.prototype.onEnteringShowScore = function () {
         var _this = this;
         Object.keys(this.gamedatas.players).forEach(function (playerId) { var _a; return (_a = _this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.setValue(0); });
-        this.gamedatas.hiddenScore = false;
     };
     LookAtTheStars.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         switch (stateName) {
-            case 'placeDeparturePawn':
-                this.onLeavingPlaceDeparturePawn();
-                break;
-            case 'placeRoute':
-                this.onLeavingPlaceRoute();
+            case 'placeShape':
+                this.onLeavingPlaceShape();
                 break;
         }
     };
-    LookAtTheStars.prototype.onLeavingPlaceDeparturePawn = function () {
-        Array.from(document.getElementsByClassName('intersection')).forEach(function (element) { return element.classList.remove('selectable'); });
+    LookAtTheStars.prototype.onLeavingPlaceShape = function () {
+        // TODO
     };
-    LookAtTheStars.prototype.onLeavingPlaceRoute = function () {
-        document.querySelectorAll('.intersection.glow').forEach(function (element) { return element.classList.remove('glow'); });
-    };
-    /*private onLeavingStepEvolution() {
-            const playerId = this.getPlayerId();
-            this.getPlayerTable(playerId)?.unhighlightHiddenEvolutions();
-    }*/
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -470,34 +471,11 @@ var LookAtTheStars = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'placeDeparturePawn':
-                    var placeDeparturePawnArgs_1 = args;
-                    placeDeparturePawnArgs_1._private.positions.forEach(function (position, index) {
-                        document.getElementById("intersection".concat(position)).classList.add('selectable');
-                        var ticketDiv = "<div class=\"ticket\" data-ticket=\"".concat(placeDeparturePawnArgs_1._private.tickets[index], "\"></div>");
-                        _this.addActionButton("placeDeparturePawn".concat(position, "_button"), dojo.string.substitute(_("Start at ${ticket}"), { ticket: ticketDiv }), function () { return _this.placeDeparturePawn(position); });
-                    });
-                    break;
-                case 'placeRoute':
+                case 'placeShape':
                     this.addActionButton("confirmTurn_button", _("Confirm turn"), function () { return _this.confirmTurn(); });
-                    var placeRouteArgs = args;
-                    if (placeRouteArgs.canConfirm) {
-                        this.startActionTimer("confirmTurn_button", 8);
-                    }
-                    else {
-                        dojo.addClass("confirmTurn_button", "disabled");
-                    }
-                    this.addActionButton("cancelLast_button", _("Cancel last marker"), function () { return _this.cancelLast(); }, null, null, 'gray');
-                    this.addActionButton("resetTurn_button", _("Reset the whole turn"), function () { return _this.resetTurn(); }, null, null, 'gray');
-                    if (!placeRouteArgs.canCancel) {
-                        dojo.addClass("cancelLast_button", "disabled");
-                        dojo.addClass("resetTurn_button", "disabled");
-                    }
+                    this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;
             }
-        }
-        else {
-            this.onLeavingPlaceDeparturePawn();
         }
     };
     ///////////////////////////////////////////////////
@@ -788,6 +766,12 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('confirmTurn');
     };
+    LookAtTheStars.prototype.skipShape = function () {
+        if (!this.checkAction('skipShape')) {
+            return;
+        }
+        this.takeAction('skipShape');
+    };
     LookAtTheStars.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -833,83 +817,38 @@ var LookAtTheStars = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
-            ['newRound', ANIMATION_MS],
-            ['placedRoute', ANIMATION_MS * 2],
-            ['confirmTurn', ANIMATION_MS],
-            ['flipObjective', ANIMATION_MS],
-            ['removeMarkers', 1],
-            ['revealPersonalObjective', 1],
-            ['updateScoreSheet', 1],
+            ['discardShape', ANIMATION_MS],
+            ['newShape', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
     };
-    LookAtTheStars.prototype.notif_newRound = function (notif) {
-        this.playersTables.forEach(function (playerTable) { return playerTable.setRound(notif.args.validatedTickets, notif.args.currentTicket); });
-        this.roundNumberCounter.toValue(notif.args.round);
+    LookAtTheStars.prototype.notif_discardShape = function (notif) {
+        this.slideToObjectAndDestroy("card-".concat(notif.args.card.id), 'topbar');
     };
-    LookAtTheStars.prototype.notif_updateScoreSheet = function (notif) {
-        var _this = this;
-        var playerId = notif.args.playerId;
-        this.registeredTablesByPlayerId[playerId].forEach(function (table) { return table.updateScoreSheet(notif.args.scoreSheets, !_this.gamedatas.hiddenScore); });
-        this.setNewScore(playerId, notif.args.scoreSheets.current.total);
-        this.setObjectivesCounters(playerId, notif.args.scoreSheets.current);
-    };
-    LookAtTheStars.prototype.notif_placedRoute = function (notif) {
-        var playerId = notif.args.playerId;
-        this.gamedatas.players[notif.args.playerId].markers.push(notif.args.marker);
-        var player = this.gamedatas.players[notif.args.playerId];
-        this.highlightObjectiveLetters(player);
-    };
-    LookAtTheStars.prototype.notif_confirmTurn = function (notif) {
-        //notif.args.markers.forEach(marker => this.tableCenter.setMarkerValidated(notif.args.playerId, marker));
-    };
-    LookAtTheStars.prototype.notif_removeMarkers = function (notif) {
-        var _this = this;
-        notif.args.markers.forEach(function (marker) {
-            var markerIndex = _this.gamedatas.players[notif.args.playerId].markers.findIndex(function (m) { return m.from == marker.from && m.to == marker.to; });
-            if (markerIndex !== -1) {
-                _this.gamedatas.players[notif.args.playerId].markers.splice(markerIndex, 1);
-            }
-        });
-        var player = this.gamedatas.players[notif.args.playerId];
-        this.highlightObjectiveLetters(player);
-    };
-    LookAtTheStars.prototype.notif_playerEliminated = function (notif) {
-        var playerId = Number(notif.args.who_quits);
-        this.setNewScore(playerId, 0);
-        this.eliminatePlayer(playerId);
-    };
-    LookAtTheStars.prototype.notif_flipObjective = function (notif) {
-        document.getElementById("common-objective-".concat(notif.args.objective.id)).dataset.side = '1';
-    };
-    LookAtTheStars.prototype.notif_revealPersonalObjective = function (notif) {
-        var playerId = notif.args.playerId;
-        var player = this.gamedatas.players[playerId];
-        player.personalObjective = notif.args.personalObjective;
-        player.personalObjectiveLetters = notif.args.personalObjectiveLetters;
-        player.personalObjectivePositions = notif.args.personalObjectivePositions;
-        this.showPersonalObjective(playerId);
-        this.highlightObjectiveLetters(player);
+    LookAtTheStars.prototype.notif_newShape = function (notif) {
+        this.cards.createMoveOrUpdateCard(notif.args.card);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     LookAtTheStars.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                if (args.shape && args.shape[0] != '<') {
-                    args.shape = "<div class=\"shape\" data-shape=\"".concat(JSON.stringify(args.shape), "\" data-step=\"").concat(args.step, "\"></div>");
+                /*if (args.shape && args.shape[0] != '<') {
+                    args.shape = `<div class="shape" data-shape="${JSON.stringify(args.shape)}" data-step="${args.step}"></div>`
                 }
+
                 if (args.elements && typeof args.elements !== 'string') {
-                    args.elements = args.elements.map(function (element) {
-                        return "<div class=\"map-icon\" data-element=\"".concat(element, "\"></div>");
-                    }).join('');
+                    args.elements = args.elements.map(element =>
+                        `<div class="map-icon" data-element="${element}"></div>`
+                    ).join('');
                 }
+
                 if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
-                    args.objectiveLetters = "<strong>".concat(args.objectiveLetters, "</strong>");
-                }
+                    args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
+                }*/
             }
         }
         catch (e) {

@@ -55,6 +55,14 @@
       self::ajaxResponse();
     }
 
+    public function skipShape() {
+      self::setAjaxMode();
+
+      $this->game->skipShape();
+
+      self::ajaxResponse();
+    }
+
   }
   
 

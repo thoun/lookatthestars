@@ -1,17 +1,17 @@
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
+const SVG_LEFT_MARGIN = 37.5;
+const SVG_BOTTOM_MARGIN = 577;
+const SVG_LINE_WIDTH = 52.3;
+const SVG_LINE_HEIGHT = 53.5;
+
+function isSafari() {
+    return !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+}
+
 class PlayerTable {
     public playerId: number;
-    
-    private oldLadies: PlayerTableOldLadiesBlock;
-    private students: PlayerTableStudentsBlock;
-    private tourists: PlayerTableTouristsBlock;
-    private businessmen: PlayerTableBusinessmenBlock;
-    private commonObjectives: PlayerTableCommonObjectivesBlock;
-    private personalObjective: PlayerTablePersonalObjectiveBlock;
-    private turnZones: PlayerTableTurnZonesBlock;
-    private trafficJam: PlayerTableTrafficJamBlock;
 
     constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
         this.playerId = Number(player.id);
@@ -19,6 +19,7 @@ class PlayerTable {
         let html = `
         <div id="player-table-${this.playerId}" class="player-table " style="box-shadow: 0 0 3px 3px #${player.color};" data-type="${player.sheetType}">
             <div id="player-table-${this.playerId}-main" class="main">
+                <div id="player-table-${this.playerId}-svg" class="svg-wrapper">${this.makeSVG()}</div>
                 <div id="player-table-${this.playerId}-day" class="day" data-level="${day}">
                 </div>
             </div>
@@ -29,47 +30,93 @@ class PlayerTable {
         `;
         dojo.place(html, document.getElementById('tables'));
 
-        /*this.oldLadies = new PlayerTableOldLadiesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.students = new PlayerTableStudentsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.tourists = new PlayerTableTouristsBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.businessmen = new PlayerTableBusinessmenBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.commonObjectives = new PlayerTableCommonObjectivesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.personalObjective = new PlayerTablePersonalObjectiveBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.turnZones = new PlayerTableTurnZonesBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
-        this.trafficJam = new PlayerTableTrafficJamBlock(this.playerId, player.scoreSheets, game.isVisibleScoring());
+        this.placeLines(player.lines);
 
-        this.updateScoreSheet(player.scoreSheets, game.isVisibleScoring());*/
+        //refresh hack
+        /*// TODO ? if (!isSafari()) {
+            const svg = document.getElementById(`lats-svg-${this.playerId}`);
+            svg.setAttribute('filter',"");
+            setTimeout(()=>{
+                    svg.setAttribute('filter',"url(#PencilTexture)");
+            },800);
+        }*/
     }
 
     public setDay(day: number) {
         document.getElementById(`player-table-${this.playerId}-day`).dataset.level = ''+day;
     }
 
-    public updateScoreSheet(scoreSheets: ScoreSheets, visibleScoring: boolean) {
-        this.oldLadies.updateScoreSheet(scoreSheets, visibleScoring);
-        this.students.updateScoreSheet(scoreSheets, visibleScoring);
-        this.tourists.updateScoreSheet(scoreSheets, visibleScoring);
-        this.businessmen.updateScoreSheet(scoreSheets, visibleScoring);
-        this.commonObjectives.updateScoreSheet(scoreSheets, visibleScoring);
-        this.personalObjective.updateScoreSheet(scoreSheets, visibleScoring);
-        this.turnZones.updateScoreSheet(scoreSheets, visibleScoring);
-        this.trafficJam.updateScoreSheet(scoreSheets, visibleScoring);
-
-        if (visibleScoring) {
-            this.setContentAndValidation(`total-score`, scoreSheets.current.total, scoreSheets.current.total != scoreSheets.validated.total);
-        }
+    private makeSVG() {
+      return `
+        <svg viewBox="0 0 546 612" preserveAspectRatio="none"> 
+            <defs>
+                <filter x="-2%" y="-2%" width="104%" height="104%" filterUnits="objectBoundingBox" id="PencilTexture">
+                <feTurbulence type="fractalNoise" baseFrequency="3.4" numOctaves="2" result="noise">
+                </feTurbulence>
+                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="4" in="SourceGraphic" result="newSource">
+                </feDisplacementMap>
+                </filter>
+            </defs>
+            <g id="lats-svg-${this.playerId}" ${isSafari() ? '' : 'filter="url(#PencilTexture)"'}>
+                <line x1="0" y1="0" x2="0" y2="0"  stroke="red" stroke-width="1" stroke-opacity="1"></line>
+            </g>
+        </svg>`;
+    }
+    public placeLines(lines: string[], color?: string) {
+        lines.forEach(line => this.placeLine(
+            line,
+            parseInt(line[0], 16),
+            parseInt(line[1], 16),
+            parseInt(line[2], 16),
+            parseInt(line[3], 16), 
+            color
+        ));
     }
 
-    private setContentAndValidation(id: string, content: string | number | undefined | null, unvalidated: boolean) {
-        const div = document.getElementById(`player-table-${this.playerId}-${id}`);
-        let contentStr = '';
-        if (typeof content === 'string') {
-            contentStr = content;
-        } else if (typeof content === 'number') {
-            contentStr = ''+content;
-        }
-        div.innerHTML = contentStr;
-        div.dataset.unvalidated = unvalidated.toString();
+    /*private moveLine(from: string, to: string) {
+
+    }*/
+
+    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, color?: string) {
+        const lineid = `line-${this.playerId}-${line}`;
+
+        const c1 = {
+            x: SVG_LEFT_MARGIN + (xfrom * SVG_LINE_WIDTH),
+            y: SVG_BOTTOM_MARGIN - (yfrom * SVG_LINE_HEIGHT),
+        };
+        const c2 = {
+            x: SVG_LEFT_MARGIN + (xto * SVG_LINE_WIDTH),
+            y: SVG_BOTTOM_MARGIN - (yto * SVG_LINE_HEIGHT),
+        };
+
+        let newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
+        newLine.setAttribute('id',lineid);
+        newLine.setAttribute('d', `M${c1.x} ${c1.y} L${c2.x} ${c2.y} Z`);
+        newLine.setAttribute('stroke', color ?? '#FFFFFFDD');
+        newLine.setAttribute('stroke-width', '8');
+        newLine.setAttribute('stroke-opacity','1');
+        newLine.setAttribute('stroke-linecap','round');
+        //newLine.setAttribute('vector-effect','non-scaling-stroke');
+
+        $('lats-svg-'+this.playerId).append(newLine);
+
+        // TODO ? newLine.setAttribute('style', 'stroke-dasharray:'+newLine.getTotalLength()+';stroke-dashoffset:'+newLine.getTotalLength());
+
+        //force refresh hack
+        setTimeout(() => {
+            newLine?.setAttribute('style', '');
+
+            const svgDiv = document.getElementById(`player-table-${this.playerId}-svg`);
+
+            if (svgDiv) {
+                if (svgDiv.getAttribute('style')=='opacity:0.9999;') {
+                    svgDiv.setAttribute('style', 'opacity:1');
+                } else {
+                    svgDiv.setAttribute('style', 'opacity:0.9999;');
+                }
+            }
+        }, 1500);
+
     }
 
 }

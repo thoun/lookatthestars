@@ -9,6 +9,7 @@ interface Shape {
 interface Card extends Shape {
     id: number;
     type: number;
+    typeArg: number;
 }
 
 interface Sheet {
@@ -27,10 +28,16 @@ interface PlayerScore {
     total: number;
 }
 
+interface Objects {
+    // TODO
+}
+
 interface LookAtTheStarsPlayer extends Player {
     playerNo: number;
     sheetType: number;
     playerScore?: PlayerScore;
+    lines: string[];
+    objects: Objects;
 }
 
 interface LookAtTheStarsGamedatas {
@@ -61,56 +68,10 @@ interface LookAtTheStarsGame extends Game {
     setTooltip(id: string, html: string): void;
 }
 
-interface EnteringPlaceDeparturePawnArgs {
-    _private?: {
-        tickets: number[];
-        positions: number[];
-    };
+interface EnteringPlaceShapeArgs {
+    currentShape: Card;
 }
 
-interface EnteringPlaceRouteArgs {
-    playerId: number;
-    canConfirm: boolean;
-    canCancel: boolean;
-    currentPosition: number;
-    possibleRoutes: PossibleRoute[];
-}
-
-interface NotifNewRoundArgs {
-    round: number;
-    validatedTickets: number[];
-    currentTicket: number | null;
-}
-
-interface NotifUpdateScoreSheetArgs {
-    playerId: number;
-    scoreSheets: ScoreSheets;
-}
-
-interface NotifPlacedDeparturePawnArgs {
-    playerId: number;
-    position: number;
-} 
-
-interface NotifPlacedRouteArgs {
-    playerId: number;
-    marker: PlacedRoute;
-    zones: number[];
-    position: number;
-} 
-
-interface NotifConfirmTurnArgs {
-    playerId: number;
-    markers: PlacedRoute[];
-}
-
-interface NotifFlipObjectiveArgs {
-    objective: CommonObjective;
-}
-
-interface NotifRevealPersonalObjectiveArgs {
-    playerId: number;
-    personalObjective: number;
-    personalObjectiveLetters: number[];
-    personalObjectivePositions: number[];
+interface NotifCardArgs {
+    card: Card;
 }

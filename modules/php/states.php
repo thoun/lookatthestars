@@ -24,12 +24,20 @@ trait StateTrait {
         }
 
         if ($remainingShapes % 6 == 0) {
-            // TODO LOG new pile
+            self::notifyAllPlayers('log', clienttranslate('A pile has been ended, day is rising!'), []);
         }
 
-        $newShape = $this->shapes->pickCardsForLocation(1, 'deck', 'current');
-        
-        // TODO Log new shape
+        $discardedCard = $this->getCurrentShape();
+        $this->shapes->moveCard($discardedCard->id, 'discard');
+        self::notifyAllPlayers('discardShape', '', [
+            'card' => $discardedCard,
+        ]);
+
+        $newCard = $this->getCurrentShape();
+
+        self::notifyAllPlayers('newShape', clienttranslate('A new shape is revealed'), [
+            'card' => $newCard,
+        ]);
 
         $this->gamestate->nextState('next');
     }

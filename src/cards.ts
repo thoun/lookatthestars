@@ -30,23 +30,14 @@ class Cards {
         );
     }
 
-    public createMoveOrUpdateCard(card: Card, destinationId: string, init: boolean = false, from: string = null) {
+    public createMoveOrUpdateCard(card: Card, destinationId?: string, init: boolean = false, from: string = null) {
         const existingDiv = document.getElementById(`card-${card.id}`);
         const side = card.type ? 'front' : 'back';
         if (existingDiv) {
-            if (existingDiv.parentElement.id == destinationId) {
-                return;
-            }
 
             (this.game as any).removeTooltip(`card-${card.id}`);
             const oldType = Number(existingDiv.dataset.category);
-            existingDiv.classList.remove('selectable', 'selected', 'disabled');
 
-            if (init) {
-                document.getElementById(destinationId).appendChild(existingDiv);
-            } else {
-                slideToObjectAndAttach(this.game, existingDiv, destinationId);
-            }
             existingDiv.dataset.side = ''+side;
             if (!oldType && card.type) {
                 this.setVisibleInformations(existingDiv, card);
@@ -54,6 +45,16 @@ class Cards {
                 setTimeout(() => this.removeVisibleInformations(existingDiv), 500); // so we don't change face while it is still visible
             }
             this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.family));
+            
+            if (!destinationId || existingDiv.parentElement.id == destinationId) {
+                return;
+            }
+
+            if (init) {
+                document.getElementById(destinationId).appendChild(existingDiv);
+            } else {
+                slideToObjectAndAttach(this.game, existingDiv, destinationId);
+            }
         } else {
             const div = document.createElement('div');
             div.id = `card-${card.id}`;
@@ -87,7 +88,7 @@ class Cards {
 
     private setVisibleInformations(div: HTMLElement, card: Card) {
         div.dataset.type = ''+card.type;
-        // TODO
+        div.dataset.typeArg = ''+card.typeArg;
     }
 
     private removeVisibleInformations(div: HTMLElement) {

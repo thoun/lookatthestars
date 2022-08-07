@@ -53,17 +53,24 @@
         background-position-y: 100%;
     }
 
-    &[data-type="2"] .front {
-        background-position-x: #{0 * 100% / 9};
-        background-position-y: 0%;
+    &[data-type="2"] {
+        @for $index from 0 through 9 {
+            &[data-type-arg="#{$index}"] .front {
+                background-position-x: #{$index * 100% / 9};
+                background-position-y: 0%;
+            }
+        }
+        @for $index from 10 through 19 {
+            &[data-type-arg="#{$index}"] .front {
+                background-position-x: #{($index - 10) * 100% / 9};
+                background-position-y: 50%;
+            }
+        }
+        @for $index from 20 through 26 {
+            &[data-type-arg="#{$index}"] .front {
+                background-position-x: #{($index - 20) * 100% / 9};
+                background-position-y: 100%;
+            }
+        }
     }
-/*
-    &[data-category="PAIR"] {
-        &[data-family="CRAB"] {
-            @for $index from 0 through 1 {
-                &[data-color="DARK_BLUE"][data-index="index"] .front {
-                    background-position-x: (index + 1) * 100% / 9};
-                    background-position-y: 0%;
-                }
-            }*/
 }

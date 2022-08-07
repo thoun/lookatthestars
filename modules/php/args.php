@@ -13,9 +13,9 @@ trait ArgsTrait {
     */
    
     function argPlaceShape() {
-        // TODO
-    
-        return [];
+        return [
+            'currentShape' => $this->getCurrentShape(),
+        ];
     }
     
 }
