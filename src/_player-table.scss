@@ -36,6 +36,20 @@ $tableWidth: 546px;
       svg {
         width: 100%;
         height: 100%;
+        
+        .line {
+          stroke: #FFFFFFDD;
+          stroke-width: 8;
+          stroke-opacity: 1;
+          stroke-linecap: round;
+
+          &.valid {
+            stroke: #00FF0099;
+          }
+          &.invalid {
+            stroke: #FF000099;
+          }
+        }
       }
     }
 

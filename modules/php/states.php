@@ -27,13 +27,13 @@ trait StateTrait {
             self::notifyAllPlayers('log', clienttranslate('A pile has been ended, day is rising!'), []);
         }
 
-        $discardedCard = $this->getCurrentShape();
+        $discardedCard = $this->getCurrentShape(true);
         $this->shapes->moveCard($discardedCard->id, 'discard');
         self::notifyAllPlayers('discardShape', '', [
             'card' => $discardedCard,
         ]);
 
-        $newCard = $this->getCurrentShape();
+        $newCard = $this->getCurrentShape(true);
 
         self::notifyAllPlayers('newShape', clienttranslate('A new shape is revealed'), [
             'card' => $newCard,

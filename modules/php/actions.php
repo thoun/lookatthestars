@@ -12,11 +12,11 @@ trait ActionTrait {
     */
 
     public function placeShape(int $x, int $y, int $rotation) {
-        self::checkAction('placeDeparturePawn'); 
+        self::checkAction('placeShape'); 
         
         $playerId = self::getCurrentPlayerId();
 
-        $shape = $this->getCurrentShape();
+        $card = $this->getCurrentShape(false);
 
         /*$mapElements = $this->MAP_POSITIONS[$this->getMap()][$position];
         $ticketNumber = $this->array_find($mapElements, fn($element) => $element >= 1 && $element <= 12);
@@ -31,6 +31,17 @@ trait ActionTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
         ]);*/
+
+        $newLines = [];
+        foreach ($card->lines as $line) {
+            $newLines[] = dechex($x + $line[0][0]).dechex($y + $line[0][1]).dechex($x + $line[1][0]).dechex($y + $line[1][1]);
+        }
+
+        $json_obj = $this->getUniqueValueFromDB("SELECT `player_lines` FROM `player` where `player_id` = $playerId");
+        $playerLines = $json_obj ? json_decode($json_obj, true) : [];
+
+        $allLines = array_merge($playerLines, $newLines);
+        $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }

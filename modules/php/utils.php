@@ -76,15 +76,15 @@ trait UtilTrait {
         return array_map(fn($dbResult) => new Player($dbResult), array_values($dbResults));
     }
 
-    function getCardFromDb(/*array|null*/ $dbCard) {
+    function getCardFromDb(/*array|null*/ $dbCard, bool $linesAsString) {
         if ($dbCard == null) {
             return null;
         }
-        return new CARD($dbCard, $this->SHAPES);
+        return new CARD($dbCard, $this->SHAPES, $linesAsString);
     }
 
-    function getCardsFromDb(array $dbCards) {
-        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
+    function getCardsFromDb(array $dbCards, bool $linesAsString) {
+        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard, $linesAsString), array_values($dbCards));
     }
 
     function setupCards() {
@@ -112,8 +112,8 @@ trait UtilTrait {
         $this->setGameStateInitialValue(STAR2, $star2);
     }
 
-    function getCurrentShape() {
-        $shape = $this->getCardFromDb($this->shapes->getCardOnTop('piles'));
+    function getCurrentShape(bool $linesAsString) {
+        $shape = $this->getCardFromDb($this->shapes->getCardOnTop('piles'), $linesAsString);
         return $shape;
     }
 }

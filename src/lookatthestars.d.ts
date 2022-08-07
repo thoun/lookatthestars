@@ -3,7 +3,7 @@
  */
 
 interface Shape {
-    lines: number[][][];
+    lines: string[];
 }
 
 interface Card extends Shape {

@@ -142,7 +142,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs) {
-        // TODO
+        this.getCurrentPlayerTable()?.setShapeToPlace(args.currentShape);
     }
 
     onEnteringShowScore() {
@@ -160,7 +160,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private onLeavingPlaceShape() {
-       // TODO
+        this.getCurrentPlayerTable()?.removeShapeToPlace();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -170,7 +170,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
-                    (this as any).addActionButton(`confirmTurn_button`, _("Confirm turn"), () => this.confirmTurn());
+                    (this as any).addActionButton(`placeShape_button`, _("Place shape"), () => this.placeShape());
                     (this as any).addActionButton(`skipShape_button`, _("Skip turn"), () => this.skipShape());
                     break;
             }
@@ -184,10 +184,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     ///////////////////////////////////////////////////
 
-    public isVisibleScoring(): boolean {
-        return !this.gamedatas.hiddenScore;
-    }
-
     public getPlayerId(): number {
         return Number((this as any).player_id);
     }
@@ -195,6 +191,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public getPlayerColor(playerId: number): string {
         return this.gamedatas.players[playerId].color;
     }    
+
+    private getPlayer(playerId: number): LookAtTheStarsPlayer {
+        return Object.values(this.gamedatas.players).find(player => Number(player.id) == playerId);
+    }
+
+    private getPlayerTable(playerId: number): PlayerTable {
+        return this.playersTables.find(playerTable => playerTable.playerId === playerId);
+    }
+
+    private getCurrentPlayerTable(): PlayerTable | null {
+        return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
+    }
     
     public setTooltip(id: string, html: string) {
         (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
@@ -271,35 +279,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 document.getElementsByTagName('html')[0].dataset.noGrid = (prefValue == 2).toString();
                 break;
         }
-    }
-
-    private expandObjectiveClick() {
-        const wrappers = document.querySelectorAll(`.personal-objective-wrapper`);
-        const expanded = (this as any).prefs[203].value == '1';
-        wrappers.forEach((wrapper: HTMLDivElement) => wrapper.dataset.expanded = (!expanded).toString());
-
-        const select = document.getElementById('preference_control_203') as HTMLSelectElement;
-        select.value = expanded ? '2' : '1';
-        var event = new Event('change');
-        select.dispatchEvent(event);
-    }
-
-    private showPersonalObjective(playerId: number) {
-        if (document.getElementById(`personal-objective-wrapper-${playerId}`).childElementCount > 0) {
-            return;
-        }
-        
-        const player = this.gamedatas.players[playerId];
-        let html = `
-            <div class="personal-objective collapsed">
-                ${player.personalObjectiveLetters.map((letter, letterIndex) => `<div class="letter" data-player-id="${playerId}" data-position="${player.personalObjectivePositions[letterIndex]}">${letter}</div>`).join('')}
-            </div>
-            <div class="personal-objective expanded" data-type="${player.personalObjective}"></div>
-            <div id="toggle-objective-expand-${playerId}" class="arrow"></div>
-        `;
-        dojo.place(html, `personal-objective-wrapper-${playerId}`);
-
-        document.getElementById(`toggle-objective-expand-${playerId}`).addEventListener('click', () => this.expandObjectiveClick());
     }
 
     private getOrderedPlayers(gamedatas: LookAtTheStarsGamedatas) {
@@ -379,127 +358,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
             (this as any).addTooltipHtml(element.id, tooltip);
         });
     }
-    
-    private eliminatePlayer(playerId: number) {
-        this.gamedatas.players[playerId].eliminated = 1;
-        document.getElementById(`overall_player_board_${playerId}`).classList.add('eliminated-player');
-        dojo.addClass(`player-table-${playerId}`, 'eliminated');
-        this.setNewScore(playerId, 0);
-    }
 
-    private setNewScore(playerId: number, score: number) {
-        if (this.gamedatas.hiddenScore) {
-            setTimeout(() => {
-                Object.keys(this.gamedatas.players).filter(pId => this.gamedatas.players[pId].eliminated == 0).forEach(pId => document.getElementById(`player_score_${pId}`).innerHTML = '-')
-            }, 100);
-        } else {
-            if (!isNaN(score)) {
-                (this as any).scoreCtrl[playerId]?.toValue(this.gamedatas.players[playerId].eliminated != 0 ? 0 : score);
-            }
-        }
-    }
-
-    private positionReached(position: number, playerMarkers: PlacedRoute[]) {
-        return playerMarkers.some(marker => marker.from == position || marker.to == position);
-    }
-
-    private highlightObjectiveLetters(player: LookAtTheStarsPlayer) {
-        if (player.personalObjective) {
-            const lettersPositions = player.personalObjectivePositions;
-            lettersPositions.forEach(lettersPosition => {
-                const reached = this.positionReached(lettersPosition, player.markers).toString();
-                const mapLetter = document.querySelector(`.objective-letter[data-position="${lettersPosition}"]`) as HTMLDivElement;
-                const panelLetter = document.querySelector(`.letter[data-player-id="${player.id}"][data-position="${lettersPosition}"]`) as HTMLDivElement;
-                if (mapLetter) {
-                    mapLetter.dataset.reached = reached;
-                }
-                if (panelLetter) {
-                    panelLetter.dataset.reached = reached;
-                }
-            });
-        }
-    }
-
-    private setObjectivesCounters(playerId: number, scoreSheet: ScoreSheet) {
-        if (playerId === this.getPlayerId()) {
-            [1, 2].forEach(objectiveNumber => {
-                const span = document.getElementById(`common-objective-${objectiveNumber}-counter`);
-                const objective = COMMON_OBJECTIVES[Number(span.dataset.type)];
-                let checked = 0;
-
-                switch (objective[0]) {
-                    case 20: //OLD_LADY
-                        checked = scoreSheet.oldLadies.checked;
-                        break;
-                    case 30: //STUDENT
-                        checked = scoreSheet.students.checkedStudents + scoreSheet.students.checkedInternships;
-                        break;
-                    case 40: //TOURIST
-                        checked = scoreSheet.tourists.checkedTourists.reduce((a, b) => a + b, 0);
-                        break;
-                    case 50: //BUSINESSMAN
-                        checked = scoreSheet.businessmen.checkedBusinessmen.reduce((a, b) => a + b, 0);
-                        break;
-
-                        case 41: //MONUMENT_LIGHT
-                        checked = scoreSheet.tourists.checkedMonumentsLight;
-                        break;
-                    case 42: //MONUMENT_DARK
-                        checked = scoreSheet.tourists.checkedMonumentsDark;
-                        break;
-                }
-
-                span.innerHTML = checked.toString();
-                span.dataset.reached = (checked >= objective[1]).toString();
-            });
-        }
-    }
-
-    public placeDeparturePawn(position: number) {
-        if(!(this as any).checkAction('placeDeparturePawn')) {
+    public placeShape() {
+        if(!(this as any).checkAction('placeShape')) {
             return;
         }
 
-        this.takeAction('placeDeparturePawn', {
-            position
-        });
-    }
-
-    public placeRoute(from: number, to: number) {
-
-        const args: EnteringPlaceRouteArgs = this.gamedatas.gamestate.args;
-        const route = args.possibleRoutes?.find(r => (r.from === from && r.to === to) || (r.from === to && r.to === from));
-        if (!route) {
-            return;
-        }
-
-        if(!(this as any).checkAction('placeRoute')) {
-            return;
-        }
-
-        const eliminationWarning = route.isElimination /* && args.possibleRoutes.some(r => !r.isElimination)*/;
-
-        if (eliminationWarning) {
-            (this as any).confirmationDialog(_('Are you sure you want to place that marker? You will be eliminated!'), () => {
-                this.takeAction('placeRoute', {
-                    from, 
-                    to,
-                });
-            });
-        } else {
-            this.takeAction('placeRoute', {
-                from, 
-                to,
-            });
-        }
-    }
-
-    public cancelLast() {
-        if(!(this as any).checkAction('cancelLast')) {
-            return;
-        }
-
-        this.takeAction('cancelLast');
+        const informations = this.getCurrentPlayerTable().getShapeInformations();
+        this.takeAction('placeShape', informations);
     }
 
     public resetTurn() {
@@ -511,7 +377,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public confirmTurn() {
-        if(!(this as any).checkAction('confirmTurn', true)) {
+        if(!(this as any).checkAction('confirmTurn')) {
             return;
         }
 

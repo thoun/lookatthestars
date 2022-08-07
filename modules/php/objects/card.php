@@ -29,7 +29,7 @@ class Card extends CardType {
     public int $type;
     public int $typeArg;
 
-    public function __construct($dbCard, $SHAPES) {
+    public function __construct($dbCard, $SHAPES, bool $linesAsString) {
         $this->id = intval($dbCard['id']);
         $this->type = intval($dbCard['type']);
         if ($this->type == 1) {
@@ -37,6 +37,10 @@ class Card extends CardType {
             $this->typeArg = intval($dbCard['type_arg']);
             $card = $SHAPES[$this->typeArg];
             $this->lines = $card->lines;
+
+            if ($linesAsString) {
+                $this->lines = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $this->lines);
+            }
         }
     } 
 
@@ -44,7 +48,7 @@ class Card extends CardType {
         return new Card([
             'id' => $card->id,
             'type' => null
-        ], null);
+        ], null, false);
     }
 
     public static function onlyIds(array $cards) {

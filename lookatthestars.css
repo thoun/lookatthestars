@@ -313,6 +313,18 @@
   width: 100%;
   height: 100%;
 }
+.player-table .main .svg-wrapper svg .line {
+  stroke: rgba(255, 255, 255, 0.8666666667);
+  stroke-width: 8;
+  stroke-opacity: 1;
+  stroke-linecap: round;
+}
+.player-table .main .svg-wrapper svg .line.valid {
+  stroke: rgba(0, 255, 0, 0.6);
+}
+.player-table .main .svg-wrapper svg .line.invalid {
+  stroke: rgba(255, 0, 0, 0.6);
+}
 .player-table .main .day {
   position: absolute;
   bottom: 0;

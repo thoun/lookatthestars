@@ -284,14 +284,11 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.makeSVG = function () {
         return "\n        <svg viewBox=\"0 0 546 612\" preserveAspectRatio=\"none\"> \n            <defs>\n                <filter x=\"-2%\" y=\"-2%\" width=\"104%\" height=\"104%\" filterUnits=\"objectBoundingBox\" id=\"PencilTexture\">\n                <feTurbulence type=\"fractalNoise\" baseFrequency=\"3.4\" numOctaves=\"2\" result=\"noise\">\n                </feTurbulence>\n                <feDisplacementMap xChannelSelector=\"R\" yChannelSelector=\"G\" scale=\"4\" in=\"SourceGraphic\" result=\"newSource\">\n                </feDisplacementMap>\n                </filter>\n            </defs>\n            <g id=\"lats-svg-".concat(this.playerId, "\" ").concat(isSafari() ? '' : 'filter="url(#PencilTexture)"', ">\n                <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"0\"  stroke=\"red\" stroke-width=\"1\" stroke-opacity=\"1\"></line>\n            </g>\n        </svg>");
     };
-    PlayerTable.prototype.placeLines = function (lines, color) {
+    PlayerTable.prototype.placeLines = function (lines, additionalClass) {
         var _this = this;
-        lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), color); });
+        lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
     };
-    /*private moveLine(from: string, to: string) {
-
-    }*/
-    PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, color) {
+    PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, additionalClass) {
         var _this = this;
         var lineid = "line-".concat(this.playerId, "-").concat(line);
         var c1 = {
@@ -305,10 +302,7 @@ var PlayerTable = /** @class */ (function () {
         var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         newLine.setAttribute('id', lineid);
         newLine.setAttribute('d', "M".concat(c1.x, " ").concat(c1.y, " L").concat(c2.x, " ").concat(c2.y, " Z"));
-        newLine.setAttribute('stroke', color !== null && color !== void 0 ? color : '#FFFFFFDD');
-        newLine.setAttribute('stroke-width', '8');
-        newLine.setAttribute('stroke-opacity', '1');
-        newLine.setAttribute('stroke-linecap', 'round');
+        newLine.classList.add('line', additionalClass);
         //newLine.setAttribute('vector-effect','non-scaling-stroke');
         $('lats-svg-' + this.playerId).append(newLine);
         // TODO ? newLine.setAttribute('style', 'stroke-dasharray:'+newLine.getTotalLength()+';stroke-dashoffset:'+newLine.getTotalLength());
@@ -325,6 +319,23 @@ var PlayerTable = /** @class */ (function () {
                 }
             }
         }, 1500);
+    };
+    PlayerTable.prototype.getShapeInformations = function () {
+        return {
+            x: this.shapeX,
+            y: this.shapeY,
+            rotation: this.shapeRotation,
+        };
+    };
+    PlayerTable.prototype.setShapeToPlace = function (currentShape) {
+        this.shapeX = 0;
+        this.shapeY = 0;
+        this.shapeRotation = 0;
+        // TODO TEMP
+        this.placeLines(currentShape.lines, 'valid');
+    };
+    PlayerTable.prototype.removeShapeToPlace = function () {
+        // TODO throw new Error("Method not implemented.");
     };
     return PlayerTable;
 }());
@@ -447,7 +458,8 @@ var LookAtTheStars = /** @class */ (function () {
         }
     };
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
-        // TODO
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentShape);
     };
     LookAtTheStars.prototype.onEnteringShowScore = function () {
         var _this = this;
@@ -462,7 +474,8 @@ var LookAtTheStars = /** @class */ (function () {
         }
     };
     LookAtTheStars.prototype.onLeavingPlaceShape = function () {
-        // TODO
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeShapeToPlace();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -472,7 +485,7 @@ var LookAtTheStars = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
-                    this.addActionButton("confirmTurn_button", _("Confirm turn"), function () { return _this.confirmTurn(); });
+                    this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;
             }
@@ -481,14 +494,21 @@ var LookAtTheStars = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
-    LookAtTheStars.prototype.isVisibleScoring = function () {
-        return !this.gamedatas.hiddenScore;
-    };
     LookAtTheStars.prototype.getPlayerId = function () {
         return Number(this.player_id);
     };
     LookAtTheStars.prototype.getPlayerColor = function (playerId) {
         return this.gamedatas.players[playerId].color;
+    };
+    LookAtTheStars.prototype.getPlayer = function (playerId) {
+        return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
+    };
+    LookAtTheStars.prototype.getPlayerTable = function (playerId) {
+        return this.playersTables.find(function (playerTable) { return playerTable.playerId === playerId; });
+    };
+    LookAtTheStars.prototype.getCurrentPlayerTable = function () {
+        var _this = this;
+        return this.playersTables.find(function (playerTable) { return playerTable.playerId === _this.getPlayerId(); });
     };
     LookAtTheStars.prototype.setTooltip = function (id, html) {
         this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
@@ -557,25 +577,6 @@ var LookAtTheStars = /** @class */ (function () {
                 break;
         }
     };
-    LookAtTheStars.prototype.expandObjectiveClick = function () {
-        var wrappers = document.querySelectorAll(".personal-objective-wrapper");
-        var expanded = this.prefs[203].value == '1';
-        wrappers.forEach(function (wrapper) { return wrapper.dataset.expanded = (!expanded).toString(); });
-        var select = document.getElementById('preference_control_203');
-        select.value = expanded ? '2' : '1';
-        var event = new Event('change');
-        select.dispatchEvent(event);
-    };
-    LookAtTheStars.prototype.showPersonalObjective = function (playerId) {
-        var _this = this;
-        if (document.getElementById("personal-objective-wrapper-".concat(playerId)).childElementCount > 0) {
-            return;
-        }
-        var player = this.gamedatas.players[playerId];
-        var html = "\n            <div class=\"personal-objective collapsed\">\n                ".concat(player.personalObjectiveLetters.map(function (letter, letterIndex) { return "<div class=\"letter\" data-player-id=\"".concat(playerId, "\" data-position=\"").concat(player.personalObjectivePositions[letterIndex], "\">").concat(letter, "</div>"); }).join(''), "\n            </div>\n            <div class=\"personal-objective expanded\" data-type=\"").concat(player.personalObjective, "\"></div>\n            <div id=\"toggle-objective-expand-").concat(playerId, "\" class=\"arrow\"></div>\n        ");
-        dojo.place(html, "personal-objective-wrapper-".concat(playerId));
-        document.getElementById("toggle-objective-expand-".concat(playerId)).addEventListener('click', function () { return _this.expandObjectiveClick(); });
-    };
     LookAtTheStars.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
         var players = Object.values(gamedatas.players).sort(function (a, b) { return a.playerNo - b.playerNo; });
@@ -642,117 +643,12 @@ var LookAtTheStars = /** @class */ (function () {
             _this.addTooltipHtml(element.id, tooltip);
         });
     };
-    LookAtTheStars.prototype.eliminatePlayer = function (playerId) {
-        this.gamedatas.players[playerId].eliminated = 1;
-        document.getElementById("overall_player_board_".concat(playerId)).classList.add('eliminated-player');
-        dojo.addClass("player-table-".concat(playerId), 'eliminated');
-        this.setNewScore(playerId, 0);
-    };
-    LookAtTheStars.prototype.setNewScore = function (playerId, score) {
-        var _this = this;
-        var _a;
-        if (this.gamedatas.hiddenScore) {
-            setTimeout(function () {
-                Object.keys(_this.gamedatas.players).filter(function (pId) { return _this.gamedatas.players[pId].eliminated == 0; }).forEach(function (pId) { return document.getElementById("player_score_".concat(pId)).innerHTML = '-'; });
-            }, 100);
-        }
-        else {
-            if (!isNaN(score)) {
-                (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(this.gamedatas.players[playerId].eliminated != 0 ? 0 : score);
-            }
-        }
-    };
-    LookAtTheStars.prototype.positionReached = function (position, playerMarkers) {
-        return playerMarkers.some(function (marker) { return marker.from == position || marker.to == position; });
-    };
-    LookAtTheStars.prototype.highlightObjectiveLetters = function (player) {
-        var _this = this;
-        if (player.personalObjective) {
-            var lettersPositions = player.personalObjectivePositions;
-            lettersPositions.forEach(function (lettersPosition) {
-                var reached = _this.positionReached(lettersPosition, player.markers).toString();
-                var mapLetter = document.querySelector(".objective-letter[data-position=\"".concat(lettersPosition, "\"]"));
-                var panelLetter = document.querySelector(".letter[data-player-id=\"".concat(player.id, "\"][data-position=\"").concat(lettersPosition, "\"]"));
-                if (mapLetter) {
-                    mapLetter.dataset.reached = reached;
-                }
-                if (panelLetter) {
-                    panelLetter.dataset.reached = reached;
-                }
-            });
-        }
-    };
-    LookAtTheStars.prototype.setObjectivesCounters = function (playerId, scoreSheet) {
-        if (playerId === this.getPlayerId()) {
-            [1, 2].forEach(function (objectiveNumber) {
-                var span = document.getElementById("common-objective-".concat(objectiveNumber, "-counter"));
-                var objective = COMMON_OBJECTIVES[Number(span.dataset.type)];
-                var checked = 0;
-                switch (objective[0]) {
-                    case 20: //OLD_LADY
-                        checked = scoreSheet.oldLadies.checked;
-                        break;
-                    case 30: //STUDENT
-                        checked = scoreSheet.students.checkedStudents + scoreSheet.students.checkedInternships;
-                        break;
-                    case 40: //TOURIST
-                        checked = scoreSheet.tourists.checkedTourists.reduce(function (a, b) { return a + b; }, 0);
-                        break;
-                    case 50: //BUSINESSMAN
-                        checked = scoreSheet.businessmen.checkedBusinessmen.reduce(function (a, b) { return a + b; }, 0);
-                        break;
-                    case 41: //MONUMENT_LIGHT
-                        checked = scoreSheet.tourists.checkedMonumentsLight;
-                        break;
-                    case 42: //MONUMENT_DARK
-                        checked = scoreSheet.tourists.checkedMonumentsDark;
-                        break;
-                }
-                span.innerHTML = checked.toString();
-                span.dataset.reached = (checked >= objective[1]).toString();
-            });
-        }
-    };
-    LookAtTheStars.prototype.placeDeparturePawn = function (position) {
-        if (!this.checkAction('placeDeparturePawn')) {
+    LookAtTheStars.prototype.placeShape = function () {
+        if (!this.checkAction('placeShape')) {
             return;
         }
-        this.takeAction('placeDeparturePawn', {
-            position: position
-        });
-    };
-    LookAtTheStars.prototype.placeRoute = function (from, to) {
-        var _this = this;
-        var _a;
-        var args = this.gamedatas.gamestate.args;
-        var route = (_a = args.possibleRoutes) === null || _a === void 0 ? void 0 : _a.find(function (r) { return (r.from === from && r.to === to) || (r.from === to && r.to === from); });
-        if (!route) {
-            return;
-        }
-        if (!this.checkAction('placeRoute')) {
-            return;
-        }
-        var eliminationWarning = route.isElimination /* && args.possibleRoutes.some(r => !r.isElimination)*/;
-        if (eliminationWarning) {
-            this.confirmationDialog(_('Are you sure you want to place that marker? You will be eliminated!'), function () {
-                _this.takeAction('placeRoute', {
-                    from: from,
-                    to: to,
-                });
-            });
-        }
-        else {
-            this.takeAction('placeRoute', {
-                from: from,
-                to: to,
-            });
-        }
-    };
-    LookAtTheStars.prototype.cancelLast = function () {
-        if (!this.checkAction('cancelLast')) {
-            return;
-        }
-        this.takeAction('cancelLast');
+        var informations = this.getCurrentPlayerTable().getShapeInformations();
+        this.takeAction('placeShape', informations);
     };
     LookAtTheStars.prototype.resetTurn = function () {
         if (!this.checkAction('resetTurn')) {
@@ -761,7 +657,7 @@ var LookAtTheStars = /** @class */ (function () {
         this.takeAction('resetTurn');
     };
     LookAtTheStars.prototype.confirmTurn = function () {
-        if (!this.checkAction('confirmTurn', true)) {
+        if (!this.checkAction('confirmTurn')) {
             return;
         }
         this.takeAction('confirmTurn');

@@ -13,8 +13,8 @@ class Player {
         $this->name = $dbPlayer['player_name'];
         $this->color = $dbPlayer['player_color'];
         $this->sheet = intval($dbPlayer['player_sheet_type']);
-        $this->lines = $dbPlayer['player_lines'] ?? [];
-        $this->objects = $dbPlayer['player_objects']?? json_decode('{}');
+        $this->lines = $dbPlayer['player_lines'] != null ? json_decode($dbPlayer['player_lines'], true) : [];
+        $this->objects = json_decode($dbPlayer['player_objects'] ?? '{}');
     } 
 }
 ?>

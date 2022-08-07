@@ -13,6 +13,10 @@ function isSafari() {
 class PlayerTable {
     public playerId: number;
 
+    private shapeX: number;
+    private shapeY: number;
+    private shapeRotation: number;
+
     constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
         this.playerId = Number(player.id);
 
@@ -62,22 +66,18 @@ class PlayerTable {
             </g>
         </svg>`;
     }
-    public placeLines(lines: string[], color?: string) {
+    public placeLines(lines: string[], additionalClass?: string) {
         lines.forEach(line => this.placeLine(
             line,
             parseInt(line[0], 16),
             parseInt(line[1], 16),
             parseInt(line[2], 16),
             parseInt(line[3], 16), 
-            color
+            additionalClass
         ));
     }
 
-    /*private moveLine(from: string, to: string) {
-
-    }*/
-
-    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, color?: string) {
+    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass?: string) {
         const lineid = `line-${this.playerId}-${line}`;
 
         const c1 = {
@@ -92,10 +92,7 @@ class PlayerTable {
         let newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
         newLine.setAttribute('id',lineid);
         newLine.setAttribute('d', `M${c1.x} ${c1.y} L${c2.x} ${c2.y} Z`);
-        newLine.setAttribute('stroke', color ?? '#FFFFFFDD');
-        newLine.setAttribute('stroke-width', '8');
-        newLine.setAttribute('stroke-opacity','1');
-        newLine.setAttribute('stroke-linecap','round');
+        newLine.classList.add('line', additionalClass);
         //newLine.setAttribute('vector-effect','non-scaling-stroke');
 
         $('lats-svg-'+this.playerId).append(newLine);
@@ -116,7 +113,27 @@ class PlayerTable {
                 }
             }
         }, 1500);
+    }
 
+    public getShapeInformations() {
+        return {
+            x: this.shapeX,
+            y: this.shapeY,
+            rotation: this.shapeRotation,
+        };
+    }
+
+    public setShapeToPlace(currentShape: Card) {
+        this.shapeX = 0;
+        this.shapeY = 0;
+        this.shapeRotation = 0;
+
+        // TODO TEMP
+        this.placeLines(currentShape.lines, 'valid');
+    }
+    
+    public removeShapeToPlace() {
+        // TODO throw new Error("Method not implemented.");
     }
 
 }
