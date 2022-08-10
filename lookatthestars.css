@@ -325,6 +325,19 @@
 .player-table .main .svg-wrapper svg .line.invalid {
   stroke: rgba(255, 0, 0, 0.6);
 }
+.player-table .main .card-border {
+  display: inline-block;
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+}
+.player-table .main .card-border[data-validity=valid] {
+  box-shadow: 0 0 5px 2px rgba(0, 255, 0, 0.6);
+}
+.player-table .main .card-border[data-validity=invalid] {
+  box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.6);
+}
 .player-table .main .day {
   position: absolute;
   bottom: 0;

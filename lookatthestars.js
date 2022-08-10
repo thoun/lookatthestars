@@ -253,6 +253,15 @@ var TableCenter = /** @class */ (function () {
     }
     return TableCenter;
 }());
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
@@ -289,6 +298,7 @@ var PlayerTable = /** @class */ (function () {
         lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
     };
     PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, additionalClass) {
+        var _a;
         var _this = this;
         var lineid = "line-".concat(this.playerId, "-").concat(line);
         var c1 = {
@@ -302,7 +312,7 @@ var PlayerTable = /** @class */ (function () {
         var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         newLine.setAttribute('id', lineid);
         newLine.setAttribute('d', "M".concat(c1.x, " ").concat(c1.y, " L").concat(c2.x, " ").concat(c2.y, " Z"));
-        newLine.classList.add('line', additionalClass);
+        (_a = newLine.classList).add.apply(_a, __spreadArray(['line'], additionalClass, false));
         //newLine.setAttribute('vector-effect','non-scaling-stroke');
         $('lats-svg-' + this.playerId).append(newLine);
         // TODO ? newLine.setAttribute('style', 'stroke-dasharray:'+newLine.getTotalLength()+';stroke-dashoffset:'+newLine.getTotalLength());
@@ -327,27 +337,76 @@ var PlayerTable = /** @class */ (function () {
             rotation: this.shapeRotation,
         };
     };
+    PlayerTable.prototype.setCardBorderPosition = function () {
+        var x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
+        var y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
+        var cardBorderDiv = document.getElementById("player-table-".concat(this.playerId, "-card-border"));
+        cardBorderDiv.style.left = "".concat(x - 20, "px");
+        cardBorderDiv.style.top = "".concat(y - 180, "px");
+    };
+    PlayerTable.prototype.getValidClass = function () {
+        // TODO TEMP this.currentShape
+        return Math.random() < 0.5 ? 'valid' : 'invalid';
+    };
     PlayerTable.prototype.setShapeToPlace = function (currentShape) {
+        this.currentShape = currentShape;
         this.shapeX = 0;
         this.shapeY = 0;
         this.shapeRotation = 0;
+        var validClass = this.getValidClass();
+        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\"></div>"), "player-table-".concat(this.playerId, "-main"));
+        this.setCardBorderPosition();
         // TODO TEMP
-        this.placeLines(currentShape.lines, 'valid');
+        this.placeLines(currentShape.lines, ['temp-line', validClass]);
+    };
+    PlayerTable.prototype.moveShape = function () {
+        var _this = this;
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        var validClass = this.getValidClass();
+        var lines = this.currentShape.lines.map(function (line) {
+            return (Number.parseInt(line[0], 16) + _this.shapeX).toString(16) +
+                (Number.parseInt(line[1], 16) + _this.shapeY).toString(16) +
+                (Number.parseInt(line[2], 16) + _this.shapeX).toString(16) +
+                (Number.parseInt(line[3], 16) + _this.shapeY).toString(16);
+        });
+        this.placeLines(lines, ['temp-line', validClass]);
+        this.setCardBorderPosition();
+        document.getElementById("player-table-".concat(this.playerId, "-card-border")).dataset.validity = validClass;
+    };
+    PlayerTable.prototype.moveShapeLeft = function () {
+        if (this.shapeX == 0) {
+            return;
+        }
+        this.shapeX--;
+        this.moveShape();
+    };
+    PlayerTable.prototype.moveShapeRight = function () {
+        if (this.shapeX >= 6) {
+            return;
+        }
+        this.shapeX++;
+        this.moveShape();
+    };
+    PlayerTable.prototype.moveShapeBottom = function () {
+        if (this.shapeY == 0) {
+            return;
+        }
+        this.shapeY--;
+        this.moveShape();
+    };
+    PlayerTable.prototype.moveShapeTop = function () {
+        if (this.shapeY >= 7) {
+            return;
+        }
+        this.shapeY++;
+        this.moveShape();
     };
     PlayerTable.prototype.removeShapeToPlace = function () {
         // TODO throw new Error("Method not implemented.");
     };
     return PlayerTable;
 }());
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var ANIMATION_MS = 500;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
@@ -485,6 +544,9 @@ var LookAtTheStars = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
+                    // TODO TEMP
+                    this.addActionButton("left_button", _("Top"), function () { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.moveShapeTop(); });
+                    this.addActionButton("right_button", _("Bottom"), function () { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.moveShapeBottom(); });
                     this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;

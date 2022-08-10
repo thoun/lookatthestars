@@ -13,6 +13,7 @@ function isSafari() {
 class PlayerTable {
     public playerId: number;
 
+    private currentShape: Card;
     private shapeX: number;
     private shapeY: number;
     private shapeRotation: number;
@@ -66,7 +67,7 @@ class PlayerTable {
             </g>
         </svg>`;
     }
-    public placeLines(lines: string[], additionalClass?: string) {
+    public placeLines(lines: string[], additionalClass?: string[]) {
         lines.forEach(line => this.placeLine(
             line,
             parseInt(line[0], 16),
@@ -77,7 +78,7 @@ class PlayerTable {
         ));
     }
 
-    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass?: string) {
+    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass?: string[]) {
         const lineid = `line-${this.playerId}-${line}`;
 
         const c1 = {
@@ -92,7 +93,7 @@ class PlayerTable {
         let newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
         newLine.setAttribute('id',lineid);
         newLine.setAttribute('d', `M${c1.x} ${c1.y} L${c2.x} ${c2.y} Z`);
-        newLine.classList.add('line', additionalClass);
+        newLine.classList.add('line', ...additionalClass);
         //newLine.setAttribute('vector-effect','non-scaling-stroke');
 
         $('lats-svg-'+this.playerId).append(newLine);
@@ -123,13 +124,80 @@ class PlayerTable {
         };
     }
 
+    private setCardBorderPosition() {
+        const x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
+        const y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
+        const cardBorderDiv = document.getElementById(`player-table-${this.playerId}-card-border`);
+        cardBorderDiv.style.left = `${x - 20}px`;
+        cardBorderDiv.style.top = `${y - 180}px`;
+    }
+
+    private getValidClass() {
+        // TODO TEMP this.currentShape
+        return Math.random() < 0.5 ? 'valid' : 'invalid';
+    }
+
     public setShapeToPlace(currentShape: Card) {
+        this.currentShape = currentShape;
         this.shapeX = 0;
         this.shapeY = 0;
         this.shapeRotation = 0;
 
+        const validClass = this.getValidClass();
+        dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card-border" data-validity="${validClass}"></div>`,  `player-table-${this.playerId}-main`);
+        this.setCardBorderPosition();
+
         // TODO TEMP
-        this.placeLines(currentShape.lines, 'valid');
+        this.placeLines(currentShape.lines, ['temp-line', validClass]);
+    }
+
+    private moveShape() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+        const validClass = this.getValidClass();
+
+        let lines = this.currentShape.lines.map(line => 
+            (Number.parseInt(line[0], 16) + this.shapeX).toString(16) + 
+            (Number.parseInt(line[1], 16) + this.shapeY).toString(16) +
+            (Number.parseInt(line[2], 16) + this.shapeX).toString(16) + 
+            (Number.parseInt(line[3], 16) + this.shapeY).toString(16) 
+        );
+        this.placeLines(lines, ['temp-line', validClass]);
+
+        this.setCardBorderPosition();
+        document.getElementById(`player-table-${this.playerId}-card-border`).dataset.validity = validClass;
+    }
+
+    public moveShapeLeft() {
+        if (this.shapeX == 0) {
+            return;
+        }
+        this.shapeX--;
+        this.moveShape();
+    }
+
+    public moveShapeRight() {
+        if (this.shapeX >= 6) {
+            return;
+        }
+        this.shapeX++;
+        this.moveShape();
+    }
+
+    public moveShapeBottom() {
+        if (this.shapeY == 0) {
+            return;
+        }
+        this.shapeY--;
+        this.moveShape();
+    }
+
+    public moveShapeTop() {
+        if (this.shapeY >= 7) {
+            return;
+        }
+        this.shapeY++;
+        this.moveShape();
     }
     
     public removeShapeToPlace() {

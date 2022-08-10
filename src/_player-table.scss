@@ -1,4 +1,6 @@
 $tableWidth: 546px;
+$validColor: #00FF0099;
+$invalidColor: #FF000099;
 
 /*#player-tables {
   display: flex;
@@ -44,12 +46,28 @@ $tableWidth: 546px;
           stroke-linecap: round;
 
           &.valid {
-            stroke: #00FF0099;
+            stroke: $validColor;
           }
           &.invalid {
-            stroke: #FF000099;
+            stroke: $invalidColor;
           }
         }
+      }
+    }
+
+    .card-border {
+      display: inline-block;
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 10px;
+      
+
+      &[data-validity="valid"] {
+        box-shadow: 0 0 5px 2px $validColor;
+      }
+      &[data-validity="invalid"] {
+        box-shadow: 0 0 5px 2px $invalidColor;
       }
     }
 
