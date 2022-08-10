@@ -295,11 +295,13 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.placeLines = function (lines, additionalClass) {
         var _this = this;
+        if (additionalClass === void 0) { additionalClass = []; }
         lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
     };
     PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, additionalClass) {
         var _a;
         var _this = this;
+        if (additionalClass === void 0) { additionalClass = []; }
         var lineid = "line-".concat(this.playerId, "-").concat(line);
         var c1 = {
             x: SVG_LEFT_MARGIN + (xfrom * SVG_LINE_WIDTH),
@@ -349,13 +351,18 @@ var PlayerTable = /** @class */ (function () {
         return Math.random() < 0.5 ? 'valid' : 'invalid';
     };
     PlayerTable.prototype.setShapeToPlace = function (currentShape) {
+        var _this = this;
         this.currentShape = currentShape;
         this.shapeX = 0;
         this.shapeY = 0;
         this.shapeRotation = 0;
         var validClass = this.getValidClass();
-        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\"></div>"), "player-table-".concat(this.playerId, "-main"));
+        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
         this.setCardBorderPosition();
+        document.getElementById("player-table-".concat(this.playerId, "-button-left")).addEventListener('click', function () { return _this.moveShapeLeft(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-right")).addEventListener('click', function () { return _this.moveShapeRight(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-top")).addEventListener('click', function () { return _this.moveShapeTop(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-bottom")).addEventListener('click', function () { return _this.moveShapeBottom(); });
         // TODO TEMP
         this.placeLines(currentShape.lines, ['temp-line', validClass]);
     };
@@ -403,7 +410,11 @@ var PlayerTable = /** @class */ (function () {
         this.moveShape();
     };
     PlayerTable.prototype.removeShapeToPlace = function () {
-        // TODO throw new Error("Method not implemented.");
+        var _a;
+        var cardBorderDiv = document.getElementById("player-table-".concat(this.playerId, "-card-border"));
+        (_a = cardBorderDiv === null || cardBorderDiv === void 0 ? void 0 : cardBorderDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(cardBorderDiv);
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
     return PlayerTable;
 }());
@@ -544,9 +555,6 @@ var LookAtTheStars = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
-                    // TODO TEMP
-                    this.addActionButton("left_button", _("Top"), function () { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.moveShapeTop(); });
-                    this.addActionButton("right_button", _("Bottom"), function () { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.moveShapeBottom(); });
                     this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;

@@ -69,6 +69,34 @@ $invalidColor: #FF000099;
       &[data-validity="invalid"] {
         box-shadow: 0 0 5px 2px $invalidColor;
       }
+
+      .arrow {
+        width: 60px;
+        height: 60px;
+        background: url('img/arrow.svg');
+        background-size: contain;
+        position: absolute;
+
+        &.top {
+          top: -40px;
+          left: 70px;
+          transform: rotate(180deg);
+        }
+        &.bottom {
+          bottom: -40px;
+          left: 70px;
+        }
+        &.left {
+          left: -40px;
+          top: 70px;
+          transform: rotate(90deg);
+        }
+        &.right {
+          right: -40px;
+          top: 70px;
+          transform: rotate(-90deg);
+        }
+      }
     }
 
     .day {

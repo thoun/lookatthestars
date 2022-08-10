@@ -67,7 +67,7 @@ class PlayerTable {
             </g>
         </svg>`;
     }
-    public placeLines(lines: string[], additionalClass?: string[]) {
+    public placeLines(lines: string[], additionalClass: string[] = []) {
         lines.forEach(line => this.placeLine(
             line,
             parseInt(line[0], 16),
@@ -78,7 +78,7 @@ class PlayerTable {
         ));
     }
 
-    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass?: string[]) {
+    private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass: string[] = []) {
         const lineid = `line-${this.playerId}-${line}`;
 
         const c1 = {
@@ -144,8 +144,17 @@ class PlayerTable {
         this.shapeRotation = 0;
 
         const validClass = this.getValidClass();
-        dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card-border" data-validity="${validClass}"></div>`,  `player-table-${this.playerId}-main`);
+        dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card-border" data-validity="${validClass}">
+            <div id="player-table-${this.playerId}-button-left" type="button" class="arrow left"></div>
+            <div id="player-table-${this.playerId}-button-right" type="button" class="arrow right"></div>
+            <div id="player-table-${this.playerId}-button-top" type="button" class="arrow top"></div>
+            <div id="player-table-${this.playerId}-button-bottom" type="button" class="arrow bottom"></div>
+        </div>`,  `player-table-${this.playerId}-main`);
         this.setCardBorderPosition();
+        document.getElementById(`player-table-${this.playerId}-button-left`).addEventListener('click', () => this.moveShapeLeft());
+        document.getElementById(`player-table-${this.playerId}-button-right`).addEventListener('click', () => this.moveShapeRight());
+        document.getElementById(`player-table-${this.playerId}-button-top`).addEventListener('click', () => this.moveShapeTop());
+        document.getElementById(`player-table-${this.playerId}-button-bottom`).addEventListener('click', () => this.moveShapeBottom());
 
         // TODO TEMP
         this.placeLines(currentShape.lines, ['temp-line', validClass]);
@@ -168,7 +177,7 @@ class PlayerTable {
         document.getElementById(`player-table-${this.playerId}-card-border`).dataset.validity = validClass;
     }
 
-    public moveShapeLeft() {
+    private moveShapeLeft() {
         if (this.shapeX == 0) {
             return;
         }
@@ -176,7 +185,7 @@ class PlayerTable {
         this.moveShape();
     }
 
-    public moveShapeRight() {
+    private moveShapeRight() {
         if (this.shapeX >= 6) {
             return;
         }
@@ -184,7 +193,7 @@ class PlayerTable {
         this.moveShape();
     }
 
-    public moveShapeBottom() {
+    private moveShapeBottom() {
         if (this.shapeY == 0) {
             return;
         }
@@ -192,7 +201,7 @@ class PlayerTable {
         this.moveShape();
     }
 
-    public moveShapeTop() {
+    private moveShapeTop() {
         if (this.shapeY >= 7) {
             return;
         }
@@ -201,7 +210,11 @@ class PlayerTable {
     }
     
     public removeShapeToPlace() {
-        // TODO throw new Error("Method not implemented.");
+        const cardBorderDiv = document.getElementById(`player-table-${this.playerId}-card-border`);
+        cardBorderDiv?.parentElement?.removeChild(cardBorderDiv);
+
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
 
 }

@@ -169,10 +169,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
-                    // TODO TEMP
-                    (this as any).addActionButton(`left_button`, _("Top"), () => this.getCurrentPlayerTable()?.moveShapeTop());
-                    (this as any).addActionButton(`right_button`, _("Bottom"), () => this.getCurrentPlayerTable()?.moveShapeBottom());
-
                     (this as any).addActionButton(`placeShape_button`, _("Place shape"), () => this.placeShape());
                     (this as any).addActionButton(`skipShape_button`, _("Skip turn"), () => this.skipShape());
                     break;

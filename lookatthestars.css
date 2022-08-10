@@ -338,6 +338,32 @@
 .player-table .main .card-border[data-validity=invalid] {
   box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.6);
 }
+.player-table .main .card-border .arrow {
+  width: 60px;
+  height: 60px;
+  background: url("img/arrow.svg");
+  background-size: contain;
+  position: absolute;
+}
+.player-table .main .card-border .arrow.top {
+  top: -40px;
+  left: 70px;
+  transform: rotate(180deg);
+}
+.player-table .main .card-border .arrow.bottom {
+  bottom: -40px;
+  left: 70px;
+}
+.player-table .main .card-border .arrow.left {
+  left: -40px;
+  top: 70px;
+  transform: rotate(90deg);
+}
+.player-table .main .card-border .arrow.right {
+  right: -40px;
+  top: 70px;
+  transform: rotate(-90deg);
+}
 .player-table .main .day {
   position: absolute;
   bottom: 0;
