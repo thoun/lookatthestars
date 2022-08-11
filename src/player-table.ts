@@ -165,16 +165,41 @@ class PlayerTable {
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
         const validClass = this.getValidClass();
 
-        let lines = this.currentShape.lines.map(line => 
+        let rotatedLines = this.currentShape.lines.map(line => line);
+        if (this.shapeRotation == 1 || this.shapeRotation == 3) {
+            // rotate 90°
+            rotatedLines = rotatedLines.map(line => 
+                (Number.parseInt(line[1], 16)).toString(16) + 
+                (3 - Number.parseInt(line[0], 16)).toString(16) +
+                (Number.parseInt(line[3], 16)).toString(16) + 
+                (3 - Number.parseInt(line[2], 16)).toString(16) 
+            );
+        }
+        if (this.shapeRotation == 2 || this.shapeRotation == 3) {
+            // rotate 180°
+            rotatedLines = rotatedLines.map(line => 
+                (3 - Number.parseInt(line[0], 16)).toString(16) + 
+                (3 - Number.parseInt(line[1], 16)).toString(16) +
+                (3 - Number.parseInt(line[2], 16)).toString(16) + 
+                (3 - Number.parseInt(line[3], 16)).toString(16) 
+            );
+        }
+
+        let rotatedAndShiftedLines = rotatedLines.map(line => 
             (Number.parseInt(line[0], 16) + this.shapeX).toString(16) + 
             (Number.parseInt(line[1], 16) + this.shapeY).toString(16) +
             (Number.parseInt(line[2], 16) + this.shapeX).toString(16) + 
             (Number.parseInt(line[3], 16) + this.shapeY).toString(16) 
         );
-        this.placeLines(lines, ['temp-line', validClass]);
+        this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
 
         this.setCardBorderPosition();
         document.getElementById(`player-table-${this.playerId}-card-border`).dataset.validity = validClass;
+    }
+
+    public rotateShape() {
+        this.shapeRotation = (this.shapeRotation + 1) % 4;
+        this.moveShape();
     }
 
     private moveShapeLeft() {

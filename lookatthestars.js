@@ -371,15 +371,38 @@ var PlayerTable = /** @class */ (function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
         var validClass = this.getValidClass();
-        var lines = this.currentShape.lines.map(function (line) {
+        var rotatedLines = this.currentShape.lines.map(function (line) { return line; });
+        if (this.shapeRotation == 1 || this.shapeRotation == 3) {
+            // rotate 90°
+            rotatedLines = rotatedLines.map(function (line) {
+                return (Number.parseInt(line[1], 16)).toString(16) +
+                    (3 - Number.parseInt(line[0], 16)).toString(16) +
+                    (Number.parseInt(line[3], 16)).toString(16) +
+                    (3 - Number.parseInt(line[2], 16)).toString(16);
+            });
+        }
+        if (this.shapeRotation == 2 || this.shapeRotation == 3) {
+            // rotate 180°
+            rotatedLines = rotatedLines.map(function (line) {
+                return (3 - Number.parseInt(line[0], 16)).toString(16) +
+                    (3 - Number.parseInt(line[1], 16)).toString(16) +
+                    (3 - Number.parseInt(line[2], 16)).toString(16) +
+                    (3 - Number.parseInt(line[3], 16)).toString(16);
+            });
+        }
+        var rotatedAndShiftedLines = rotatedLines.map(function (line) {
             return (Number.parseInt(line[0], 16) + _this.shapeX).toString(16) +
                 (Number.parseInt(line[1], 16) + _this.shapeY).toString(16) +
                 (Number.parseInt(line[2], 16) + _this.shapeX).toString(16) +
                 (Number.parseInt(line[3], 16) + _this.shapeY).toString(16);
         });
-        this.placeLines(lines, ['temp-line', validClass]);
+        this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
         this.setCardBorderPosition();
         document.getElementById("player-table-".concat(this.playerId, "-card-border")).dataset.validity = validClass;
+    };
+    PlayerTable.prototype.rotateShape = function () {
+        this.shapeRotation = (this.shapeRotation + 1) % 4;
+        this.moveShape();
     };
     PlayerTable.prototype.moveShapeLeft = function () {
         if (this.shapeX == 0) {
@@ -555,6 +578,7 @@ var LookAtTheStars = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
+                    this.addActionButton("rotateShape_button", _("Rotate shape"), function () { return _this.getCurrentPlayerTable().rotateShape(); });
                     this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;

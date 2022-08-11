@@ -339,29 +339,34 @@
   box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.6);
 }
 .player-table .main .card-border .arrow {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   background: url("img/arrow.svg");
   background-size: contain;
   position: absolute;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.player-table .main .card-border .arrow:hover {
+  opacity: 1;
 }
 .player-table .main .card-border .arrow.top {
   top: -40px;
-  left: 70px;
+  left: 75px;
   transform: rotate(180deg);
 }
 .player-table .main .card-border .arrow.bottom {
   bottom: -40px;
-  left: 70px;
+  left: 75px;
 }
 .player-table .main .card-border .arrow.left {
   left: -40px;
-  top: 70px;
+  top: 75px;
   transform: rotate(90deg);
 }
 .player-table .main .card-border .arrow.right {
   right: -40px;
-  top: 70px;
+  top: 75px;
   transform: rotate(-90deg);
 }
 .player-table .main .day {
@@ -379,44 +384,6 @@
 .player-table .main .day[data-level="2"] {
   height: 231px;
 }
-.player-table .main .block {
-  position: absolute;
-}
-.player-table .main .block .checkmark {
-  position: absolute;
-  text-align: center;
-  width: 28px;
-  height: 27px;
-  font-size: 22pt;
-  margin-top: -8px;
-}
-.player-table .main .block .subtotal, .player-table .main .block .special {
-  position: absolute;
-  text-align: center;
-  width: 28px;
-  height: 27px;
-  right: 7px;
-}
-.player-table .main .block .total {
-  position: absolute;
-  text-align: center;
-  bottom: 0;
-  right: 0;
-  width: 43px;
-  height: 41px;
-  font-size: 22pt;
-}
-.player-table .main .score.total {
-  position: absolute;
-  text-align: center;
-  bottom: 16px;
-  right: 29px;
-  width: 103px;
-  height: 41px;
-  font-size: 40pt;
-  margin-bottom: 15px;
-  margin-right: 7px;
-}
 .player-table .name {
   position: absolute;
   bottom: 0;
@@ -430,9 +397,6 @@
 .player-table .name span {
   background: white;
   box-shadow: 0 0 10px 10px white;
-}
-.player-table [data-unvalidated=true] {
-  color: red;
 }
 
 html, .mode_3d #game_play_area_background {

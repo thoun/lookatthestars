@@ -18,6 +18,22 @@ trait ActionTrait {
 
         $card = $this->getCurrentShape(false);
 
+        $rotatedLines = json_decode(json_encode($card->lines), true);
+        if ($rotation == 1 || $rotation == 3) {
+            // rotate 90°
+            $rotatedLines = array_map(fn($line) => [
+                [$line[0][1], 3 - $line[0][0]],
+                [$line[1][1], 3 - $line[1][0]],                
+            ], $rotatedLines);
+        }
+        if ($rotation == 2 || $rotation == 3) {
+            // rotate 180°
+            $rotatedLines = array_map(fn($line) => [
+                [3 - $line[0][0], 3 - $line[0][1]],
+                [3 - $line[1][0], 3 - $line[1][1]],
+            ], $rotatedLines);
+        }
+
         /*$mapElements = $this->MAP_POSITIONS[$this->getMap()][$position];
         $ticketNumber = $this->array_find($mapElements, fn($element) => $element >= 1 && $element <= 12);
 
@@ -33,7 +49,7 @@ trait ActionTrait {
         ]);*/
 
         $newLines = [];
-        foreach ($card->lines as $line) {
+        foreach ($rotatedLines as $line) {
             $newLines[] = dechex($x + $line[0][0]).dechex($y + $line[0][1]).dechex($x + $line[1][0]).dechex($y + $line[1][1]);
         }
 

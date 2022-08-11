@@ -71,29 +71,35 @@ $invalidColor: #FF000099;
       }
 
       .arrow {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         background: url('img/arrow.svg');
         background-size: contain;
         position: absolute;
+        opacity: 0.7;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
 
         &.top {
           top: -40px;
-          left: 70px;
+          left: 75px;
           transform: rotate(180deg);
         }
         &.bottom {
           bottom: -40px;
-          left: 70px;
+          left: 75px;
         }
         &.left {
           left: -40px;
-          top: 70px;
+          top: 75px;
           transform: rotate(90deg);
         }
         &.right {
           right: -40px;
-          top: 70px;
+          top: 75px;
           transform: rotate(-90deg);
         }
       }
@@ -116,49 +122,6 @@ $invalidColor: #FF000099;
         height: 231px;
       }
     }
-
-    .block {
-      position: absolute;
-
-      .checkmark {
-        position: absolute;
-        text-align: center;
-        width: 28px;
-        height: 27px;
-        font-size: 22pt;
-        margin-top: -8px;
-      }
-
-      .subtotal, .special {
-        position: absolute;
-        text-align: center;
-        width: 28px;
-        height: 27px;
-        right: 7px;
-      }
-
-      .total {
-        position: absolute;
-        text-align: center;
-        bottom: 0;
-        right: 0;
-        width: 43px;
-        height: 41px;
-        font-size: 22pt;
-      }
-    }
-
-    .score.total {
-      position: absolute;
-      text-align: center;
-      bottom: 16px;
-      right: 29px;
-      width: 103px;
-      height: 41px;
-      font-size: 40pt;
-      margin-bottom: 15px;
-      margin-right: 7px;
-    }
   }
 
   .name {
@@ -175,9 +138,5 @@ $invalidColor: #FF000099;
       background: white;
       box-shadow: 0 0 10px 10px white;
     }
-  }
-
-  [data-unvalidated="true"] {
-    color: red;
   }
 }
