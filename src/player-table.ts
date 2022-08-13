@@ -17,6 +17,7 @@ class PlayerTable {
     private shapeX: number;
     private shapeY: number;
     private shapeRotation: number;
+    private possiblePositions: number[][];
 
     constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
         this.playerId = Number(player.id);
@@ -132,13 +133,17 @@ class PlayerTable {
         cardBorderDiv.style.top = `${y - 180}px`;
     }
 
-    private getValidClass() {
-        // TODO TEMP this.currentShape
-        return Math.random() < 0.5 ? 'valid' : 'invalid';
+    private getValid(): boolean {
+        return this.possiblePositions[this.shapeX.toString(16) + this.shapeY.toString(16)].includes(this.shapeRotation);
     }
 
-    public setShapeToPlace(currentShape: Card) {
+    private getValidClass(): string {
+        return this.getValid() ? 'valid' : 'invalid';
+    }
+
+    public setShapeToPlace(currentShape: Card, possiblePositions: number[][]) {
         this.currentShape = currentShape;
+        this.possiblePositions = possiblePositions;
         this.shapeX = 0;
         this.shapeY = 0;
         this.shapeRotation = 0;
@@ -195,6 +200,8 @@ class PlayerTable {
 
         this.setCardBorderPosition();
         document.getElementById(`player-table-${this.playerId}-card-border`).dataset.validity = validClass;
+
+        document.getElementById('placeShape_button')?.classList.toggle('disabled', !this.getValid());
     }
 
     public rotateShape() {

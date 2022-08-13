@@ -70,6 +70,7 @@ interface LookAtTheStarsGame extends Game {
 
 interface EnteringPlaceShapeArgs {
     currentShape: Card;
+    possiblePositions: number[][][];
 }
 
 interface NotifCardArgs {

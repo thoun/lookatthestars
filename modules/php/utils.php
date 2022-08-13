@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/objects/shape.php');
+require_once(__DIR__.'/objects/player.php');
 
 trait UtilTrait {
 
@@ -65,26 +66,26 @@ trait UtilTrait {
     }
 
     function getPlayer(int $id) {
-        $sql = "SELECT * FROM player WHERE player_id = $id";
+        $sql = "SELECT * FROM player WHERE player_id = $id";// SELECT * FROM player WHERE player_id = 2343493
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbResult) => new Player($dbResult), array_values($dbResults))[0];
+        return array_map(fn($dbResult) => new LatsPlayer($dbResult), array_values($dbResults))[0];
     }
 
     function getPlayers() {
         $sql = "SELECT * FROM player ORDER BY player_no";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbResult) => new Player($dbResult), array_values($dbResults));
+        return array_map(fn($dbResult) => new LatsPlayer($dbResult), array_values($dbResults));
     }
 
-    function getCardFromDb(/*array|null*/ $dbCard, bool $linesAsString) {
+    function getCardFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;
         }
-        return new CARD($dbCard, $this->SHAPES, $linesAsString);
+        return new Card($dbCard, $this->SHAPES);
     }
 
-    function getCardsFromDb(array $dbCards, bool $linesAsString) {
-        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard, $linesAsString), array_values($dbCards));
+    function getCardsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
     }
 
     function setupCards() {
@@ -114,6 +115,93 @@ trait UtilTrait {
 
     function getCurrentShape(bool $linesAsString) {
         $shape = $this->getCardFromDb($this->shapes->getCardOnTop('piles'), $linesAsString);
-        return $shape;
+        return $linesAsString ? Card::linesAsString($shape) : $shape;
+    }
+
+    function shiftLines(array $lines, int $x, int $y, int $rotation) {
+        $rotatedLines = json_decode(json_encode($lines), true);
+        if ($rotation == 1 || $rotation == 3) {
+            // rotate 90°
+            $rotatedLines = array_map(fn($line) => [
+                [$line[0][1], 3 - $line[0][0]],
+                [$line[1][1], 3 - $line[1][0]],                
+            ], $rotatedLines);
+        }
+        if ($rotation == 2 || $rotation == 3) {
+            // rotate 180°
+            $rotatedLines = array_map(fn($line) => [
+                [3 - $line[0][0], 3 - $line[0][1]],
+                [3 - $line[1][0], 3 - $line[1][1]],
+            ], $rotatedLines);
+        }
+
+        $rotatedAndShiftedLines = array_map(fn($line) => [[$x + $line[0][0], $y + $line[0][1]], [$x + $line[1][0], $y + $line[1][1]]], $rotatedLines);
+        return $rotatedAndShiftedLines;
+    }
+
+    function coordinatesInArray(array $coordinates, array $arrayOfCoordinates) {
+        return $this->array_some($arrayOfCoordinates, fn($iCoord) => $coordinates[0] == $iCoord[0] && $coordinates[1] == $iCoord[1]);
+    }
+
+    function sameCoordinates(array $coordinates1, array $coordinates2) {
+        return $coordinates1[0] == $coordinates2[0] && $coordinates1[1] == $coordinates2[1];
+    }
+
+    function sameLine(array $line1, array $line2) {
+        return (
+            $this->sameCoordinates($line1[0], $line2[0]) && $this->sameCoordinates($line1[1], $line2[1])
+        ) || (
+            $this->sameCoordinates($line1[0], $line2[1]) && $this->sameCoordinates($line1[1], $line2[0])
+        );
+    }
+
+    function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines) {
+        // no always forbidden points, sheet forbidden points, or planet
+        $forbiddenCoordinates = array_merge(
+            $this->ALWAYS_FORBIDDEN_POINTS,
+            $playerSheet->forbiddenStars,
+            $playerSheet->planets,
+        );
+
+        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $this->coordinatesInArray($coordinates, $forbiddenCoordinates)))) {
+            return false;
+        }
+
+        // no pre-existing line
+        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($placedLines, fn($placedLine) => $this->sameLine($line, $placedLine)))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function getPossiblePositions(int $playerId, array $shapeLines, bool $keysAsString) {
+        $player = $this->getPlayer($playerId);
+        //$this->debug([$playerId, $player]);
+        $playerSheet = $this->SHEETS[$player->sheet];
+        $placedLines = array_merge(
+            array_map(fn($lineStr) => [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]], $player->lines),
+            $playerSheet->lines
+        );
+        $result = [];
+
+        for ($x = 0; $x <= 6; $x++) {
+            for ($y = 0; $y <= 7; $y++) {
+                $key = $keysAsString ? dechex($x).dechex($y) : [$x, $y];
+                $possibleRotationsForPosition = [];
+                for ($rotation = 0; $rotation <= 3; $rotation++) {
+                    $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
+                    if ($this->isPossiblePosition(
+                        $shiftedLines,
+                        $playerSheet,
+                        $placedLines
+                    )) {
+                        $possibleRotationsForPosition[] = $rotation;
+                    }
+                }
+                $result[$key] = $possibleRotationsForPosition;
+            }
+        }
+        return $result;
     }
 }

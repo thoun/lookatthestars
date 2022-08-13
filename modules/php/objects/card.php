@@ -1,7 +1,7 @@
 <?php
 
 class CardType {
-    public array $lines;
+    public array $lines = [];
   
     public function __construct(array $lines) {
         $this->lines = $lines;
@@ -27,9 +27,9 @@ class Star2Type extends CardType {
 class Card extends CardType {
     public int $id;
     public int $type;
-    public int $typeArg;
+    public int $typeArg = 0;
 
-    public function __construct($dbCard, $SHAPES, bool $linesAsString) {
+    public function __construct($dbCard, $SHAPES) {
         $this->id = intval($dbCard['id']);
         $this->type = intval($dbCard['type']);
         if ($this->type == 1) {
@@ -37,22 +37,36 @@ class Card extends CardType {
             $this->typeArg = intval($dbCard['type_arg']);
             $card = $SHAPES[$this->typeArg];
             $this->lines = $card->lines;
-
-            if ($linesAsString) {
-                $this->lines = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $this->lines);
-            }
         }
     } 
 
-    public static function onlyId(Card $card) {
+    public static function onlyId(/*Card */$card) {
         return new Card([
             'id' => $card->id,
             'type' => null
-        ], null, false);
+        ], null);
     }
 
     public static function onlyIds(array $cards) {
         return array_map(fn($card) => self::onlyId($card), $cards);
+    }
+
+    private static function clone(Card $card) {
+        $clone = new stdClass();
+        $clone->id = $card->id;
+        $clone->type = $card->type;
+        $clone->typeArg = $card->typeArg;
+        $clone->lines = $card->lines;
+        return $clone;
+    }
+
+    public static function linesAsString($cardOrCards) {
+        if (gettype($cardOrCards) == 'array') {
+            return array_map(fn($card) => self::linesAsString($card), $cardOrCards);
+        }
+        $newCard = self::clone($cardOrCards);
+        $newCard->lines = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $newCard->lines);
+        return $newCard;
     }
 }
 ?>

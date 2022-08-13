@@ -141,7 +141,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs) {
-        this.getCurrentPlayerTable()?.setShapeToPlace(args.currentShape);
+        this.getCurrentPlayerTable()?.setShapeToPlace(args.currentShape, args.possiblePositions[this.getPlayerId()]);
     }
 
     onEnteringShowScore() {

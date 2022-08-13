@@ -13,8 +13,23 @@ trait ArgsTrait {
     */
    
     function argPlaceShape() {
+        $currentShape = $this->getCurrentShape(false);
+        $currentShapeStr = $this->getCurrentShape(true);
+
+        $playersIds = $this->getPlayersIds();
+        $possiblePositions = [];
+        foreach($playersIds as $playerId) {
+            $possiblePositions[$playerId] = $this->getPossiblePositions(
+                $playerId, 
+                $currentShape->lines, 
+                true
+            );
+        }
+
+
         return [
-            'currentShape' => $this->getCurrentShape(true),
+            'currentShape' => $currentShapeStr,
+            'possiblePositions' => $possiblePositions,
         ];
     }
     

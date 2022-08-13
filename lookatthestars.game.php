@@ -128,7 +128,7 @@ class LookAtTheStars extends Table {
         $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_objects objects FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
-        $cards = $this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg'), true);
+        $cards = Card::linesAsString($this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg')));
         $maskedCards = [];
         for ($i=0; $i<count($cards); $i++) {
             $maskedCards[] = ($i == count($cards) - 1) ? $cards[$i] : Card::onlyId($cards[$i]);

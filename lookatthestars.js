@@ -346,13 +346,16 @@ var PlayerTable = /** @class */ (function () {
         cardBorderDiv.style.left = "".concat(x - 20, "px");
         cardBorderDiv.style.top = "".concat(y - 180, "px");
     };
-    PlayerTable.prototype.getValidClass = function () {
-        // TODO TEMP this.currentShape
-        return Math.random() < 0.5 ? 'valid' : 'invalid';
+    PlayerTable.prototype.getValid = function () {
+        return this.possiblePositions[this.shapeX.toString(16) + this.shapeY.toString(16)].includes(this.shapeRotation);
     };
-    PlayerTable.prototype.setShapeToPlace = function (currentShape) {
+    PlayerTable.prototype.getValidClass = function () {
+        return this.getValid() ? 'valid' : 'invalid';
+    };
+    PlayerTable.prototype.setShapeToPlace = function (currentShape, possiblePositions) {
         var _this = this;
         this.currentShape = currentShape;
+        this.possiblePositions = possiblePositions;
         this.shapeX = 0;
         this.shapeY = 0;
         this.shapeRotation = 0;
@@ -368,6 +371,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.moveShape = function () {
         var _this = this;
+        var _a;
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
         var validClass = this.getValidClass();
@@ -399,6 +403,7 @@ var PlayerTable = /** @class */ (function () {
         this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
         this.setCardBorderPosition();
         document.getElementById("player-table-".concat(this.playerId, "-card-border")).dataset.validity = validClass;
+        (_a = document.getElementById('placeShape_button')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', !this.getValid());
     };
     PlayerTable.prototype.rotateShape = function () {
         this.shapeRotation = (this.shapeRotation + 1) % 4;
@@ -552,7 +557,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentShape);
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentShape, args.possiblePositions[this.getPlayerId()]);
     };
     LookAtTheStars.prototype.onEnteringShowScore = function () {
         var _this = this;

@@ -1,12 +1,12 @@
 <?php
 
-class Player {
+class LatsPlayer {
     public int $id;
     public string $name;
     public string $color;
     public int $sheet;
-    public int $lines;
-    public int $objects;
+    public array $lines;
+    public object $objects;
 
     public function __construct($dbPlayer) {
         $this->id = intval($dbPlayer['player_id']);
