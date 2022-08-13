@@ -274,6 +274,8 @@
   position: relative;
   font-size: 16pt;
   border-radius: 273px 273px 0 0;
+  margin: 40px;
+  margin-bottom: 0;
 }
 .player-table[data-type="0"] {
   background: url("img/sheet-1.png");
@@ -470,7 +472,6 @@ html, .mode_3d #game_play_area_background {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
 }
 
 .shape {

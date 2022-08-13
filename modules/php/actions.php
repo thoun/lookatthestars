@@ -18,6 +18,15 @@ trait ActionTrait {
 
         $card = $this->getCurrentShape(false);
 
+        $possiblePositions = $this->getPossiblePositions(
+            $playerId, 
+            $card->lines, 
+            true
+        );
+        if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
+            throw new \BgaUserException("Invalid position");
+        }
+
         $shiftedLines = $this->shiftLines($card->lines, $x, $y, $rotation);
 
         $newLines = [];

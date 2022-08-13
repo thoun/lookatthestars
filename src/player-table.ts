@@ -134,7 +134,7 @@ class PlayerTable {
     }
 
     private getValid(): boolean {
-        return this.possiblePositions[this.shapeX.toString(16) + this.shapeY.toString(16)].includes(this.shapeRotation);
+        return this.possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
     }
 
     private getValidClass(): string {
@@ -144,8 +144,8 @@ class PlayerTable {
     public setShapeToPlace(currentShape: Card, possiblePositions: number[][]) {
         this.currentShape = currentShape;
         this.possiblePositions = possiblePositions;
-        this.shapeX = 0;
-        this.shapeY = 0;
+        this.shapeX = 3;
+        this.shapeY = 3;
         this.shapeRotation = 0;
 
         const validClass = this.getValidClass();
@@ -161,8 +161,7 @@ class PlayerTable {
         document.getElementById(`player-table-${this.playerId}-button-top`).addEventListener('click', () => this.moveShapeTop());
         document.getElementById(`player-table-${this.playerId}-button-bottom`).addEventListener('click', () => this.moveShapeBottom());
 
-        // TODO TEMP
-        this.placeLines(currentShape.lines, ['temp-line', validClass]);
+        this.moveShape();
     }
 
     private moveShape() {
@@ -210,7 +209,7 @@ class PlayerTable {
     }
 
     private moveShapeLeft() {
-        if (this.shapeX == 0) {
+        if (this.shapeX <= -1) {
             return;
         }
         this.shapeX--;
@@ -218,7 +217,7 @@ class PlayerTable {
     }
 
     private moveShapeRight() {
-        if (this.shapeX >= 6) {
+        if (this.shapeX >= 7) {
             return;
         }
         this.shapeX++;
@@ -226,7 +225,7 @@ class PlayerTable {
     }
 
     private moveShapeBottom() {
-        if (this.shapeY == 0) {
+        if (this.shapeY <= -1) {
             return;
         }
         this.shapeY--;
@@ -234,7 +233,7 @@ class PlayerTable {
     }
 
     private moveShapeTop() {
-        if (this.shapeY >= 7) {
+        if (this.shapeY >= 8) {
             return;
         }
         this.shapeY++;

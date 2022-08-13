@@ -156,6 +156,11 @@ trait UtilTrait {
     }
 
     function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines) {
+        // not oustside the board
+        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < 0 || $coordinates[1] > 10))) {
+            return false;
+        }
+
         // no always forbidden points, sheet forbidden points, or planet
         $forbiddenCoordinates = array_merge(
             $this->ALWAYS_FORBIDDEN_POINTS,
@@ -185,9 +190,9 @@ trait UtilTrait {
         );
         $result = [];
 
-        for ($x = 0; $x <= 6; $x++) {
-            for ($y = 0; $y <= 7; $y++) {
-                $key = $keysAsString ? dechex($x).dechex($y) : [$x, $y];
+        for ($x = -1; $x <= 7; $x++) {
+            for ($y = -1; $y <= 8; $y++) {
+                $key = $keysAsString ? dechex($x + 1).dechex($y + 1) : [$x, $y];
                 $possibleRotationsForPosition = [];
                 for ($rotation = 0; $rotation <= 3; $rotation++) {
                     $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);

@@ -347,7 +347,7 @@ var PlayerTable = /** @class */ (function () {
         cardBorderDiv.style.top = "".concat(y - 180, "px");
     };
     PlayerTable.prototype.getValid = function () {
-        return this.possiblePositions[this.shapeX.toString(16) + this.shapeY.toString(16)].includes(this.shapeRotation);
+        return this.possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
     };
     PlayerTable.prototype.getValidClass = function () {
         return this.getValid() ? 'valid' : 'invalid';
@@ -356,8 +356,8 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.currentShape = currentShape;
         this.possiblePositions = possiblePositions;
-        this.shapeX = 0;
-        this.shapeY = 0;
+        this.shapeX = 3;
+        this.shapeY = 3;
         this.shapeRotation = 0;
         var validClass = this.getValidClass();
         dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
@@ -366,8 +366,7 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-button-right")).addEventListener('click', function () { return _this.moveShapeRight(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-top")).addEventListener('click', function () { return _this.moveShapeTop(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-bottom")).addEventListener('click', function () { return _this.moveShapeBottom(); });
-        // TODO TEMP
-        this.placeLines(currentShape.lines, ['temp-line', validClass]);
+        this.moveShape();
     };
     PlayerTable.prototype.moveShape = function () {
         var _this = this;
@@ -410,28 +409,28 @@ var PlayerTable = /** @class */ (function () {
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeLeft = function () {
-        if (this.shapeX == 0) {
+        if (this.shapeX <= -1) {
             return;
         }
         this.shapeX--;
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeRight = function () {
-        if (this.shapeX >= 6) {
+        if (this.shapeX >= 7) {
             return;
         }
         this.shapeX++;
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeBottom = function () {
-        if (this.shapeY == 0) {
+        if (this.shapeY <= -1) {
             return;
         }
         this.shapeY--;
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeTop = function () {
-        if (this.shapeY >= 7) {
+        if (this.shapeY >= 8) {
             return;
         }
         this.shapeY++;
