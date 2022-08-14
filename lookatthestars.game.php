@@ -125,7 +125,7 @@ class LookAtTheStars extends Table {
     */
     protected function getAllDatas() {
         $result = [];
-        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        $isEndScore = true;//intval($this->gamestate->state_id()) >= ST_END_SCORE;
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.

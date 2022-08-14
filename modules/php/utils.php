@@ -252,6 +252,20 @@ trait UtilTrait {
 
             if ($constellation) {
                 $constellation->addLine($line);
+
+                $otherConstellationConnectedToLineIndex = $this->array_find_key($constellations, fn($iConstellation) => 
+                    $iConstellation->key != $constellation->key && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
+                );
+
+                while ($otherConstellationConnectedToLineIndex !== null) {
+                    $constellation->addConstellation($constellations[$otherConstellationConnectedToLineIndex]);
+
+                    array_splice($constellations, $otherConstellationConnectedToLineIndex, 1);
+
+                    $otherConstellationConnectedToLineIndex = $this->array_find_key($constellations, fn($iConstellation) => 
+                        $iConstellation->key != $constellation->key && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
+                    );
+                }
             } else {
                 $constellation = new Constellation($line);
                 $constellations[] = $constellation;

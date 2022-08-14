@@ -39,6 +39,11 @@ class Constellation {
         $this->setKey();
     }
 
+    public function addConstellation(Constellation $constellation) {
+        $this->lines = array_merge($this->lines, $constellation->lines);
+        $this->setKey();
+    }
+
     public function getSize() {
         return count($this->lines);
     }
