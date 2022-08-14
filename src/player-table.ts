@@ -250,4 +250,16 @@ class PlayerTable {
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
 
+    public setConstellationsScore(checkedConstellations: number[], score: number) {
+        // TODO
+    }
+
+    public setPlanetScore(score: number) {
+        // TODO
+    }
+
+    public setFinalScore(points: number) {
+        // TODO
+    }
+
 }

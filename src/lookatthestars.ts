@@ -6,6 +6,7 @@ declare const _;
 declare const g_gamethemeurl;
 
 const ANIMATION_MS = 500;
+const SCORE_MS = 1000;
 
 const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1/*, 1.25, 1.5*/];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0/*, 20, 33.34*/];
@@ -357,6 +358,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
             (this as any).addTooltipHtml(element.id, tooltip);
         });
     }
+    
+    private setPoints(playerId: number, points: number) {
+        (this as any).scoreCtrl[playerId]?.toValue(points);
+        this.getPlayerTable(playerId).setFinalScore(points);
+    }
 
     public placeShape() {
         if(!(this as any).checkAction('placeShape')) {
@@ -440,6 +446,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
         const notifs = [
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
+            ['score', 1],
+            ['scoreConstellations', SCORE_MS],
+            ['scorePlanets', SCORE_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -454,6 +463,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     notif_newShape(notif: Notif<NotifCardArgs>) {
         this.cards.createMoveOrUpdateCard(notif.args.card);
+    }
+
+    notif_score(notif: Notif<NotifScoreArgs>) {
+        this.setPoints(notif.args.playerId, notif.args.score);
+    }
+
+    notif_scoreConstellations(notif: Notif<NotifScoreConstellationsArgs>) {
+        this.getPlayerTable(notif.args.playerId).setConstellationsScore(notif.args.checkedConstellations, notif.args.score);
+    }
+
+    notif_scorePlanets(notif: Notif<NotifScoreArgs>) {
+        this.getPlayerTable(notif.args.playerId).setPlanetScore(notif.args.score);
     }
     
 

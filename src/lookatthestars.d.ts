@@ -76,3 +76,14 @@ interface EnteringPlaceShapeArgs {
 interface NotifCardArgs {
     card: Card;
 }
+
+interface NotifScoreArgs {
+    playerId: number;
+    score: number;
+}
+
+interface NotifScoreConstellationsArgs extends NotifScoreArgs {
+    playerId: number;
+    checkedConstellations: number[];
+    incScore: number;
+}

@@ -444,9 +444,19 @@ var PlayerTable = /** @class */ (function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
+    PlayerTable.prototype.setConstellationsScore = function (checkedConstellations, score) {
+        // TODO
+    };
+    PlayerTable.prototype.setPlanetScore = function (score) {
+        // TODO
+    };
+    PlayerTable.prototype.setFinalScore = function (points) {
+        // TODO
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
+var SCORE_MS = 1000;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
@@ -741,6 +751,11 @@ var LookAtTheStars = /** @class */ (function () {
             _this.addTooltipHtml(element.id, tooltip);
         });
     };
+    LookAtTheStars.prototype.setPoints = function (playerId, points) {
+        var _a;
+        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
+        this.getPlayerTable(playerId).setFinalScore(points);
+    };
     LookAtTheStars.prototype.placeShape = function () {
         if (!this.checkAction('placeShape')) {
             return;
@@ -813,6 +828,9 @@ var LookAtTheStars = /** @class */ (function () {
         var notifs = [
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
+            ['score', 1],
+            ['scoreConstellations', SCORE_MS],
+            ['scorePlanets', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -824,6 +842,15 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_newShape = function (notif) {
         this.cards.createMoveOrUpdateCard(notif.args.card);
+    };
+    LookAtTheStars.prototype.notif_score = function (notif) {
+        this.setPoints(notif.args.playerId, notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_scoreConstellations = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setConstellationsScore(notif.args.checkedConstellations, notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_scorePlanets = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setPlanetScore(notif.args.score);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

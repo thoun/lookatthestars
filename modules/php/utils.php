@@ -2,6 +2,7 @@
 
 require_once(__DIR__.'/objects/shape.php');
 require_once(__DIR__.'/objects/player.php');
+require_once(__DIR__.'/objects/constellation.php');
 
 trait UtilTrait {
 
@@ -75,6 +76,15 @@ trait UtilTrait {
         $sql = "SELECT * FROM player ORDER BY player_no";
         $dbResults = $this->getCollectionFromDb($sql);
         return array_map(fn($dbResult) => new LatsPlayer($dbResult), array_values($dbResults));
+    }
+
+    function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
+        $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
+            
+        $this->notifyAllPlayers('score', $message, [
+            'playerId' => $playerId,
+            'score' => $this->getPlayer($playerId)->score,
+        ] + $args);
     }
 
     function getCardFromDb(/*array|null*/ $dbCard) {
@@ -208,5 +218,22 @@ trait UtilTrait {
             }
         }
         return $result;
+    }
+
+    function getConstellations(array $lines) {
+        $constellations = [];
+
+        foreach ($lines as $line) {
+            $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($iLine) => $this->sameLine($line, $iLine)));
+
+            if ($constellation) {
+                $constellation->addLine($line);
+            } else {
+                $constellation = new Constellation($line);
+                $constellations[] = $constellation;
+            }
+        }
+
+        return $constellations;
     }
 }

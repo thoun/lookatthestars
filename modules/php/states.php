@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__.'/objects/player-score.php');
+
 trait StateTrait {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -42,7 +44,7 @@ trait StateTrait {
         $this->gamestate->nextState('next');
     }
 
-    function computeStats(int $playerId) {
+    /*function computeStats(int $playerId) {
         $scoreSheets = $this->getScoreSheets($playerId, $this->getPlacedRoutes($playerId), $this->getCommonObjectives(), true);
         $scoreSheet = $scoreSheets->validated;
         
@@ -74,31 +76,78 @@ trait StateTrait {
         if ($checkedBusinessmen > 0) {
             $this->setStat((float)$scoreSheet->businessmen->total / (float)$checkedBusinessmen, 'averagePointsByCheckedBusinessmen', $playerId);
         }
+    }*/
+
+    private function scoreConstellations(int $playerId, PlayerScore &$playerScore, array $constellations) {
+        for ($size = 3; $size <=8; $size++) {
+            if ($this->array_some($constellations, fn($constellation) => $constellation->getSize() == $size)) {
+                $playerScore->checkedConstellations[] = $size;
+                $playerScore->constellations += $size;
+            }
+        }
+
+        $this->incPlayerScore($playerId, $playerScore->constellations);
+        $this->notifyAllPlayers('scoreConstellations', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $playerScore->constellations,
+            'checkedConstellations' => $playerScore->checkedConstellations,
+            'scoring' => clienttranslate('Constellations'),
+            'i18n' => ['scoring'],
+            'score' => $playerScore->constellations,
+        ]);
+    }
+
+    private function scorePlanet(PlayerScore &$playerScore, array $constellations, array $planet) {
+        $planetConstellations = [];
+        for ($x = $planet[0]-1; $x <= $planet[0]+1; $x++) {
+            for ($y = $planet[1]-1; $y <= $planet[1]+1; $y++) {
+                if ($x != 0 || $y != 0) {
+                    $coordinates = [$x, $y];
+                    $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
+                        $this->coordinatesInArray($coordinates, $line)
+                    ));
+                    if (!in_array($constellation->key, $planetConstellations)) {
+                        $planetConstellations[] = $constellation->key;
+                    }
+                }
+            }
+        }
+
+        $playerScore->planets += count($planetConstellations);
+    }
+
+    private function scorePlanets(int $playerId, PlayerScore &$playerScore, array $constellations, array $planets) {
+        foreach ($planets as $planet) {
+            $this->scorePlanet($playerScore, $constellations, $planet);
+        }
+
+        $this->incPlayerScore($playerId, $playerScore->planets);
+        $this->notifyAllPlayers('scorePlanets', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $playerScore->planets,
+            'scoring' => clienttranslate('Planets'),
+            'i18n' => ['scoring'],
+            'score' => $playerScore->planets,
+        ]);
     }
 
     function stEndScore() {
-        $playersIds = $this->getPlayersIds();
-        $map = $this->getMap();
-        foreach ($playersIds as $playerId) {
-            if (!$this->isEliminated($playerId)) {
-                $scoreSheets = $this->notifUpdateScoreSheet($playerId, true);
-                $score = $scoreSheets->validated->total;
-                $this->DbQuery("UPDATE player SET `player_score` = $score WHERE `player_id` = $playerId");
-            }
+        $players = $this->getPlayers();
+        foreach ($players as $player) {
+            $playerScore = new PlayerScore();
+            $constellations = $this->getConstellations($player->lines);
 
-            $personalObjective = intval($this->getUniqueValueFromDB("SELECT player_personal_objective FROM `player` where `player_id` = $playerId"));
+            $this->scoreConstellations($player->id, $playerScore, $constellations);
+            $this->scorePlanets($player->id, $playerScore, $constellations, $this->SHEETS[$player->sheet]->planets);
+            // TODO Shooting star
+            // TODO star1
+            // TODO star2
+            
+            $playerScore->calculateTotal();
 
-            $personalObjectiveLetters = array_map(fn($code) => chr($code), $this->getPersonalObjectiveLetters($playerId));
-            self::notifyAllPlayers('revealPersonalObjective', clienttranslate('${player_name} personal objective was ${objectiveLetters}'), [
-                'playerId' => $playerId,
-                'player_name' => $this->getPlayerName($playerId),
-                'objectiveLetters' => implode(' ', $personalObjectiveLetters),
-                'personalObjective' => $personalObjective,
-                'personalObjectiveLetters' => $personalObjectiveLetters,
-                'personalObjectivePositions' => $this->getPersonalObjectivePositions($personalObjective, $map),
-            ]);
-
-            $this->computeStats($playerId);
+            //$this->computeStats($playerId);
         }
 
         $this->gamestate->nextState('endGame');
