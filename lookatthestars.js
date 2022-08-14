@@ -282,6 +282,14 @@ var PlayerTable = /** @class */ (function () {
         html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         this.placeLines(player.lines);
+        if (player.playerScore) {
+            this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
+            this.setPlanetScore(player.playerScore.planets);
+            this.setShootingStarsScore(player.playerScore.shootingStars);
+            this.setStar1Score(player.playerScore.star1);
+            this.setStar2Score(player.playerScore.star2);
+            this.setFinalScore(player.playerScore.total);
+        }
         //refresh hack
         /*// TODO ? if (!isSafari()) {
             const svg = document.getElementById(`lats-svg-${this.playerId}`);

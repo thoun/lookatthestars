@@ -50,6 +50,15 @@ class PlayerTable {
 
         this.placeLines(player.lines);
 
+        if (player.playerScore) {
+            this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
+            this.setPlanetScore(player.playerScore.planets);
+            this.setShootingStarsScore(player.playerScore.shootingStars);
+            this.setStar1Score(player.playerScore.star1);
+            this.setStar2Score(player.playerScore.star2);
+            this.setFinalScore(player.playerScore.total);
+        }
+
         //refresh hack
         /*// TODO ? if (!isSafari()) {
             const svg = document.getElementById(`lats-svg-${this.playerId}`);

@@ -125,6 +125,7 @@ class LookAtTheStars extends Table {
     */
     protected function getAllDatas() {
         $result = [];
+        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
@@ -142,6 +143,7 @@ class LookAtTheStars extends Table {
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
             $playerDb['lines'] = $playerDb['lines'] ? json_decode($playerDb['lines'], true) : [];
             $playerDb['objects'] = $playerDb['objects'] ?? json_decode('{}');
+            $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($this->getPlayer($playerId)) : null;
         }
 
         $result['cards'] = $maskedCards;

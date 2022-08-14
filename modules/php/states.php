@@ -78,14 +78,7 @@ trait StateTrait {
         }
     }*/
 
-    private function scoreConstellations(int $playerId, PlayerScore &$playerScore, array $constellations) {
-        for ($size = 3; $size <=8; $size++) {
-            if ($this->array_some($constellations, fn($constellation) => $constellation->getSize() == $size)) {
-                $playerScore->checkedConstellations[] = $size;
-                $playerScore->constellations += $size;
-            }
-        }
-
+    private function scoreConstellations(int $playerId, PlayerScore &$playerScore) {
         $this->incPlayerScore($playerId, $playerScore->constellations);
         $this->notifyAllPlayers('scoreConstellations', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
             'playerId' => $playerId,
@@ -98,30 +91,7 @@ trait StateTrait {
         ]);
     }
 
-    private function scorePlanet(PlayerScore &$playerScore, array $constellations, array $planet) {
-        $planetConstellations = [];
-        for ($x = $planet[0]-1; $x <= $planet[0]+1; $x++) {
-            for ($y = $planet[1]-1; $y <= $planet[1]+1; $y++) {
-                if ($x != 0 || $y != 0) {
-                    $coordinates = [$x, $y];
-                    $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
-                        $this->coordinatesInArray($coordinates, $line)
-                    ));
-                    if ($constellation && !in_array($constellation->key, $planetConstellations)) {
-                        $planetConstellations[] = $constellation->key;
-                    }
-                }
-            }
-        }
-
-        $playerScore->planets += count($planetConstellations);
-    }
-
-    private function scorePlanets(int $playerId, PlayerScore &$playerScore, array $constellations, array $planets) {
-        foreach ($planets as $planet) {
-            $this->scorePlanet($playerScore, $constellations, $planet);
-        }
-
+    private function scorePlanets(int $playerId, PlayerScore &$playerScore) {
         $this->incPlayerScore($playerId, $playerScore->planets);
         $this->notifyAllPlayers('scorePlanets', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
             'playerId' => $playerId,
@@ -133,25 +103,52 @@ trait StateTrait {
         ]);
     }
 
+    private function scoreShootingStars(int $playerId, PlayerScore &$playerScore) {
+        $this->incPlayerScore($playerId, $playerScore->shootingStars);
+        $this->notifyAllPlayers('scoreShootingStars', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $playerScore->shootingStars,
+            'scoring' => clienttranslate('Shooting stars'),
+            'i18n' => ['scoring'],
+            'score' => $playerScore->shootingStars,
+        ]);
+    }
+
+    private function scoreStar1(int $playerId, PlayerScore &$playerScore) {
+        $this->incPlayerScore($playerId, $playerScore->star1);
+        $this->notifyAllPlayers('scoreShootingStars', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $playerScore->star1,
+            'scoring' => clienttranslate('[star5]'),
+            'i18n' => ['scoring'],
+            'score' => $playerScore->star1,
+        ]);
+    }
+
+    private function scoreStar2(int $playerId, PlayerScore &$playerScore) {
+        $this->incPlayerScore($playerId, $playerScore->star2);
+        $this->notifyAllPlayers('scoreShootingStars', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $playerScore->star2,
+            'scoring' => clienttranslate('[star7]'),
+            'i18n' => ['scoring'],
+            'score' => $playerScore->star2,
+        ]);
+    }
+
     function stEndScore() {
         $players = $this->getPlayers();
         foreach ($players as $player) {
-            $playerScore = new PlayerScore();
-            $playerSheet = $this->SHEETS[$player->sheet];
-            $placedLines = array_merge(
-                $this->linesStrToLines($player->lines),
-                $playerSheet->lines,
-            );
-            $constellations = $this->getConstellations($placedLines);
-            $validConstellations = $this->getValidConstellations($constellations);
-            //$player->id == 2343492 && $this->debug($validConstellations);
-            $planets = $playerSheet->planets;
+            $playerScore = $this->getPlayerScore($player);
 
-            $this->scoreConstellations($player->id, $playerScore, $validConstellations);
-            $this->scorePlanets($player->id, $playerScore, $validConstellations, $planets);
-            // TODO Shooting star
-            // TODO star1
-            // TODO star2
+            $this->scoreConstellations($player->id, $playerScore);
+            $this->scorePlanets($player->id, $playerScore);
+            $this->scoreShootingStars($player->id, $playerScore);
+            $this->scoreStar1($player->id, $playerScore);
+            $this->scoreStar2($player->id, $playerScore);
             
             $playerScore->calculateTotal();
 

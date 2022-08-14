@@ -260,4 +260,73 @@ trait UtilTrait {
 
         return $constellations;
     }
+
+    private function calculateConstellationsScore(PlayerScore &$playerScore, array $constellations) {
+        for ($size = 3; $size <=8; $size++) {
+            if ($this->array_some($constellations, fn($constellation) => $constellation->getSize() == $size)) {
+                $playerScore->checkedConstellations[] = $size;
+                $playerScore->constellations += $size;
+            }
+        }
+    }
+
+    private function calculatePlanetScore(PlayerScore &$playerScore, array $constellations, array $planet) {
+        $planetConstellations = [];
+        for ($x = $planet[0]-1; $x <= $planet[0]+1; $x++) {
+            for ($y = $planet[1]-1; $y <= $planet[1]+1; $y++) {
+                if ($x != 0 || $y != 0) {
+                    $coordinates = [$x, $y];
+                    $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
+                        $this->coordinatesInArray($coordinates, $line)
+                    ));
+                    if ($constellation && !in_array($constellation->key, $planetConstellations)) {
+                        $planetConstellations[] = $constellation->key;
+                    }
+                }
+            }
+        }
+
+        $playerScore->planets += count($planetConstellations);
+    }
+
+    private function calculatePlanetsScore(PlayerScore &$playerScore, array $constellations, array $planets) {
+        foreach ($planets as $planet) {
+            $this->calculatePlanetScore($playerScore, $constellations, $planet);
+        }
+    }
+
+    private function calculateShootingStarsScore(PlayerScore &$playerScore) {
+        // TODO
+    }
+
+    private function calculateStar1Score(PlayerScore &$playerScore) {
+        // TODO
+    }
+
+    private function calculateStar2Score(PlayerScore &$playerScore) {
+        // TODO
+    }
+
+    private function getPlayerScore(LatsPlayer $player) {
+        $playerScore = new PlayerScore();
+        $playerSheet = $this->SHEETS[$player->sheet];
+        $placedLines = array_merge(
+            $this->linesStrToLines($player->lines),
+            $playerSheet->lines,
+        );
+        $constellations = $this->getConstellations($placedLines);
+        $validConstellations = $this->getValidConstellations($constellations);
+        //$player->id == 2343492 && $this->debug($validConstellations);
+        $planets = $playerSheet->planets;
+
+        $this->calculateConstellationsScore($playerScore, $validConstellations);
+        $this->calculatePlanetsScore($playerScore, $validConstellations, $planets);
+        $this->calculateShootingStarsScore($playerScore);
+        $this->calculateStar1Score($playerScore);
+        $this->calculateStar2Score($playerScore);
+        
+        $playerScore->calculateTotal();
+
+        return $playerScore;
+    }
 }
