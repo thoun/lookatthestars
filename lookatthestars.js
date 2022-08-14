@@ -360,12 +360,13 @@ var PlayerTable = /** @class */ (function () {
         this.shapeY = 3;
         this.shapeRotation = 0;
         var validClass = this.getValidClass();
-        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
+        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-rotate\" type=\"button\" class=\"arrow rotate\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
         this.setCardBorderPosition();
         document.getElementById("player-table-".concat(this.playerId, "-button-left")).addEventListener('click', function () { return _this.moveShapeLeft(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-right")).addEventListener('click', function () { return _this.moveShapeRight(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-top")).addEventListener('click', function () { return _this.moveShapeTop(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-bottom")).addEventListener('click', function () { return _this.moveShapeBottom(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-rotate")).addEventListener('click', function () { return _this.rotateShape(); });
         this.moveShape();
     };
     PlayerTable.prototype.moveShape = function () {
@@ -582,7 +583,6 @@ var LookAtTheStars = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
-                    this.addActionButton("rotateShape_button", _("Rotate shape"), function () { return _this.getCurrentPlayerTable().rotateShape(); });
                     this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
                     break;

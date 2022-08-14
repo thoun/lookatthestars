@@ -154,12 +154,14 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-button-right" type="button" class="arrow right"></div>
             <div id="player-table-${this.playerId}-button-top" type="button" class="arrow top"></div>
             <div id="player-table-${this.playerId}-button-bottom" type="button" class="arrow bottom"></div>
+            <div id="player-table-${this.playerId}-button-rotate" type="button" class="arrow rotate"></div>
         </div>`,  `player-table-${this.playerId}-main`);
         this.setCardBorderPosition();
         document.getElementById(`player-table-${this.playerId}-button-left`).addEventListener('click', () => this.moveShapeLeft());
         document.getElementById(`player-table-${this.playerId}-button-right`).addEventListener('click', () => this.moveShapeRight());
         document.getElementById(`player-table-${this.playerId}-button-top`).addEventListener('click', () => this.moveShapeTop());
         document.getElementById(`player-table-${this.playerId}-button-bottom`).addEventListener('click', () => this.moveShapeBottom());
+        document.getElementById(`player-table-${this.playerId}-button-rotate`).addEventListener('click', () => this.rotateShape());
 
         this.moveShape();
     }
@@ -203,7 +205,7 @@ class PlayerTable {
         document.getElementById('placeShape_button')?.classList.toggle('disabled', !this.getValid());
     }
 
-    public rotateShape() {
+    private rotateShape() {
         this.shapeRotation = (this.shapeRotation + 1) % 4;
         this.moveShape();
     }

@@ -75,8 +75,10 @@ $invalidColor: #FF000099;
       .arrow {
         width: 50px;
         height: 50px;
-        background: url('img/arrow.svg');
+        background-image: url('img/arrow.svg');
+        background-repeat: no-repeat;
         background-size: contain;
+        background-position: center;
         position: absolute;
         opacity: 0.7;
         cursor: pointer;
@@ -103,6 +105,13 @@ $invalidColor: #FF000099;
           right: -40px;
           top: 75px;
           transform: rotate(-90deg);
+        }
+
+        &.rotate {
+          background-image: url('img/curved-arrow.svg');
+          right: -40px;
+          bottom: -40px;
+          transform: rotate(90deg);
         }
       }
     }
