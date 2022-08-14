@@ -14,7 +14,7 @@ trait ActionTrait {
     public function placeShape(int $x, int $y, int $rotation) {
         self::checkAction('placeShape'); 
         
-        $playerId = self::getCurrentPlayerId();
+        $playerId = intval($this->getCurrentPlayerId());
 
         $card = $this->getCurrentShape(false);
 
@@ -33,12 +33,12 @@ trait ActionTrait {
         foreach ($shiftedLines as $line) {
             $newLines[] = dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]);
         }
+        $this->DbQuery("UPDATE player SET `player_round_lines` = '".json_encode($newLines)."' WHERE `player_id` = $playerId");
 
-        $json_obj = $this->getUniqueValueFromDB("SELECT `player_lines` FROM `player` where `player_id` = $playerId");
-        $playerLines = $json_obj ? json_decode($json_obj, true) : [];
-
-        $allLines = array_merge($playerLines, $newLines);
-        $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
+        self::notifyAllPlayers('placedLines', '', [
+            'playerId' => $playerId,
+            'lines' => $newLines,
+        ]);
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
@@ -46,7 +46,11 @@ trait ActionTrait {
     public function cancelPlaceShape() {
         $playerId = intval($this->getCurrentPlayerId());
 
-        // TODO
+        $this->DbQuery("UPDATE player SET `player_round_lines` = NULL WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('cancelPlacedLines', '', [
+            'playerId' => $playerId,
+        ]);
 
         $this->gamestate->setPlayersMultiactive([$playerId], 'next', false);
     }
@@ -54,7 +58,7 @@ trait ActionTrait {
     public function skipShape() {
         $playerId = intval($this->getCurrentPlayerId());
 
-        // TODO
+        // TODO notif?
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }

@@ -129,7 +129,7 @@ class LookAtTheStars extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_objects objects FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_round_lines `roundLines`, player_objects objects FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
         $cards = Card::linesAsString($this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg')));
@@ -142,6 +142,7 @@ class LookAtTheStars extends Table {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
             $playerDb['lines'] = $playerDb['lines'] ? json_decode($playerDb['lines'], true) : [];
+            $playerDb['roundLines'] = $playerDb['roundLines'] ? json_decode($playerDb['roundLines'], true) : [];
             $playerDb['objects'] = $playerDb['objects'] ?? json_decode('{}');
             $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($this->getPlayer($playerId)) : null;
         }

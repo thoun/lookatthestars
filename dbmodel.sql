@@ -30,3 +30,5 @@ CREATE TABLE IF NOT EXISTS `shape` (
 ALTER TABLE `player` ADD `player_sheet_type` INT UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `player_lines` JSON;
 ALTER TABLE `player` ADD `player_objects` JSON;
+ALTER TABLE `player` ADD `player_round_lines` JSON;
+ALTER TABLE `player` ADD `player_round_objects` JSON;

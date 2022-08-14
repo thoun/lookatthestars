@@ -49,6 +49,7 @@ class PlayerTable {
         dojo.place(html, document.getElementById('tables'));
 
         this.placeLines(player.lines);
+        this.placeLines(player.roundLines, ['round']);
 
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
@@ -163,6 +164,10 @@ class PlayerTable {
     }
 
     public setShapeToPlace(currentShape: Card, possiblePositions: number[][]) {
+        if (this.currentShape != null) {
+            return;
+        }
+
         this.currentShape = currentShape;
         this.possiblePositions = possiblePositions;
         this.shapeX = 3;
@@ -269,6 +274,12 @@ class PlayerTable {
 
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+        this.currentShape = null;
+    }
+    
+    public cancelPlacedLines() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
 
     public setConstellationsScore(checkedConstellations: number[], score: number) {
@@ -299,6 +310,12 @@ class PlayerTable {
 
     public setFinalScore(score: number) {
         document.getElementById(`player-table-${this.playerId}-total`).innerHTML = ''+score;
+    }
+
+    public nextShape(): void {
+        // validate round lines
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.classList.remove('round'));
     }
 
 }

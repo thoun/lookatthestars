@@ -18,7 +18,27 @@ trait StateTrait {
     }
 
     function stNextShape() {
-        $remainingShapes = intval($this->shapes->countCardInLocation('deck'));
+        $players = $this->getPlayers();
+        foreach ($players as $player) {
+            $playerId = $player->id;
+
+            // apply turn lines
+            $allLines = array_merge($player->lines, $player->roundLines);
+            $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
+
+            // TODO apply turn objects
+        }
+        /*
+        
+
+        $json_obj = $this->getUniqueValueFromDB("SELECT `player_lines` FROM `player` where `player_id` = $playerId");
+
+        $allLines = array_merge($playerLines, $newLines);
+        $this->DbQuery("UPDATE player SET `player_round_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
+        */
+
+
+        $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
 
         if ($remainingShapes == 0) {
             $this->gamestate->nextState('endScore');

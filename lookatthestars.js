@@ -282,6 +282,7 @@ var PlayerTable = /** @class */ (function () {
         html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         this.placeLines(player.lines);
+        this.placeLines(player.roundLines, ['round']);
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
             this.setPlanetScore(player.playerScore.planets);
@@ -366,6 +367,9 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setShapeToPlace = function (currentShape, possiblePositions) {
         var _this = this;
+        if (this.currentShape != null) {
+            return;
+        }
         this.currentShape = currentShape;
         this.possiblePositions = possiblePositions;
         this.shapeX = 3;
@@ -455,6 +459,11 @@ var PlayerTable = /** @class */ (function () {
         (_a = cardBorderDiv === null || cardBorderDiv === void 0 ? void 0 : cardBorderDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(cardBorderDiv);
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        this.currentShape = null;
+    };
+    PlayerTable.prototype.cancelPlacedLines = function () {
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
     PlayerTable.prototype.setConstellationsScore = function (checkedConstellations, score) {
         for (var i = 3; i <= 8; i++) {
@@ -478,6 +487,11 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setFinalScore = function (score) {
         document.getElementById("player-table-".concat(this.playerId, "-total")).innerHTML = '' + score;
+    };
+    PlayerTable.prototype.nextShape = function () {
+        // validate round lines
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
+        oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round'); });
     };
     return PlayerTable;
 }());
@@ -583,8 +597,8 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
-            case 'placeShape':
-                this.onEnteringPlaceShape(args.args);
+            case 'nextShape':
+                this.onEnteringNextShape();
                 break;
             case 'endScore':
                 this.onEnteringShowScore();
@@ -594,6 +608,9 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentShape, args.possiblePositions[this.getPlayerId()]);
+    };
+    LookAtTheStars.prototype.onEnteringNextShape = function () {
+        this.playersTables.forEach(function (playerTable) { return playerTable.nextShape(); });
     };
     LookAtTheStars.prototype.onEnteringShowScore = function () {
         var _this = this;
@@ -616,13 +633,23 @@ var LookAtTheStars = /** @class */ (function () {
     //
     LookAtTheStars.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
-        if (this.isCurrentPlayerActive()) {
-            switch (stateName) {
-                case 'placeShape':
+        switch (stateName) {
+            case 'placeShape':
+                var playerActive = this.isCurrentPlayerActive();
+                if (playerActive) {
+                    this.onEnteringPlaceShape(args);
+                }
+                else {
+                    this.onLeavingPlaceShape();
+                }
+                if (playerActive) {
                     this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
-                    break;
-            }
+                }
+                else {
+                    this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                }
+                break;
         }
     };
     ///////////////////////////////////////////////////
@@ -789,17 +816,11 @@ var LookAtTheStars = /** @class */ (function () {
         var informations = this.getCurrentPlayerTable().getShapeInformations();
         this.takeAction('placeShape', informations);
     };
-    LookAtTheStars.prototype.resetTurn = function () {
-        if (!this.checkAction('resetTurn')) {
+    LookAtTheStars.prototype.cancelPlaceShape = function () {
+        if (!this.checkAction('cancelPlaceShape')) {
             return;
         }
-        this.takeAction('resetTurn');
-    };
-    LookAtTheStars.prototype.confirmTurn = function () {
-        if (!this.checkAction('confirmTurn')) {
-            return;
-        }
-        this.takeAction('confirmTurn');
+        this.takeAction('cancelPlaceShape');
     };
     LookAtTheStars.prototype.skipShape = function () {
         if (!this.checkAction('skipShape')) {
@@ -854,6 +875,8 @@ var LookAtTheStars = /** @class */ (function () {
         var notifs = [
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
+            ['placedLines', 1],
+            ['cancelPlacedLines', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
             ['scorePlanets', SCORE_MS],
@@ -868,6 +891,12 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_newShape = function (notif) {
         this.cards.createMoveOrUpdateCard(notif.args.card);
+    };
+    LookAtTheStars.prototype.notif_placedLines = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
+    };
+    LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
+        this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
     };
     LookAtTheStars.prototype.notif_score = function (notif) {
         this.setPoints(notif.args.playerId, notif.args.score);

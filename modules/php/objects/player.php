@@ -7,6 +7,7 @@ class LatsPlayer {
     public int $score;
     public int $sheet;
     public array $lines;
+    public array $roundLines;
     public object $objects;
 
     public function __construct($dbPlayer) {
@@ -16,6 +17,7 @@ class LatsPlayer {
         $this->score = intval($dbPlayer['player_score']);
         $this->sheet = intval($dbPlayer['player_sheet_type']);
         $this->lines = $dbPlayer['player_lines'] != null ? json_decode($dbPlayer['player_lines'], true) : [];
+        $this->roundLines = $dbPlayer['player_round_lines'] != null ? json_decode($dbPlayer['player_round_lines'], true) : [];
         $this->objects = json_decode($dbPlayer['player_objects'] ?? '{}');
     } 
 }

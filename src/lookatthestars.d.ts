@@ -37,6 +37,7 @@ interface LookAtTheStarsPlayer extends Player {
     sheetType: number;
     playerScore?: PlayerScore;
     lines: string[];
+    roundLines: string[];
     objects: Objects;
 }
 
@@ -75,6 +76,11 @@ interface EnteringPlaceShapeArgs {
 
 interface NotifCardArgs {
     card: Card;
+}
+
+interface NotifPlacedLinesArgs {
+    playerId: number;
+    lines: string[];
 }
 
 interface NotifScoreArgs {

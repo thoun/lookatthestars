@@ -81,7 +81,7 @@ $playerActionsGameStates = [
         "type" => "multipleactiveplayer",
         "args" => "argPlaceShape",
         "action" => "stPlaceShape",
-        "possibleactions" => [ "placeShape", "skipShape" ],
+        "possibleactions" => [ "placeShape", "skipShape", "cancelPlaceShape" ],
         "transitions" => [
             "next" => ST_NEXT_SHAPE,
         ],

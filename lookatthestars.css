@@ -333,6 +333,9 @@
 .player-table .main .svg-wrapper svg .line.invalid {
   stroke: rgba(255, 0, 0, 0.6);
 }
+.player-table .main .svg-wrapper svg .line.round {
+  animation: unvalidated-animation 1s alternate infinite ease-in-out;
+}
 .player-table .main .card-border {
   display: inline-block;
   position: absolute;
@@ -479,6 +482,14 @@
   font-size: 48pt;
 }
 
+@keyframes unvalidated-animation {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 html, .mode_3d #game_play_area_background {
   background: #101010;
 }
