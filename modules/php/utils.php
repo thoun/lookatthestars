@@ -87,6 +87,14 @@ trait UtilTrait {
         ] + $args);
     }
 
+    function lineStrToLine(string $lineStr) {
+        return [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]];
+    }
+
+    function linesStrToLines(array $linesStr) {
+        return array_map(fn($lineStr) => $this->lineStrToLine($lineStr), $linesStr);
+    }
+
     function getCardFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;
@@ -165,6 +173,16 @@ trait UtilTrait {
         );
     }
 
+    function lineConnected(array $line, array $toLine) {
+        return $this->coordinatesInArray($line[0], $toLine) || $this->coordinatesInArray($line[1], $toLine) || $this->lineCross($line, $toLine);
+    }
+
+    function lineCross(array $line, array $withLine) {
+        return 
+            ($line[0][0] + $line[1][0] == $withLine[0][0] + $withLine[1][0]) &&
+            ($line[0][1] + $line[1][1] == $withLine[0][1] + $withLine[1][1]);
+    }
+
     function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines) {
         // not oustside the board
         if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < 0 || $coordinates[1] > 10))) {
@@ -195,7 +213,7 @@ trait UtilTrait {
         //$this->debug([$playerId, $player]);
         $playerSheet = $this->SHEETS[$player->sheet];
         $placedLines = array_merge(
-            array_map(fn($lineStr) => [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]], $player->lines),
+            $this->linesStrToLines($player->lines),
             $playerSheet->lines
         );
         $result = [];
@@ -220,11 +238,17 @@ trait UtilTrait {
         return $result;
     }
 
+    function getValidConstellations(array $constellations) {
+        return array_values(array_filter($constellations, fn($constellation) => $constellation->getSize() >= 3 && $constellation->getSize() <= 8));
+    }
+
     function getConstellations(array $lines) {
         $constellations = [];
 
         foreach ($lines as $line) {
-            $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($iLine) => $this->sameLine($line, $iLine)));
+            $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($iLine) => 
+                $this->lineConnected($line, $iLine)
+            ));
 
             if ($constellation) {
                 $constellation->addLine($line);

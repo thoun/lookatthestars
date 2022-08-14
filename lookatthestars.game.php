@@ -108,6 +108,9 @@ class LookAtTheStars extends Table {
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
+        // TODO TEMP to test
+        $this->debugSetup();
+
         /************ End of the game initialization *****/
     }
 

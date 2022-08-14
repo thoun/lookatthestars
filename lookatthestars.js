@@ -275,7 +275,11 @@ function isSafari() {
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, day) {
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n        </div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
+        for (var i = 3; i <= 8; i++) {
+            html += "<div id=\"player-table-".concat(this.playerId, "-constellation").concat(i, "\" class=\"constellation score\" data-number=\"").concat(i, "\"></div>");
+        }
+        html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         this.placeLines(player.lines);
         //refresh hack
@@ -445,13 +449,27 @@ var PlayerTable = /** @class */ (function () {
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
     PlayerTable.prototype.setConstellationsScore = function (checkedConstellations, score) {
-        // TODO
+        for (var i = 3; i <= 8; i++) {
+            if (checkedConstellations.includes(i)) {
+                document.getElementById("player-table-".concat(this.playerId, "-constellation").concat(i)).innerHTML = '.';
+            }
+        }
+        document.getElementById("player-table-".concat(this.playerId, "-constellations")).innerHTML = '' + score;
     };
     PlayerTable.prototype.setPlanetScore = function (score) {
-        // TODO
+        document.getElementById("player-table-".concat(this.playerId, "-planets")).innerHTML = '' + score;
     };
-    PlayerTable.prototype.setFinalScore = function (points) {
-        // TODO
+    PlayerTable.prototype.setShootingStarsScore = function (score) {
+        document.getElementById("player-table-".concat(this.playerId, "-shooting-stars")).innerHTML = '' + score;
+    };
+    PlayerTable.prototype.setStar1Score = function (score) {
+        document.getElementById("player-table-".concat(this.playerId, "-star1")).innerHTML = '' + score;
+    };
+    PlayerTable.prototype.setStar2Score = function (score) {
+        document.getElementById("player-table-".concat(this.playerId, "-star2")).innerHTML = '' + score;
+    };
+    PlayerTable.prototype.setFinalScore = function (score) {
+        document.getElementById("player-table-".concat(this.playerId, "-total")).innerHTML = '' + score;
     };
     return PlayerTable;
 }());

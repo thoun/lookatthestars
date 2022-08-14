@@ -2,6 +2,14 @@ $tableWidth: 546px;
 $validColor: #00FF0099;
 $invalidColor: #FF000099;
 
+@font-face {
+  font-family: 'blzeeregular';
+  src: url('img/blzee-webfont.woff2') format('woff2'),
+       url('img/blzee-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /*#player-tables {
   display: flex;
   justify-content: center;
@@ -148,6 +156,64 @@ $invalidColor: #FF000099;
     span {
       background: white;
       box-shadow: 0 0 10px 10px white;
+    }
+  }
+
+  .score {
+    font-family: 'blzeeregular';
+    font-size: 28pt;
+    position: absolute;
+    top: 695px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    text-align: center;
+
+    &.constellation {
+      font-size: 64pt;
+      width: 14px;
+      height: 14px;
+
+      @for $number from 3 through 5 {
+        &[data-number="#{$number}"] {
+          top: 634px;
+          left: #{31 + ($number - 3) * 17}px;
+        }
+      }
+
+      @for $number from 6 through 8 {
+        &[data-number="#{$number}"] {
+          top: 663px;
+          left: #{31 + ($number - 6) * 17}px;
+        }
+      }
+    }
+
+    &.constellations {
+      left: 21px;
+    }
+    &.planets {
+      left: 103px;
+    }
+    &.shooting-stars {
+      left: 183px;
+    }
+    &.star1 {
+      left: 265px;
+    }
+    &.star2 {
+      left: 345px;
+    }
+
+    &.total {
+      left: 434px;
+      top: 652px;
+      width: 90px;
+      height: 90px;
+      font-size: 48pt;
     }
   }
 }

@@ -259,6 +259,12 @@
   background-position-x: 100%;
 }
 
+@font-face {
+  font-family: "blzeeregular";
+  src: url("img/blzee-webfont.woff2") format("woff2"), url("img/blzee-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 /*#player-tables {
   display: flex;
   justify-content: center;
@@ -407,6 +413,70 @@
 .player-table .name span {
   background: white;
   box-shadow: 0 0 10px 10px white;
+}
+.player-table .score {
+  font-family: "blzeeregular";
+  font-size: 28pt;
+  position: absolute;
+  top: 695px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  text-align: center;
+}
+.player-table .score.constellation {
+  font-size: 64pt;
+  width: 14px;
+  height: 14px;
+}
+.player-table .score.constellation[data-number="3"] {
+  top: 634px;
+  left: 31px;
+}
+.player-table .score.constellation[data-number="4"] {
+  top: 634px;
+  left: 48px;
+}
+.player-table .score.constellation[data-number="5"] {
+  top: 634px;
+  left: 65px;
+}
+.player-table .score.constellation[data-number="6"] {
+  top: 663px;
+  left: 31px;
+}
+.player-table .score.constellation[data-number="7"] {
+  top: 663px;
+  left: 48px;
+}
+.player-table .score.constellation[data-number="8"] {
+  top: 663px;
+  left: 65px;
+}
+.player-table .score.constellations {
+  left: 21px;
+}
+.player-table .score.planets {
+  left: 103px;
+}
+.player-table .score.shooting-stars {
+  left: 183px;
+}
+.player-table .score.star1 {
+  left: 265px;
+}
+.player-table .score.star2 {
+  left: 345px;
+}
+.player-table .score.total {
+  left: 434px;
+  top: 652px;
+  width: 90px;
+  height: 90px;
+  font-size: 48pt;
 }
 
 html, .mode_3d #game_play_area_background {

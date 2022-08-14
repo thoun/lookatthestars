@@ -32,6 +32,18 @@ class PlayerTable {
             <div class="name" style="color: #${player.color};">
                 <span>${player.name}</span>
             </div>
+
+            <div class="checkedConstellations">`;
+            for (let i = 3; i <= 8; i++) {
+                html += `<div id="player-table-${this.playerId}-constellation${i}" class="constellation score" data-number="${i}"></div>`;
+            }
+            html += `    </div>
+            <div id="player-table-${this.playerId}-constellations" class="constellations score"></div>
+            <div id="player-table-${this.playerId}-planets" class="planets score"></div>
+            <div id="player-table-${this.playerId}-shooting-stars" class="shooting-stars score"></div>
+            <div id="player-table-${this.playerId}-star1" class="star1 score"></div>
+            <div id="player-table-${this.playerId}-star2" class="star2 score"></div>
+            <div id="player-table-${this.playerId}-total" class="total score"></div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -251,15 +263,33 @@ class PlayerTable {
     }
 
     public setConstellationsScore(checkedConstellations: number[], score: number) {
-        // TODO
+        for (let i = 3; i <= 8; i++) {
+            if (checkedConstellations.includes(i)) {
+                document.getElementById(`player-table-${this.playerId}-constellation${i}`).innerHTML = '.';
+            }
+        }
+
+        document.getElementById(`player-table-${this.playerId}-constellations`).innerHTML = ''+score;
     }
 
     public setPlanetScore(score: number) {
-        // TODO
+        document.getElementById(`player-table-${this.playerId}-planets`).innerHTML = ''+score;
     }
 
-    public setFinalScore(points: number) {
-        // TODO
+    public setShootingStarsScore(score: number) {
+        document.getElementById(`player-table-${this.playerId}-shooting-stars`).innerHTML = ''+score;
+    }
+
+    public setStar1Score(score: number) {
+        document.getElementById(`player-table-${this.playerId}-star1`).innerHTML = ''+score;
+    }
+
+    public setStar2Score(score: number) {
+        document.getElementById(`player-table-${this.playerId}-star2`).innerHTML = ''+score;
+    }
+
+    public setFinalScore(score: number) {
+        document.getElementById(`player-table-${this.playerId}-total`).innerHTML = ''+score;
     }
 
 }

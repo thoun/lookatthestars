@@ -107,7 +107,7 @@ trait StateTrait {
                     $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
                         $this->coordinatesInArray($coordinates, $line)
                     ));
-                    if (!in_array($constellation->key, $planetConstellations)) {
+                    if ($constellation && !in_array($constellation->key, $planetConstellations)) {
                         $planetConstellations[] = $constellation->key;
                     }
                 }
@@ -137,10 +137,18 @@ trait StateTrait {
         $players = $this->getPlayers();
         foreach ($players as $player) {
             $playerScore = new PlayerScore();
-            $constellations = $this->getConstellations($player->lines);
+            $playerSheet = $this->SHEETS[$player->sheet];
+            $placedLines = array_merge(
+                $this->linesStrToLines($player->lines),
+                $playerSheet->lines,
+            );
+            $constellations = $this->getConstellations($placedLines);
+            $validConstellations = $this->getValidConstellations($constellations);
+            //$player->id == 2343492 && $this->debug($validConstellations);
+            $planets = $playerSheet->planets;
 
-            $this->scoreConstellations($player->id, $playerScore, $constellations);
-            $this->scorePlanets($player->id, $playerScore, $constellations, $this->SHEETS[$player->sheet]->planets);
+            $this->scoreConstellations($player->id, $playerScore, $validConstellations);
+            $this->scorePlanets($player->id, $playerScore, $validConstellations, $planets);
             // TODO Shooting star
             // TODO star1
             // TODO star2
@@ -150,6 +158,6 @@ trait StateTrait {
             //$this->computeStats($playerId);
         }
 
-        $this->gamestate->nextState('endGame');
+        //$this->gamestate->nextState('endGame');
     }
 }

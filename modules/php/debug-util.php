@@ -11,86 +11,44 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->insertRoutes(2343492, [16, 15, 14, 24, 34, 44, 43, 53, 63, 64, 74, 73]);
-        //$this->insertRoutes(2343493, [16, 15, 14, 24, 34, 44, 43, 53, 63, 64, 74, 73]);
-
-        // table https://boardgamearena.com/archive/replay/220513-1000/?table=267222414&player=1559197&comments=86175279;#
-        //$this->insertRoutes(2343492, [36, 46, 56, 55, 65, 66, 76, 75, 85, 95, 96, 106, 105, 115, 125, 124, 123, 113, 103, 102/*, 101, 91*/]);
-        
-        //$this->debugSetStart(2343492, 36);
-        //$this->debugSetStart(2343493, 23);
-        //$this->gamestate->jumpToState(ST_START_GAME);
-
-        $this->debugSetCommonObjective(1, 3);
-        //$this->DbQuery("UPDATE bonus_cards SET `completed_at_round` = 1");
-        //$this->debugSetCommonObjective(2, 5);
+        $this->insertRandomLines(2343492, 16);
+        $this->insertRandomLines(2343493, 20);
     }
 
-    function insertRoutes(int $playerId, array $positions, int $validated = 1) {
-        for($i=0; $i < count($positions) - 1; $i++) {
-            $from = $positions[$i];
-            $to = $positions[$i+1];
-            $useTurnZone = 0;
-            $this->DbQuery("INSERT INTO placed_routes(`player_id`, `from`, `to`, `round`, `use_turn_zone`, `traffic_jam`, `validated`) VALUES ($playerId, $from, $to, 0, $useTurnZone, 1, $validated)");
-        }
-    }
+    function getRandomLine() {
+        $start = [bga_rand(0, 9), bga_rand(0, 10)];
 
-    function debugStart() {
-        $playersIds = $this->getPlayersIds();
+        $deltaX = bga_rand($start[0] == 0 ? 0 : -1, $start[0] == 9 ? 0 : 1);
+        $deltaY = bga_rand($start[1] == 0 ? 0 : -1, $start[1] == 10 ? 0 : 1);
 
-        $MAP_DEPARTURE_POSITIONS = [
-            'small' => [
-              1 => 23,
-              2 => 36,
-              3 => 61,
-              4 => 65,
-              5 => 97,
-              6 => 114,
-            ],
-          
-            'big' => [
-              1 => 51,
-              2 => 71,
-              3 => 42,
-              4 => 112,
-              5 => 34,
-              6 => 104,
-              7 => 15,
-              8 => 106,
-              9 => 58,
-              10 => 118,
-              11 => 29,
-              12 => 89,
-            ],
-          ];
-
-        foreach ($playersIds as $playerId) {
-            $tickets = $this->getCardsFromDb($this->tickets->getCardsInLocation('hand', $playerId));
-            $ticketNumber = $tickets[0]->type;
-            $position = $MAP_DEPARTURE_POSITIONS[$this->getMap()][$ticketNumber]; 
-            $this->DbQuery("UPDATE player SET `player_departure_position` = $position WHERE `player_id` = $playerId");
-            $this->tickets->moveAllCardsInLocation('hand', 'discard', $playerId);
+        while (
+            ($deltaX == 0 && $deltaY == 0)
+        ) {
+            $deltaX = bga_rand($start[0] == 0 ? 0 : -1, $start[0] == 9 ? 0 : 1);
+            $deltaY = bga_rand($start[1] == 0 ? 0 : -1, $start[1] == 10 ? 0 : 1);
         }
 
-        $this->gamestate->jumpToState(ST_START_GAME);
+        return [$start, [
+            $start[0] + $deltaX,
+            $start[1] + $deltaY,
+        ]];
     }
 
-    function debugSetStart(int $playerId, int $position) {
-        $this->DbQuery("UPDATE player SET `player_departure_position` = $position WHERE `player_id` = $playerId");
-        $this->tickets->moveAllCardsInLocation('hand', 'discard', $playerId);
-    }
+    function insertRandomLines(int $playerId, int $number) {
+        $lines = [];
 
-    function debugSetCommonObjective(int $number, int $objective) {
-        $this->DbQuery("UPDATE bonus_cards SET `id` = $objective WHERE `number` = $number");
-    }
+        for ($i=0; $i<$number; $i++) {
+            $newLine = $this->getRandomLine();
 
-    function debugLastRound() {
-        $this->DbQuery("update `tickets` set card_location='discard' where card_location='deck'");
-    }
+            while ($this->array_some($lines, fn($line) => $this->sameLine($line, $newLine))) {
+                $newLine = $this->getRandomLine();
+            }
 
-    function debugTest() {
-        $this->debugStart();
-        $this->DbQuery("update `tickets` set card_location='discard' where card_location='deck' AND card_type <> 3");
+            $lines[] = $newLine;
+        }
+
+        $linesStr = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $lines);
+        $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($linesStr)."' WHERE `player_id` = $playerId");
     }
 
     public function debugReplacePlayersIds() {
@@ -116,7 +74,7 @@ trait DebugUtilTrait {
 
 			// 'other' game specific tables. example:
 			// tables specific to your schema that use player_ids
-			$this->DbQuery("UPDATE placed_routes SET player_id=$sid WHERE player_id = $id" );
+			//$this->DbQuery("UPDATE placed_routes SET player_id=$sid WHERE player_id = $id" );
 			
 			++$sid;
 		}
