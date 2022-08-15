@@ -705,7 +705,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions[this.getPlayerId()]);
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions);
     };
     LookAtTheStars.prototype.onEnteringNextShape = function () {
         this.playersTables.forEach(function (playerTable) { return playerTable.nextShape(); });
@@ -731,6 +731,7 @@ var LookAtTheStars = /** @class */ (function () {
     //
     LookAtTheStars.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        log('onUpdateActionButtons: ' + stateName, args);
         switch (stateName) {
             case 'playCard':
                 if (!this.isCurrentPlayerActive()) {
@@ -741,10 +742,9 @@ var LookAtTheStars = /** @class */ (function () {
                 var playerActive = this.isCurrentPlayerActive();
                 if (playerActive) {
                     this.onEnteringPlaceShape(args);
-                }
-                else {
+                } /* else {
                     this.onLeavingPlaceShape();
-                }
+                }*/
                 if (playerActive) {
                     var placeCardArg = args;
                     if (placeCardArg.currentCard.type == 1) {
@@ -765,6 +765,10 @@ var LookAtTheStars = /** @class */ (function () {
                 else {
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
                 }
+                break;
+            case 'placeLine':
+                this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
+                this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
                 break;
         }
     };

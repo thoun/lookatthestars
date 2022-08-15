@@ -80,11 +80,11 @@ interface EnteringPlaceCardArgs {
 }
 
 interface EnteringPlaceShapeArgs extends EnteringPlaceCardArgs {
-    possiblePositions: number[][][];
+    possiblePositions: number[][];
 }
 
 interface EnteringPlaceShootingStarArgs extends EnteringPlaceCardArgs {
-    possiblePositions: { [size: number]: number[][][] };
+    possiblePositions: { [size: number]: number[][] };
 }
 
 interface NotifCardArgs {

@@ -125,7 +125,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs | EnteringPlaceShootingStarArgs) {
-        this.getCurrentPlayerTable()?.setShapeToPlace(args.currentCard, args.possiblePositions[this.getPlayerId()]);
+        this.getCurrentPlayerTable()?.setShapeToPlace(args.currentCard, args.possiblePositions as any);
     }
 
     onEnteringNextShape() {
@@ -154,6 +154,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     public onUpdateActionButtons(stateName: string, args: any) {
+        log( 'onUpdateActionButtons: '+stateName, args );
+
         switch (stateName) {
             case 'playCard':
                 if (!(this as any).isCurrentPlayerActive()) {
@@ -164,9 +166,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 const playerActive = (this as any).isCurrentPlayerActive();
                 if (playerActive) {
                     this.onEnteringPlaceShape(args);
-                } else {
+                }/* else {
                     this.onLeavingPlaceShape();
-                }
+                }*/
                 if (playerActive) {
                     const placeCardArg = args as EnteringPlaceCardArgs;
                     if (placeCardArg.currentCard.type == 1) {
@@ -185,6 +187,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 } else {
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                 }
+                break;
+            case 'placeLine':
+                (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
+                (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                 break;
         }
     } 

@@ -12,16 +12,13 @@ trait ArgsTrait {
         game state.
     */
 
-    function argPlaceShapeForStandardShape(Card $currentCard, array $playersIds) {
-        $possiblePositions = [];
-        foreach($playersIds as $playerId) {
-            $possiblePositions[$playerId] = $this->getPossiblePositions(
-                $playerId, 
-                $currentCard->lines, 
-                true,
-                true
-            );
-        }
+    function argPlaceShapeForStandardShape(int $playerId, Card $currentCard) {
+        $possiblePositions = $this->getPossiblePositions(
+            $playerId, 
+            $currentCard->lines, 
+            true,
+            true
+        );
 
         return [
             'shootingStar' => false,
@@ -30,20 +27,15 @@ trait ArgsTrait {
         ];
     }
 
-    function argPlaceShapeForShootingStar(array $playersIds) {
+    function argPlaceShapeForShootingStar(int $playerId) {
         $currentCardStr = $this->getCurrentCard(true);
 
-        $possiblePositions = [];
-        foreach($playersIds as $playerId) {
-            $playerPossiblePositions = array_map(fn($shootingStar) => $this->getPossiblePositions(
-                $playerId, 
-                $shootingStar->lines, 
-                true,
-                false
-            ), $this->SHOOTING_STAR_SIZES);
-
-            $possiblePositions[$playerId] = $playerPossiblePositions;
-        }
+        $possiblePositions = array_map(fn($shootingStar) => $this->getPossiblePositions(
+            $playerId, 
+            $shootingStar->lines, 
+            true,
+            false
+        ), $this->SHOOTING_STAR_SIZES);
 
         return [
             'shootingStar' => true,
@@ -52,14 +44,13 @@ trait ArgsTrait {
         ];
     }
    
-    function argPlaceShape() {
+    function argPlaceShape(int $playerId) {
         $currentCard = $this->getCurrentCard(false);
-        $playersIds = $this->getPlayersIds();
 
         if ($currentCard->type == 1) {
-            return $this->argPlaceShapeForShootingStar($playersIds);
+            return $this->argPlaceShapeForShootingStar($playerId);
         } else if ($currentCard->type == 2) {
-            return $this->argPlaceShapeForStandardShape($currentCard, $playersIds);
+            return $this->argPlaceShapeForStandardShape($playerId, $currentCard);
         }
     }
 
