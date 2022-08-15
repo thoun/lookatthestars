@@ -75,6 +75,14 @@
       self::ajaxResponse();
     }
 
+    public function skipBonus() {
+      self::setAjaxMode();
+
+      $this->game->skipBonus();
+
+      self::ajaxResponse();
+    }
+
   }
   
 

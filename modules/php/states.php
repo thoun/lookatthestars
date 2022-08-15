@@ -13,8 +13,9 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
-    function stPlaceShape() {
+    function stPlayCard() {
         $this->gamestate->setAllPlayersMultiactive();
+        $this->gamestate->initializePrivateStateForAllActivePlayers(); 
     }
 
     function stNextShape() {

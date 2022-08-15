@@ -948,6 +948,12 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('skipCard');
     };
+    LookAtTheStars.prototype.skipBonus = function () {
+        if (!this.checkAction('skipBonus')) {
+            return;
+        }
+        this.takeAction('skipBonus');
+    };
     LookAtTheStars.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;

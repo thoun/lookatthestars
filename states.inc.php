@@ -57,7 +57,7 @@ $basicGameStates = [
         "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => [ "" => ST_MULTIPLAYER_PLACE_SHAPE ]
+        "transitions" => [ "" => ST_MULTIPLAYER_PLAY_CARD ]
     ],
    
     // Final state.
@@ -74,17 +74,46 @@ $basicGameStates = [
 
 $playerActionsGameStates = [
 
-    ST_MULTIPLAYER_PLACE_SHAPE => [
-        "name" => "placeShape",
+    ST_MULTIPLAYER_PLAY_CARD => [
+        "name" => "playCard",
         "description" => clienttranslate('Players must place the shape'),
-        "descriptionmyturn" => clienttranslate('${you} must place the shape'),
+        "descriptionmyturn" => '',
         "type" => "multipleactiveplayer",
-        "args" => "argPlaceShape",
-        "action" => "stPlaceShape",
-        "possibleactions" => [ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ],
+        "initialprivate" => ST_PRIVATE_PLACE_SHAPE,
+        "action" => "stPlayCard",
+        "possibleactions" => [ "cancelPlaceShape" ],
         "transitions" => [
             "next" => ST_NEXT_SHAPE,
         ],
+    ],
+
+    ST_PRIVATE_PLACE_SHAPE => [
+        "name" => "placeShape",
+        "descriptionmyturn" => clienttranslate('${you} must place the shape'),
+        "type" => "private",
+        "args" => "argPlaceShape", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "possibleactions" => [ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ],
+        "transitions" => [
+          'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_PLANET => [
+        "name" => "placePlanet",
+        "descriptionmyturn" => clienttranslate('${you} can place a new planet on an unused star'),
+        "type" => "private",
+        "args" => "argPlacePlanet", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "possibleactions" => [ "placePlanet", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => []
+    ],
+
+    ST_PRIVATE_PLACE_LINE => [
+        "name" => "placeLine",
+        "descriptionmyturn" => clienttranslate('${you} can place a new line between 2 adjacent stars'),
+        "type" => "private",
+        "args" => "argPlaceLine", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "possibleactions" => [ "placeLine", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => []
     ],
 ];
 
@@ -98,7 +127,7 @@ $gameGameStates = [
         "action" => "stNextShape",
         "updateGameProgression" => true,
         "transitions" => [
-            "next" => ST_MULTIPLAYER_PLACE_SHAPE, 
+            "next" => ST_MULTIPLAYER_PLAY_CARD, 
             "endScore" => ST_END_SCORE,
         ],
     ],

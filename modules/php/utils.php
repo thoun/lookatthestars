@@ -388,9 +388,30 @@ trait UtilTrait {
     }
 
     private function calculateStar2Score(PlayerScore &$playerScore) {
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+
         $points = 0;
 
-        // TODO
+        switch ($objective->power) {
+            case POWER_GALAXY:
+                // TODO 2 points / galaxy
+                break;
+            case POWER_TWINKLING_STAR:
+                // TODO 3 victory points if it is adjacent to exactly 2 constellations at the end of the game.
+                break;
+            case POWER_NOVA:
+                /* TODO 9 or 10 points if nova on a 9/10 constellation. scored once .*/
+                break;
+            case POWER_LUMINOUS_AURA:                
+                // TODO 2 points / LUMINOUS_AURA
+                break;
+            case POWER_CRESCENT_MOON:
+                // TODO Each constellation which has at least 1 star in a vertical or horizontal alignment with the crescent moon scores 1 additional victory point at the end of the game.
+                break;
+            case POWER_BLACK_HOLE:
+                // TODO score 1 point for each unused star adjacent to the black hole. You can only draw one black hole per game.
+                break;
+        }
 
         $playerScore->star2 += $points;
     }

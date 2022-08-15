@@ -11,8 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->insertRandomLines(2343492, 16);
-        $this->insertRandomLines(2343493, 20);
+        //$this->insertRandomLines(2343492, 16);
+        //$this->insertRandomLines(2343493, 20);
     }
 
     function getRandomLine() {

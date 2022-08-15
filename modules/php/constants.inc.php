@@ -5,9 +5,14 @@
  */
 define('ST_BGA_GAME_SETUP', 1);
 
-define('ST_MULTIPLAYER_PLACE_SHAPE', 20);
+define('ST_MULTIPLAYER_PLAY_CARD', 20);
 
-define('ST_NEXT_SHAPE', 30);
+define('ST_PRIVATE_PLACE_SHAPE', 30);
+
+define('ST_PRIVATE_PLACE_PLANET', 40);
+define('ST_PRIVATE_PLACE_LINE', 41);
+
+define('ST_NEXT_SHAPE', 70);
 
 define('ST_END_SCORE', 90);
 

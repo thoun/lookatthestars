@@ -44,7 +44,19 @@ trait ActionTrait {
             'lines' => $newLines,
         ]);
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+
+        $player = $this->getPlayer($playerId);
+        $allLines = $this->linesStrToLines(array_merge(
+            $player->lines,
+            $player->roundLines
+        ));
+        $shapesFound = $this->findShape($allLines, $objective->lines);
+        if (count($shapesFound) > 0) { // TODO ignore already applied
+            $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
+        } else {
+            $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        }
     }
 
     public function placeShootingStar(int $x, int $y, int $rotation, int $size) {
@@ -108,6 +120,14 @@ trait ActionTrait {
     }
 
     public function skipCard() {
+        $playerId = intval($this->getCurrentPlayerId());
+
+        // TODO notif?
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    }
+
+    public function skipBonus() {
         $playerId = intval($this->getCurrentPlayerId());
 
         // TODO notif?

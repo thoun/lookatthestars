@@ -411,6 +411,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('skipCard');
     }
 
+    public skipBonus() {
+        if(!(this as any).checkAction('skipBonus')) {
+            return;
+        }
+
+        this.takeAction('skipBonus');
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
