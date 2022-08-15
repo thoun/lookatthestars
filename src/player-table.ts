@@ -21,14 +21,14 @@ class PlayerTable {
     private shootingStarPossiblePositions: number[][][];
     private shootingStarSize: number;
 
-    constructor(private game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
+    constructor(private game: LookAtTheStarsGame, player: LookAtTheStarsPlayer) {
         this.playerId = Number(player.id);
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table " style="box-shadow: 0 0 3px 3px #${player.color};" data-type="${player.sheetType}">
             <div id="player-table-${this.playerId}-main" class="main">
                 <div id="player-table-${this.playerId}-svg" class="svg-wrapper">${this.makeSVG()}</div>
-                <div id="player-table-${this.playerId}-day" class="day" data-level="${day}">
+                <div id="player-table-${this.playerId}-day" class="day" data-level="${this.game.day}">
                 </div>
             </div>
             <div class="name" style="color: #${player.color};">
@@ -230,7 +230,7 @@ class PlayerTable {
 
         this.currentCard = currentShape;
         this.shapeX = 3;
-        this.shapeY = 3;
+        this.shapeY = 3 + this.game.day;
         this.shapeRotation = 0;
         if (this.currentCard.type == 1) {
             this.shootingStarPossiblePositions = possiblePositions as number[][][];
@@ -358,7 +358,7 @@ class PlayerTable {
     }
 
     private moveShapeBottom() {
-        if (this.shapeY <= -1) {
+        if (this.shapeY <= -1 + (this.game.day * 2)) {
             return;
         }
         this.shapeY--;

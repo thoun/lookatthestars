@@ -284,12 +284,12 @@ function isSafari() {
     return !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
 }
 var PlayerTable = /** @class */ (function () {
-    function PlayerTable(game, player, day) {
+    function PlayerTable(game, player) {
         var _this = this;
         var _a;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(this.game.day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
         for (var i = 3; i <= 8; i++) {
             html += "<div id=\"player-table-".concat(this.playerId, "-constellation").concat(i, "\" class=\"constellation score\" data-number=\"").concat(i, "\"></div>");
         }
@@ -437,7 +437,7 @@ var PlayerTable = /** @class */ (function () {
         }
         this.currentCard = currentShape;
         this.shapeX = 3;
-        this.shapeY = 3;
+        this.shapeY = 3 + this.game.day;
         this.shapeRotation = 0;
         if (this.currentCard.type == 1) {
             this.shootingStarPossiblePositions = possiblePositions;
@@ -547,7 +547,7 @@ var PlayerTable = /** @class */ (function () {
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeBottom = function () {
-        if (this.shapeY <= -1) {
+        if (this.shapeY <= -1 + (this.game.day * 2)) {
             return;
         }
         this.shapeY--;
@@ -613,33 +613,19 @@ var SCORE_MS = 1000;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
-var COMMON_OBJECTIVES = [
-    null,
-    [20, 5],
-    [30, 5],
-    [40, 5],
-    [50, 5],
-    [41, 3],
-    [42, 3],
-];
 function formatTextIcons(rawText) {
     if (!rawText) {
         return '';
     }
     return rawText
-        .replace(/\[GreenLight\]/ig, '<div class="map-icon" data-element="0"></div>')
-        .replace(/\[OldLady\]/ig, '<div class="map-icon" data-element="20"></div>')
-        .replace(/\[Student\]/ig, '<div class="map-icon" data-element="30"></div>')
-        .replace(/\[School\]/ig, '<div class="map-icon" data-element="32"></div>')
-        .replace(/\[Tourist\]/ig, '<div class="map-icon" data-element="40"></div>')
-        .replace(/\[MonumentLight\]/ig, '<div class="map-icon" data-element="41"></div>')
-        .replace(/\[MonumentDark\]/ig, '<div class="map-icon" data-element="42"></div>')
-        .replace(/\[Businessman\]/ig, '<div class="map-icon" data-element="50"></div>')
-        .replace(/\[Office\]/ig, '<div class="map-icon" data-element="51"></div>');
+        .replace(/\[CardBack\]/ig, '<div class="icon moon"></div>')
+        .replace(/\[Star5\]/ig, '<div class="icon star5"></div>')
+        .replace(/\[Star7\]/ig, '<div class="icon star7"></div>');
 }
 var LookAtTheStars = /** @class */ (function () {
     function LookAtTheStars() {
         this.zoom = 0.75;
+        this.day = 0;
         this.playersTables = [];
         this.registeredTablesByPlayerId = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
@@ -670,16 +656,15 @@ var LookAtTheStars = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        var day = 0;
         if (gamedatas.cards.length <= 6) {
-            day = 2;
+            this.day = 2;
         }
         else if (gamedatas.cards.length <= 12) {
-            day = 1;
+            this.day = 1;
         }
         this.cards = new Cards(this);
         this.tableCenter = new TableCenter(this, gamedatas);
-        this.createPlayerTables(gamedatas, day);
+        this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
         Object.values(gamedatas.players).forEach(function (player) {
             //this.highlightObjectiveLetters(player);
@@ -871,22 +856,23 @@ var LookAtTheStars = /** @class */ (function () {
         var orderedPlayers = playerIndex > 0 ? __spreadArray(__spreadArray([], players.slice(playerIndex), true), players.slice(0, playerIndex), true) : players;
         return orderedPlayers;
     };
-    LookAtTheStars.prototype.createPlayerTables = function (gamedatas, day) {
+    LookAtTheStars.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
         var orderedPlayers = this.getOrderedPlayers(gamedatas);
         orderedPlayers.forEach(function (player) {
-            return _this.createPlayerTable(gamedatas, Number(player.id), day);
+            return _this.createPlayerTable(gamedatas, Number(player.id));
         });
     };
-    LookAtTheStars.prototype.createPlayerTable = function (gamedatas, playerId, day) {
-        var table = new PlayerTable(this, gamedatas.players[playerId], day);
+    LookAtTheStars.prototype.createPlayerTable = function (gamedatas, playerId) {
+        var table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
         this.registeredTablesByPlayerId[playerId] = [table];
     };
     LookAtTheStars.prototype.createPlayerJumps = function (gamedatas) {
         var _this = this;
-        dojo.place("\n        <div id=\"jump-toggle\" class=\"jump-link toggle\">\n            \u21D4\n        </div>", "jump-controls");
+        dojo.place("\n        <div id=\"jump-toggle\" class=\"jump-link toggle\">\n            \u21D4\n        </div>\n        <div id=\"jump-0\" class=\"jump-link\">\n            <div class=\"eye\"></div> ".concat(formatTextIcons('[CardBack][Star5][Star7]'), "\n        </div>"), "jump-controls");
         document.getElementById("jump-toggle").addEventListener('click', function () { return _this.jumpToggle(); });
+        document.getElementById("jump-0").addEventListener('click', function () { return _this.jumpToPlayer(0); });
         var orderedPlayers = this.getOrderedPlayers(gamedatas);
         orderedPlayers.forEach(function (player) {
             dojo.place("<div id=\"jump-".concat(player.id, "\" class=\"jump-link\" style=\"color: #").concat(player.color, "; border-color: #").concat(player.color, ";\"><div class=\"eye\" style=\"background: #").concat(player.color, ";\"></div> ").concat(player.name, "</div>"), "jump-controls");
@@ -899,7 +885,8 @@ var LookAtTheStars = /** @class */ (function () {
         document.getElementById("jump-controls").classList.toggle('folded');
     };
     LookAtTheStars.prototype.jumpToPlayer = function (playerId) {
-        document.getElementById("player-table-".concat(playerId)).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        var elementId = playerId === 0 ? "cards" : "player-table-".concat(playerId);
+        document.getElementById(elementId).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     };
     LookAtTheStars.prototype.getTooltip = function (element) {
         switch (element) {
@@ -1011,6 +998,7 @@ var LookAtTheStars = /** @class */ (function () {
             ['placedLines', 1],
             ['placedShootingStar', 1],
             ['cancelPlacedLines', 1],
+            ['day', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
             ['scorePlanets', SCORE_MS],
@@ -1039,6 +1027,11 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
     };
+    LookAtTheStars.prototype.notif_day = function (notif) {
+        var _this = this;
+        this.day = notif.args.day;
+        this.playersTables.forEach(function (playerTable) { return playerTable.setDay(_this.day); });
+    };
     LookAtTheStars.prototype.notif_score = function (notif) {
         this.setPoints(notif.args.playerId, notif.args.score);
     };
@@ -1060,6 +1053,7 @@ var LookAtTheStars = /** @class */ (function () {
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     LookAtTheStars.prototype.format_string_recursive = function (log, args) {
+        var _a, _b;
         try {
             if (log && args && !args.processed) {
                 /*if (args.shape && args.shape[0] != '<') {
@@ -1075,6 +1069,12 @@ var LookAtTheStars = /** @class */ (function () {
                 if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
                     args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
                 }*/
+                for (var property in args) {
+                    if (((_b = (_a = args[property]) === null || _a === void 0 ? void 0 : _a.indexOf) === null || _b === void 0 ? void 0 : _b.call(_a, ']')) > 0) {
+                        args[property] = formatTextIcons(_(args[property]));
+                    }
+                }
+                log = formatTextIcons(_(log));
             }
         }
         catch (e) {

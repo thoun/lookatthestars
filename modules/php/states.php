@@ -40,6 +40,12 @@ trait StateTrait {
         */
 
 
+        $discardedCard = $this->getCurrentCard(true);
+        $this->shapes->moveCard($discardedCard->id, 'discard');
+        self::notifyAllPlayers('discardShape', '', [
+            'card' => $discardedCard,
+        ]);
+
         $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
 
         if ($remainingShapes == 0) {
@@ -48,14 +54,10 @@ trait StateTrait {
         }
 
         if ($remainingShapes % 6 == 0) {
-            self::notifyAllPlayers('log', clienttranslate('A pile has been ended, day is rising!'), []);
+            self::notifyAllPlayers('day', clienttranslate('A pile has been ended, day is rising!'), [
+                'day' => $this->getDay(),
+            ]);
         }
-
-        $discardedCard = $this->getCurrentCard(true);
-        $this->shapes->moveCard($discardedCard->id, 'discard');
-        self::notifyAllPlayers('discardShape', '', [
-            'card' => $discardedCard,
-        ]);
 
         $newCard = $this->getCurrentCard(true);
 

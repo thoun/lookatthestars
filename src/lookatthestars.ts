@@ -12,36 +12,20 @@ const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1/*, 1.25, 1.5*/];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0/*, 20, 33.34*/];
 const LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
 
-const COMMON_OBJECTIVES = [
-    null,
-    [20, 5],
-    [30, 5],
-    [40, 5],
-    [50, 5],
-    [41, 3],
-    [42, 3],
-  ];
-
-
 function formatTextIcons(rawText: string) {
     if (!rawText) {
         return '';
     }
     return rawText
-        .replace(/\[GreenLight\]/ig, '<div class="map-icon" data-element="0"></div>')
-        .replace(/\[OldLady\]/ig, '<div class="map-icon" data-element="20"></div>')
-        .replace(/\[Student\]/ig, '<div class="map-icon" data-element="30"></div>')
-        .replace(/\[School\]/ig, '<div class="map-icon" data-element="32"></div>')
-        .replace(/\[Tourist\]/ig, '<div class="map-icon" data-element="40"></div>')
-        .replace(/\[MonumentLight\]/ig, '<div class="map-icon" data-element="41"></div>')
-        .replace(/\[MonumentDark\]/ig, '<div class="map-icon" data-element="42"></div>')
-        .replace(/\[Businessman\]/ig, '<div class="map-icon" data-element="50"></div>')
-        .replace(/\[Office\]/ig, '<div class="map-icon" data-element="51"></div>');
+        .replace(/\[CardBack\]/ig, '<div class="icon moon"></div>')
+        .replace(/\[Star5\]/ig, '<div class="icon star5"></div>')
+        .replace(/\[Star7\]/ig, '<div class="icon star7"></div>')
 }
 
 class LookAtTheStars implements LookAtTheStarsGame {
     public zoom: number = 0.75;
     public cards: Cards;
+    public day: number = 0;
 
     private gamedatas: LookAtTheStarsGamedatas;
     private tableCenter: TableCenter;
@@ -83,16 +67,15 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
         log('gamedatas', gamedatas);
 
-        let day = 0;
         if (gamedatas.cards.length <= 6) {
-            day = 2;
+            this.day = 2;
         } else if (gamedatas.cards.length <= 12) {
-            day = 1;
+            this.day = 1;
         }
 
         this.cards = new Cards(this);
         this.tableCenter = new TableCenter(this, gamedatas);
-        this.createPlayerTables(gamedatas, day);
+        this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
         Object.values(gamedatas.players).forEach(player => {
             //this.highlightObjectiveLetters(player);
@@ -312,16 +295,16 @@ class LookAtTheStars implements LookAtTheStarsGame {
         return orderedPlayers;
     }
 
-    private createPlayerTables(gamedatas: LookAtTheStarsGamedatas, day: number) {
+    private createPlayerTables(gamedatas: LookAtTheStarsGamedatas) {
         const orderedPlayers = this.getOrderedPlayers(gamedatas);
 
         orderedPlayers.forEach(player => 
-            this.createPlayerTable(gamedatas, Number(player.id), day)
+            this.createPlayerTable(gamedatas, Number(player.id))
         );
     }
 
-    private createPlayerTable(gamedatas: LookAtTheStarsGamedatas, playerId: number, day: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId], day);
+    private createPlayerTable(gamedatas: LookAtTheStarsGamedatas, playerId: number) {
+        const table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
         this.registeredTablesByPlayerId[playerId] = [table];
     }
@@ -330,8 +313,13 @@ class LookAtTheStars implements LookAtTheStarsGame {
         dojo.place(`
         <div id="jump-toggle" class="jump-link toggle">
             ⇔
+        </div>
+        <div id="jump-0" class="jump-link">
+            <div class="eye"></div> ${formatTextIcons('[CardBack][Star5][Star7]')}
         </div>`, `jump-controls`);
+
         document.getElementById(`jump-toggle`).addEventListener('click', () => this.jumpToggle());
+        document.getElementById(`jump-0`).addEventListener('click', () => this.jumpToPlayer(0));
         
         const orderedPlayers = this.getOrderedPlayers(gamedatas);
 
@@ -349,7 +337,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private jumpToPlayer(playerId: number): void {
-        document.getElementById(`player-table-${playerId}`).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        const elementId = playerId === 0 ? `cards` : `player-table-${playerId}`;
+        document.getElementById(elementId).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     }
 
     public getTooltip(element: number) {
@@ -474,6 +463,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedLines', 1],
             ['placedShootingStar', 1],
             ['cancelPlacedLines', 1],
+            ['day', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
             ['scorePlanets', SCORE_MS],
@@ -506,6 +496,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
+    }
+
+    notif_day(notif: Notif<NotifDayArgs>) {
+        this.day = notif.args.day;
+        this.playersTables.forEach(playerTable => playerTable.setDay(this.day));
     }
 
     notif_score(notif: Notif<NotifScoreArgs>) {
@@ -550,6 +545,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
                     args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
                 }*/
+
+                for (const property in args) {
+                    if (args[property]?.indexOf?.(']') > 0) {
+                        args[property] = formatTextIcons(_(args[property]));
+                    }
+                }
+
+                log = formatTextIcons(_(log));
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);

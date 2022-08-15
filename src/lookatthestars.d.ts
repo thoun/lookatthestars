@@ -66,6 +66,7 @@ interface LookAtTheStarsGamedatas {
 }
 
 interface LookAtTheStarsGame extends Game {
+    day: number;
     cards: Cards;
 
     getPlayerId(): number;
@@ -96,6 +97,10 @@ interface NotifPlacedLinesArgs {
 }
 interface NotifPlacedShootingStarArgs extends NotifPlacedLinesArgs {
     head: string;
+}
+
+interface NotifDayArgs {
+    day: number;
 }
 
 interface NotifScoreArgs {

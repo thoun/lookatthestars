@@ -199,9 +199,21 @@ trait UtilTrait {
             ($line[0][1] + $line[1][1] == $withLine[0][1] + $withLine[1][1]);
     }
 
+    function getDay() {
+        $day = 0;
+        $cardsLength = intval($this->shapes->countCardInLocation('piles'));
+        if ($cardsLength <= 6) {
+            $day = 2;
+        } else if ($cardsLength <= 12) {
+            $day = 1;
+        }
+        return $day;
+    }
+
     function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines, object $placedObjects, bool $canTouchLines) {
         // not oustside the board
-        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < 0 || $coordinates[1] > 10))) {
+        $minY = 2 * $this->getDay();
+        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10))) {
             return false;
         }
 
@@ -345,7 +357,8 @@ trait UtilTrait {
         }
     }
 
-    private function calculateStar1Score(PlayerScore &$playerScore) {
+    private function calculateStar1Score(PlayerScore &$playerScore, array $lines) {
+        $objective = $this->STAR1[intval($this->getGameStateValue(STAR1))];
         // TODO
     }
 
@@ -370,7 +383,7 @@ trait UtilTrait {
         $this->calculateConstellationsScore($playerScore, $validConstellations);
         $this->calculatePlanetsScore($playerScore, $validConstellations, $planets);
         $this->calculateShootingStarsScore($playerScore, $placedObjects->shootingStars);
-        $this->calculateStar1Score($playerScore);
+        $this->calculateStar1Score($playerScore, $placedLines);
         $this->calculateStar2Score($playerScore);
         
         $playerScore->calculateTotal();

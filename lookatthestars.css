@@ -726,3 +726,36 @@ html, .mode_3d #game_play_area_background {
 .setShootingStarSizeButton.current-size {
   border-color: #4871b6;
 }
+
+.icon {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-image: url("img/icons.png");
+  background-size: auto 100%;
+  vertical-align: middle;
+}
+.icon.moon {
+  background-position: 0% 0%;
+  border-radius: 16%;
+}
+.icon.star5 {
+  background-position: 50% 0%;
+  border-radius: 16%;
+}
+.icon.star7 {
+  background-position: 100% 0%;
+  border-radius: 16%;
+}
+
+.jump-link .icon {
+  width: 20px;
+  height: 20px;
+  margin: 0 2px;
+}
+
+.log .icon {
+  width: 24px;
+  height: 24px;
+}
