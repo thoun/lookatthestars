@@ -24,7 +24,6 @@ trait ActionTrait {
         $possiblePositions = $this->getPossiblePositions(
             $playerId, 
             $card->lines, 
-            true,
             true
         );
         if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
@@ -74,7 +73,6 @@ trait ActionTrait {
         $possiblePositions = $this->getPossiblePositions(
             $playerId, 
             $shootingStar->lines, 
-            true,
             false
         );
         if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
@@ -102,6 +100,32 @@ trait ActionTrait {
             'playerId' => $playerId,
             'lines' => $newLines,
             'head' => $headStr
+        ]);
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    }
+
+    public function placeLine(int $xFrom, int $yFrom, int $xTo, int $yTo) {
+        self::checkAction('placeLine'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $possibleLines = $this->getPossiblePositionsForLine($playerId);
+        
+        $fromStr = dechex($xFrom).dechex($yFrom);
+        $toStr = dechex($xTo).dechex($yTo);
+
+        if (!$this->array_some($possibleLines, fn($possibleLine) => $possibleLine == $fromStr.$toStr || $possibleLine == $toStr.$fromStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+
+        $roundObjects = new Objects();
+        $roundObjects->line = $fromStr.$toStr;
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedLines', '', [
+            'playerId' => $playerId,
+            'lines' => [$fromStr.$toStr],
         ]);
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');

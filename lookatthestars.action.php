@@ -59,6 +59,19 @@
         self::ajaxResponse();
     }
 
+    public function placeLine() {
+        self::setAjaxMode();     
+
+        $xFrom = self::getArg("xFrom", AT_posint, true);
+        $yFrom = self::getArg("yFrom", AT_posint, true);
+        $xTo = self::getArg("xTo", AT_posint, true);
+        $yTo = self::getArg("yTo", AT_posint, true);
+
+        $this->game->placeLine($xFrom, $yFrom, $xTo, $yTo);
+
+        self::ajaxResponse();
+    }
+
     public function cancelPlaceShape() {
       self::setAjaxMode();
 

@@ -16,7 +16,6 @@ trait ArgsTrait {
         $possiblePositions = $this->getPossiblePositions(
             $playerId, 
             $currentCard->lines, 
-            true,
             true
         );
 
@@ -33,7 +32,6 @@ trait ArgsTrait {
         $possiblePositions = array_map(fn($shootingStar) => $this->getPossiblePositions(
             $playerId, 
             $shootingStar->lines, 
-            true,
             false
         ), $this->SHOOTING_STAR_SIZES);
 
@@ -55,8 +53,10 @@ trait ArgsTrait {
     }
 
     function argPlaceLine(int $playerId) {
+        $possibleLines = $this->getPossiblePositionsForLine($playerId);
+
         return [
-            // TODO
+            'possibleLines' => $possibleLines,
         ];
     }
     

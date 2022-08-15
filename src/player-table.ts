@@ -20,6 +20,7 @@ class PlayerTable {
     private possiblePositions: number[][];
     private shootingStarPossiblePositions: number[][][];
     private shootingStarSize: number;
+    private linePossiblePositions: string[];
 
     constructor(private game: LookAtTheStarsGame, player: LookAtTheStarsPlayer) {
         this.playerId = Number(player.id);
@@ -200,6 +201,15 @@ class PlayerTable {
             size: this.shootingStarSize,
         };
     }
+    
+    public getLineInformations() {
+        return {
+            xFrom: this.shapeX,
+            yFrom: this.shapeY,
+            xTo: [1, 2, 3].includes(this.shapeRotation) ? this.shapeX + 1 : ([5, 6, 7].includes(this.shapeRotation) ? this.shapeX - 1 : this.shapeX),
+            yTo: [7, 0, 1].includes(this.shapeRotation) ? this.shapeY + 1 : ([3, 4, 5].includes(this.shapeRotation) ? this.shapeY - 1 : this.shapeX),
+        };
+    }
 
     private setCardBorderPosition() {
         const x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
@@ -207,6 +217,14 @@ class PlayerTable {
         const cardBorderDiv = document.getElementById(`player-table-${this.playerId}-card-border`);
         cardBorderDiv.style.left = `${x - 20}px`;
         cardBorderDiv.style.top = `${y - 180}px`;
+    }
+
+    private setLineBorderPosition() {
+        const x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
+        const y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
+        const cardBorderDiv = document.getElementById(`player-table-${this.playerId}-line-border`);
+        cardBorderDiv.style.left = `${x - 70}px`;
+        cardBorderDiv.style.top = `${y - 70}px`;
     }
 
     private getValid(): boolean {
@@ -221,6 +239,17 @@ class PlayerTable {
 
     private getValidClass(): string {
         return this.getValid() ? 'valid' : 'invalid';
+    }
+
+    private getValidForLine(): boolean {
+        const infos = this.getLineInformations();
+        const fromStr = infos.xFrom.toString(16) + infos.yFrom.toString(16);
+        const toStr = infos.xTo.toString(16) + infos.yTo.toString(16);
+        return this.linePossiblePositions.includes(fromStr + toStr) || this.linePossiblePositions.includes(toStr + fromStr);
+    }
+
+    private getValidClassForLine(): string {
+        return this.getValidForLine() ? 'valid' : 'invalid';
     }
 
     public setShapeToPlace(currentShape: Card, possiblePositions: number[][] | number[][][]) {
@@ -240,7 +269,7 @@ class PlayerTable {
         }
 
         const validClass = this.getValidClass();
-        dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card-border" data-validity="${validClass}">
+        dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card border" data-validity="${validClass}">
             <div id="player-table-${this.playerId}-button-left" type="button" class="arrow left"></div>
             <div id="player-table-${this.playerId}-button-right" type="button" class="arrow right"></div>
             <div id="player-table-${this.playerId}-button-top" type="button" class="arrow top"></div>
@@ -255,6 +284,30 @@ class PlayerTable {
         document.getElementById(`player-table-${this.playerId}-button-rotate`).addEventListener('click', () => this.rotateShape());
 
         this.moveShape();
+    }
+
+    public setLineToPlace(possiblePositions: string[]) {
+        this.linePossiblePositions = possiblePositions;
+        this.shapeX = 5;
+        this.shapeY = 5 + this.game.day;
+        this.shapeRotation = 0;
+
+        const validClass = this.getValidClassForLine();
+        dojo.place(`<div id="player-table-${this.playerId}-line-border" class="line border" data-validity="${validClass}">
+            <div id="player-table-${this.playerId}-button-left" type="button" class="arrow left"></div>
+            <div id="player-table-${this.playerId}-button-right" type="button" class="arrow right"></div>
+            <div id="player-table-${this.playerId}-button-top" type="button" class="arrow top"></div>
+            <div id="player-table-${this.playerId}-button-bottom" type="button" class="arrow bottom"></div>
+            <div id="player-table-${this.playerId}-button-rotate" type="button" class="arrow rotate"></div>
+        </div>`,  `player-table-${this.playerId}-main`);
+        this.setLineBorderPosition();
+        document.getElementById(`player-table-${this.playerId}-button-left`).addEventListener('click', () => this.moveLineLeft());
+        document.getElementById(`player-table-${this.playerId}-button-right`).addEventListener('click', () => this.moveLineRight());
+        document.getElementById(`player-table-${this.playerId}-button-top`).addEventListener('click', () => this.moveLineTop());
+        document.getElementById(`player-table-${this.playerId}-button-bottom`).addEventListener('click', () => this.moveLineBottom());
+        document.getElementById(`player-table-${this.playerId}-button-rotate`).addEventListener('click', () => this.rotateLine());
+
+        this.moveLine();
     }
 
     private getRotatedAndShiftedLines(lines: string[]): string[] {
@@ -336,6 +389,23 @@ class PlayerTable {
         document.getElementById('placeShape_button')?.classList.toggle('disabled', !this.getValid());
     }
 
+    private moveLine() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+        const validClass = this.getValidClassForLine();
+
+        const infos = this.getLineInformations();
+        let lines = [
+            infos.xFrom.toString(16) + infos.yFrom.toString(16) + infos.xTo.toString(16) + infos.yTo.toString(16)
+        ];
+        this.placeLines(lines, ['temp-line', validClass]);
+
+        this.setLineBorderPosition();
+        document.getElementById(`player-table-${this.playerId}-line-border`).dataset.validity = validClass;
+
+        document.getElementById('placeLine_button')?.classList.toggle('disabled', !this.getValidForLine());
+    }
+
     private rotateShape() {
         this.shapeRotation = (this.shapeRotation + 1) % 4;
         this.moveShape();
@@ -355,6 +425,44 @@ class PlayerTable {
         }
         this.shapeX++;
         this.moveShape();
+    }
+
+    private rotateLine() {
+        this.shapeRotation = (this.shapeRotation + 1) % 8;
+        // TODO 
+        this.moveLine();
+    }
+
+    private moveLineBottom() {
+        if (this.shapeY <= (this.game.day * 2)) {
+            return;
+        }
+        this.shapeY--;
+        this.moveLine();
+    }
+
+    private moveLineTop() {
+        if (this.shapeY >= 10) {
+            return;
+        }
+        this.shapeY++;
+        this.moveLine();
+    }
+
+    private moveLineLeft() {
+        if (this.shapeX <= 0) {
+            return;
+        }
+        this.shapeX--;
+        this.moveLine();
+    }
+
+    private moveLineRight() {
+        if (this.shapeX >= 9) {
+            return;
+        }
+        this.shapeX++;
+        this.moveLine();
     }
 
     private moveShapeBottom() {
@@ -380,6 +488,14 @@ class PlayerTable {
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
         this.currentCard = null;
+    }
+    
+    public removeLineToPlace() {
+        const cardBorderDiv = document.getElementById(`player-table-${this.playerId}-line-border`);
+        cardBorderDiv?.parentElement?.removeChild(cardBorderDiv);
+
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
     
     public cancelPlacedLines() {

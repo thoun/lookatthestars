@@ -100,8 +100,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
             this.onEnteringShowScore();
         }
 
-        this.addTooltips();
-
         log( "Ending game setup" );
     }
 
@@ -115,6 +113,12 @@ class LookAtTheStars implements LookAtTheStarsGame {
         log('Entering state: ' + stateName, args.args);
 
         switch (stateName) {
+            case 'placeShape':
+                this.onEnteringPlaceShape(args.args);
+                break;
+            case 'placeLine':
+                this.onEnteringPlaceLine(args.args);
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -126,6 +130,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
     
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs | EnteringPlaceShootingStarArgs) {
         this.getCurrentPlayerTable()?.setShapeToPlace(args.currentCard, args.possiblePositions as any);
+    }
+    
+    private onEnteringPlaceLine(args: EnteringPlaceLineArgs) {
+        this.getCurrentPlayerTable()?.setLineToPlace(args.possibleLines as any);
     }
 
     onEnteringNextShape() {
@@ -140,8 +148,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'placeShape':             
+            case 'placeShape':
                 this.onLeavingPlaceShape();
+                break;
+            case 'placeLine':
+                this.onLeavingPlaceLine();
                 break;
         }
     }
@@ -150,26 +161,19 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.getCurrentPlayerTable()?.removeShapeToPlace();
     }
 
+    private onLeavingPlaceLine() {
+        this.getCurrentPlayerTable()?.removeLineToPlace();
+    }
+
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
     public onUpdateActionButtons(stateName: string, args: any) {
         log( 'onUpdateActionButtons: '+stateName, args );
 
-        switch (stateName) {
-            case 'playCard':
-                if (!(this as any).isCurrentPlayerActive()) {
-                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
-                }
-                break;
-            case 'placeShape':
-                const playerActive = (this as any).isCurrentPlayerActive();
-                if (playerActive) {
-                    this.onEnteringPlaceShape(args);
-                }/* else {
-                    this.onLeavingPlaceShape();
-                }*/
-                if (playerActive) {
+        if ((this as any).isCurrentPlayerActive()) {
+            switch (stateName) {
+                case 'placeShape':
                     const placeCardArg = args as EnteringPlaceCardArgs;
                     if (placeCardArg.currentCard.type == 1) {
                         [1, 2, 3].forEach(size => {
@@ -184,14 +188,17 @@ class LookAtTheStars implements LookAtTheStarsGame {
                         (this as any).addActionButton(`placeShape_button`, _("Place shape"), () => this.placeShape());
                     }
                     (this as any).addActionButton(`skipCard_button`, _("Skip this card"), () => this.skipCard(), null, null, 'red');
-                } else {
+                    break;
+                case 'placeLine':
+                    (this as any).addActionButton(`placeLine_button`, _("Place line"), () => this.placeLine());
+                    (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
-                }
-                break;
-            case 'placeLine':
-                (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
-                (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
-                break;
+                    break;
+            }
+        } else if (stateName == 'playCard') {
+            (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+            this.getCurrentPlayerTable()?.removeShapeToPlace();
+            this.getCurrentPlayerTable()?.removeLineToPlace();
         }
     } 
     
@@ -351,37 +358,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
         const elementId = playerId === 0 ? `cards` : `player-table-${playerId}`;
         document.getElementById(elementId).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     }
-
-    public getTooltip(element: number) {
-        switch (element) {
-            case 0: return '[GreenLight] : ' + _("If your route ends at an intersection with a [GreenLight], you place an additional marker.");
-            case 1: return _("<strong>Number:</strong> Possible starting point. You choose between 2 numbers at the beginning of the game to place your Departure Pawn.");
-            case 20: return '[OldLady] : ' + _("When a marker reaches [OldLady], check a box on the [OldLady] zone. Add the number next to each checked box at game end.");
-            case 30: return '[Student] : ' + _("When a marker reaches [Student], check a box on the [Student] zone. Multiply [Student] with [School] at game end.");
-            case 32: return '[School] : ' + _("When a marker reaches [School], check a box on the [School] zone. Multiply [Student] with [School] at game end.") + `<br><i>${_("If the [School] is marked with a Star, write the number of [Student] you have checked when a marker reaches it.")}</i>`;
-            case 40: return '[Tourist] : ' + _("When a marker reaches [Tourist], check a box on the first available row on the [Tourist] zone. You will score when you drop off the [Tourist] to [MonumentLight]/[MonumentDark]. If the current row is full and you didn't reach [MonumentLight]/[MonumentDark], nothing happens.");
-            case 41: return '[MonumentLight][MonumentDark] : ' +  _("When a marker reaches [MonumentLight]/[MonumentDark], write the score on the column of the [Tourist] at the end of the current row. If the current row is empty, nothing happens.") + `<br><i>${_("If [MonumentLight]/[MonumentDark] is marked with a Star, write the number of [Tourist] you have checked When a marker reaches it.")}</i>`;
-            case 50: return '[Businessman] : ' + _("When a marker reaches [Businessman], check a box on the first available row on the [Businessman] zone. You will score when you drop off the [Businessman] to [Office]. If the current row is full and you didn't reach [Office], nothing happens.");
-            case 51: return '[Office] : ' + _("When a marker reaches [Office], write the score on the column of the [Businessman] at the end of the current row, and check the corresponding symbol ([OldLady], [Tourist] or [Student]) as if you reached it with a marker. If the current row is empty, nothing happens.") + `<br><i>${_("If the [Office] is marked with a Star, write the number of [Businessman] you have checked When a marker reaches it.")}</i>`;
-            case 90: return _("<strong>Common Objective:</strong> Score 10 points when you complete the objective, or 6 points if another player completed it on a previous round.");
-            case 91: return _("<strong>Personal Objective:</strong> Score 10 points when your markers link the 3 Letters of your personal objective.");
-            case 92: return _("<strong>Turn Zone:</strong> If you choose to change a turn into a straight line or a straight line to a turn, check a box on the Turn Zone. The score here is negative, and you only have 5 of them!");
-            case 93: return _("<strong>Traffic Jam:</strong> For each marker already in place when you add a marker on a route, check a Traffic Jam box. If the road is black, check an extra box. The score here is negative!");
-            case 94: return _("<strong>Total score:</strong> Add sum of all green zone totals, subtract sum of all red zone totals.");
-            case 95: return _("<strong>Tickets:</strong> The red check indicates the current round ticket. It defines the shape of the route you have to place. The black checks indicates past rounds.");
-            case 97: return _("<strong>Letter:</strong> Used to define your personal objective.");
-
-        }
-    }
-
-    private addTooltips() {
-        document.querySelectorAll(`[data-tooltip]`).forEach((element: HTMLElement) => {
-            const tooltipsIds = JSON.parse(element.dataset.tooltip);
-            let tooltip = ``;
-            tooltipsIds.forEach(id => tooltip += `<div class="tooltip-section">${formatTextIcons(this.getTooltip(id))}</div>`);
-            (this as any).addTooltipHtml(element.id, tooltip);
-        });
-    }
     
     private setPoints(playerId: number, points: number) {
         (this as any).scoreCtrl[playerId]?.toValue(points);
@@ -404,6 +380,15 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
         const informations = this.getCurrentPlayerTable().getShootingStarInformations();
         this.takeAction('placeShootingStar', informations);
+    }
+
+    public placeLine() {
+        if(!(this as any).checkAction('placeLine')) {
+            return;
+        }
+
+        const informations = this.getCurrentPlayerTable().getLineInformations();
+        this.takeAction('placeLine', informations);
     }
 
     public cancelPlaceShape() {

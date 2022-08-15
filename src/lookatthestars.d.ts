@@ -87,6 +87,10 @@ interface EnteringPlaceShootingStarArgs extends EnteringPlaceCardArgs {
     possiblePositions: { [size: number]: number[][] };
 }
 
+interface EnteringPlaceLineArgs {
+    possibleLines: string[];
+}
+
 interface NotifCardArgs {
     card: Card;
 }

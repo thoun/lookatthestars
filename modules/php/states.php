@@ -25,21 +25,15 @@ trait StateTrait {
 
             // apply turn lines
             $allLines = array_merge($player->lines, $player->roundLines);
+            if ($player->roundObjects->line !== null) {
+                $allLines[] = $player->roundObjects->line;
+            }
             $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
 
             // apply turn objects
             $player->objects->shootingStars = array_merge($player->objects->shootingStars, $player->roundObjects->shootingStars);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
         }
-        /*
-        
-
-        $json_obj = $this->getUniqueValueFromDB("SELECT `player_lines` FROM `player` where `player_id` = $playerId");
-
-        $allLines = array_merge($playerLines, $newLines);
-        $this->DbQuery("UPDATE player SET `player_round_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
-        */
-
 
         $discardedCard = $this->getCurrentCard(true);
         $this->shapes->moveCard($discardedCard->id, 'discard');

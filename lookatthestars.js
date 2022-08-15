@@ -410,12 +410,27 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.getShootingStarInformations = function () {
         return __assign(__assign({}, this.getShapeInformations()), { size: this.shootingStarSize });
     };
+    PlayerTable.prototype.getLineInformations = function () {
+        return {
+            xFrom: this.shapeX,
+            yFrom: this.shapeY,
+            xTo: [1, 2, 3].includes(this.shapeRotation) ? this.shapeX + 1 : ([5, 6, 7].includes(this.shapeRotation) ? this.shapeX - 1 : this.shapeX),
+            yTo: [7, 0, 1].includes(this.shapeRotation) ? this.shapeY + 1 : ([3, 4, 5].includes(this.shapeRotation) ? this.shapeY - 1 : this.shapeX),
+        };
+    };
     PlayerTable.prototype.setCardBorderPosition = function () {
         var x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
         var y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
         var cardBorderDiv = document.getElementById("player-table-".concat(this.playerId, "-card-border"));
         cardBorderDiv.style.left = "".concat(x - 20, "px");
         cardBorderDiv.style.top = "".concat(y - 180, "px");
+    };
+    PlayerTable.prototype.setLineBorderPosition = function () {
+        var x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
+        var y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
+        var cardBorderDiv = document.getElementById("player-table-".concat(this.playerId, "-line-border"));
+        cardBorderDiv.style.left = "".concat(x - 70, "px");
+        cardBorderDiv.style.top = "".concat(y - 70, "px");
     };
     PlayerTable.prototype.getValid = function () {
         var possiblePositions;
@@ -429,6 +444,15 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.getValidClass = function () {
         return this.getValid() ? 'valid' : 'invalid';
+    };
+    PlayerTable.prototype.getValidForLine = function () {
+        var infos = this.getLineInformations();
+        var fromStr = infos.xFrom.toString(16) + infos.yFrom.toString(16);
+        var toStr = infos.xTo.toString(16) + infos.yTo.toString(16);
+        return this.linePossiblePositions.includes(fromStr + toStr) || this.linePossiblePositions.includes(toStr + fromStr);
+    };
+    PlayerTable.prototype.getValidClassForLine = function () {
+        return this.getValidForLine() ? 'valid' : 'invalid';
     };
     PlayerTable.prototype.setShapeToPlace = function (currentShape, possiblePositions) {
         var _this = this;
@@ -447,7 +471,7 @@ var PlayerTable = /** @class */ (function () {
             this.possiblePositions = possiblePositions;
         }
         var validClass = this.getValidClass();
-        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-rotate\" type=\"button\" class=\"arrow rotate\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
+        dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-rotate\" type=\"button\" class=\"arrow rotate\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
         this.setCardBorderPosition();
         document.getElementById("player-table-".concat(this.playerId, "-button-left")).addEventListener('click', function () { return _this.moveShapeLeft(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-right")).addEventListener('click', function () { return _this.moveShapeRight(); });
@@ -455,6 +479,22 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-button-bottom")).addEventListener('click', function () { return _this.moveShapeBottom(); });
         document.getElementById("player-table-".concat(this.playerId, "-button-rotate")).addEventListener('click', function () { return _this.rotateShape(); });
         this.moveShape();
+    };
+    PlayerTable.prototype.setLineToPlace = function (possiblePositions) {
+        var _this = this;
+        this.linePossiblePositions = possiblePositions;
+        this.shapeX = 5;
+        this.shapeY = 5 + this.game.day;
+        this.shapeRotation = 0;
+        var validClass = this.getValidClassForLine();
+        dojo.place("<div id=\"player-table-".concat(this.playerId, "-line-border\" class=\"line border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-rotate\" type=\"button\" class=\"arrow rotate\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
+        this.setLineBorderPosition();
+        document.getElementById("player-table-".concat(this.playerId, "-button-left")).addEventListener('click', function () { return _this.moveLineLeft(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-right")).addEventListener('click', function () { return _this.moveLineRight(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-top")).addEventListener('click', function () { return _this.moveLineTop(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-bottom")).addEventListener('click', function () { return _this.moveLineBottom(); });
+        document.getElementById("player-table-".concat(this.playerId, "-button-rotate")).addEventListener('click', function () { return _this.rotateLine(); });
+        this.moveLine();
     };
     PlayerTable.prototype.getRotatedAndShiftedLines = function (lines) {
         var _this = this;
@@ -528,6 +568,20 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-card-border")).dataset.validity = validClass;
         (_a = document.getElementById('placeShape_button')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', !this.getValid());
     };
+    PlayerTable.prototype.moveLine = function () {
+        var _a;
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        var validClass = this.getValidClassForLine();
+        var infos = this.getLineInformations();
+        var lines = [
+            infos.xFrom.toString(16) + infos.yFrom.toString(16) + infos.xTo.toString(16) + infos.yTo.toString(16)
+        ];
+        this.placeLines(lines, ['temp-line', validClass]);
+        this.setLineBorderPosition();
+        document.getElementById("player-table-".concat(this.playerId, "-line-border")).dataset.validity = validClass;
+        (_a = document.getElementById('placeLine_button')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', !this.getValidForLine());
+    };
     PlayerTable.prototype.rotateShape = function () {
         this.shapeRotation = (this.shapeRotation + 1) % 4;
         this.moveShape();
@@ -545,6 +599,39 @@ var PlayerTable = /** @class */ (function () {
         }
         this.shapeX++;
         this.moveShape();
+    };
+    PlayerTable.prototype.rotateLine = function () {
+        this.shapeRotation = (this.shapeRotation + 1) % 8;
+        // TODO 
+        this.moveLine();
+    };
+    PlayerTable.prototype.moveLineBottom = function () {
+        if (this.shapeY <= (this.game.day * 2)) {
+            return;
+        }
+        this.shapeY--;
+        this.moveLine();
+    };
+    PlayerTable.prototype.moveLineTop = function () {
+        if (this.shapeY >= 10) {
+            return;
+        }
+        this.shapeY++;
+        this.moveLine();
+    };
+    PlayerTable.prototype.moveLineLeft = function () {
+        if (this.shapeX <= 0) {
+            return;
+        }
+        this.shapeX--;
+        this.moveLine();
+    };
+    PlayerTable.prototype.moveLineRight = function () {
+        if (this.shapeX >= 9) {
+            return;
+        }
+        this.shapeX++;
+        this.moveLine();
     };
     PlayerTable.prototype.moveShapeBottom = function () {
         if (this.shapeY <= -1 + (this.game.day * 2)) {
@@ -567,6 +654,13 @@ var PlayerTable = /** @class */ (function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
         this.currentCard = null;
+    };
+    PlayerTable.prototype.removeLineToPlace = function () {
+        var _a;
+        var cardBorderDiv = document.getElementById("player-table-".concat(this.playerId, "-line-border"));
+        (_a = cardBorderDiv === null || cardBorderDiv === void 0 ? void 0 : cardBorderDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(cardBorderDiv);
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
     PlayerTable.prototype.cancelPlacedLines = function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
@@ -684,7 +778,6 @@ var LookAtTheStars = /** @class */ (function () {
         if (Number(gamedatas.gamestate.id) >= 90) { // score or end
             this.onEnteringShowScore();
         }
-        this.addTooltips();
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -695,6 +788,12 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
+            case 'placeShape':
+                this.onEnteringPlaceShape(args.args);
+                break;
+            case 'placeLine':
+                this.onEnteringPlaceLine(args.args);
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -706,6 +805,10 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions);
+    };
+    LookAtTheStars.prototype.onEnteringPlaceLine = function (args) {
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setLineToPlace(args.possibleLines);
     };
     LookAtTheStars.prototype.onEnteringNextShape = function () {
         this.playersTables.forEach(function (playerTable) { return playerTable.nextShape(); });
@@ -720,32 +823,29 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeShape':
                 this.onLeavingPlaceShape();
                 break;
+            case 'placeLine':
+                this.onLeavingPlaceLine();
+                break;
         }
     };
     LookAtTheStars.prototype.onLeavingPlaceShape = function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeShapeToPlace();
     };
+    LookAtTheStars.prototype.onLeavingPlaceLine = function () {
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeLineToPlace();
+    };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
     LookAtTheStars.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        var _a, _b;
         log('onUpdateActionButtons: ' + stateName, args);
-        switch (stateName) {
-            case 'playCard':
-                if (!this.isCurrentPlayerActive()) {
-                    this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
-                }
-                break;
-            case 'placeShape':
-                var playerActive = this.isCurrentPlayerActive();
-                if (playerActive) {
-                    this.onEnteringPlaceShape(args);
-                } /* else {
-                    this.onLeavingPlaceShape();
-                }*/
-                if (playerActive) {
+        if (this.isCurrentPlayerActive()) {
+            switch (stateName) {
+                case 'placeShape':
                     var placeCardArg = args;
                     if (placeCardArg.currentCard.type == 1) {
                         [1, 2, 3].forEach(function (size) {
@@ -761,15 +861,18 @@ var LookAtTheStars = /** @class */ (function () {
                         this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
                     }
                     this.addActionButton("skipCard_button", _("Skip this card"), function () { return _this.skipCard(); }, null, null, 'red');
-                }
-                else {
+                    break;
+                case 'placeLine':
+                    this.addActionButton("placeLine_button", _("Place line"), function () { return _this.placeLine(); });
+                    this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
-                }
-                break;
-            case 'placeLine':
-                this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
-                this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
-                break;
+                    break;
+            }
+        }
+        else if (stateName == 'playCard') {
+            this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeShapeToPlace();
+            (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.removeLineToPlace();
         }
     };
     ///////////////////////////////////////////////////
@@ -897,35 +1000,6 @@ var LookAtTheStars = /** @class */ (function () {
         var elementId = playerId === 0 ? "cards" : "player-table-".concat(playerId);
         document.getElementById(elementId).scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     };
-    LookAtTheStars.prototype.getTooltip = function (element) {
-        switch (element) {
-            case 0: return '[GreenLight] : ' + _("If your route ends at an intersection with a [GreenLight], you place an additional marker.");
-            case 1: return _("<strong>Number:</strong> Possible starting point. You choose between 2 numbers at the beginning of the game to place your Departure Pawn.");
-            case 20: return '[OldLady] : ' + _("When a marker reaches [OldLady], check a box on the [OldLady] zone. Add the number next to each checked box at game end.");
-            case 30: return '[Student] : ' + _("When a marker reaches [Student], check a box on the [Student] zone. Multiply [Student] with [School] at game end.");
-            case 32: return '[School] : ' + _("When a marker reaches [School], check a box on the [School] zone. Multiply [Student] with [School] at game end.") + "<br><i>".concat(_("If the [School] is marked with a Star, write the number of [Student] you have checked when a marker reaches it."), "</i>");
-            case 40: return '[Tourist] : ' + _("When a marker reaches [Tourist], check a box on the first available row on the [Tourist] zone. You will score when you drop off the [Tourist] to [MonumentLight]/[MonumentDark]. If the current row is full and you didn't reach [MonumentLight]/[MonumentDark], nothing happens.");
-            case 41: return '[MonumentLight][MonumentDark] : ' + _("When a marker reaches [MonumentLight]/[MonumentDark], write the score on the column of the [Tourist] at the end of the current row. If the current row is empty, nothing happens.") + "<br><i>".concat(_("If [MonumentLight]/[MonumentDark] is marked with a Star, write the number of [Tourist] you have checked When a marker reaches it."), "</i>");
-            case 50: return '[Businessman] : ' + _("When a marker reaches [Businessman], check a box on the first available row on the [Businessman] zone. You will score when you drop off the [Businessman] to [Office]. If the current row is full and you didn't reach [Office], nothing happens.");
-            case 51: return '[Office] : ' + _("When a marker reaches [Office], write the score on the column of the [Businessman] at the end of the current row, and check the corresponding symbol ([OldLady], [Tourist] or [Student]) as if you reached it with a marker. If the current row is empty, nothing happens.") + "<br><i>".concat(_("If the [Office] is marked with a Star, write the number of [Businessman] you have checked When a marker reaches it."), "</i>");
-            case 90: return _("<strong>Common Objective:</strong> Score 10 points when you complete the objective, or 6 points if another player completed it on a previous round.");
-            case 91: return _("<strong>Personal Objective:</strong> Score 10 points when your markers link the 3 Letters of your personal objective.");
-            case 92: return _("<strong>Turn Zone:</strong> If you choose to change a turn into a straight line or a straight line to a turn, check a box on the Turn Zone. The score here is negative, and you only have 5 of them!");
-            case 93: return _("<strong>Traffic Jam:</strong> For each marker already in place when you add a marker on a route, check a Traffic Jam box. If the road is black, check an extra box. The score here is negative!");
-            case 94: return _("<strong>Total score:</strong> Add sum of all green zone totals, subtract sum of all red zone totals.");
-            case 95: return _("<strong>Tickets:</strong> The red check indicates the current round ticket. It defines the shape of the route you have to place. The black checks indicates past rounds.");
-            case 97: return _("<strong>Letter:</strong> Used to define your personal objective.");
-        }
-    };
-    LookAtTheStars.prototype.addTooltips = function () {
-        var _this = this;
-        document.querySelectorAll("[data-tooltip]").forEach(function (element) {
-            var tooltipsIds = JSON.parse(element.dataset.tooltip);
-            var tooltip = "";
-            tooltipsIds.forEach(function (id) { return tooltip += "<div class=\"tooltip-section\">".concat(formatTextIcons(_this.getTooltip(id)), "</div>"); });
-            _this.addTooltipHtml(element.id, tooltip);
-        });
-    };
     LookAtTheStars.prototype.setPoints = function (playerId, points) {
         var _a;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
@@ -944,6 +1018,13 @@ var LookAtTheStars = /** @class */ (function () {
         }
         var informations = this.getCurrentPlayerTable().getShootingStarInformations();
         this.takeAction('placeShootingStar', informations);
+    };
+    LookAtTheStars.prototype.placeLine = function () {
+        if (!this.checkAction('placeLine')) {
+            return;
+        }
+        var informations = this.getCurrentPlayerTable().getLineInformations();
+        this.takeAction('placeLine', informations);
     };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
