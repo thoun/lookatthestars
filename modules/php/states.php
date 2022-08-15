@@ -179,6 +179,6 @@ trait StateTrait {
             //$this->computeStats($playerId);
         }
 
-        //TODO TEMP $this->gamestate->nextState('endGame');
+        $this->gamestate->nextState('endGame');
     }
 }

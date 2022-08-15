@@ -609,7 +609,7 @@ var PlayerTable = /** @class */ (function () {
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
-var SCORE_MS = 1000;
+var SCORE_MS = 1 /*TODO 000 */;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
@@ -1056,19 +1056,11 @@ var LookAtTheStars = /** @class */ (function () {
         var _a, _b;
         try {
             if (log && args && !args.processed) {
-                /*if (args.shape && args.shape[0] != '<') {
-                    args.shape = `<div class="shape" data-shape="${JSON.stringify(args.shape)}" data-step="${args.step}"></div>`
-                }
-
-                if (args.elements && typeof args.elements !== 'string') {
-                    args.elements = args.elements.map(element =>
-                        `<div class="map-icon" data-element="${element}"></div>`
-                    ).join('');
-                }
-
-                if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
-                    args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
-                }*/
+                ['points', 'scoring'].forEach(function (field) {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = "<strong>".concat(_(args[field]), "</strong>");
+                    }
+                });
                 for (var property in args) {
                     if (((_b = (_a = args[property]) === null || _a === void 0 ? void 0 : _a.indexOf) === null || _b === void 0 ? void 0 : _b.call(_a, ']')) > 0) {
                         args[property] = formatTextIcons(_(args[property]));

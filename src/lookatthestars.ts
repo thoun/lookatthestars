@@ -6,7 +6,7 @@ declare const _;
 declare const g_gamethemeurl;
 
 const ANIMATION_MS = 500;
-const SCORE_MS = 1000;
+const SCORE_MS = 1/*TODO 000 */;
 
 const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1/*, 1.25, 1.5*/];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0/*, 20, 33.34*/];
@@ -532,19 +532,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                /*if (args.shape && args.shape[0] != '<') {
-                    args.shape = `<div class="shape" data-shape="${JSON.stringify(args.shape)}" data-step="${args.step}"></div>`
-                }
-
-                if (args.elements && typeof args.elements !== 'string') {
-                    args.elements = args.elements.map(element => 
-                        `<div class="map-icon" data-element="${element}"></div>`
-                    ).join('');
-                }
-
-                if (args.objectiveLetters && args.objectiveLetters[0] != '<') {
-                    args.objectiveLetters = `<strong>${args.objectiveLetters}</strong>`;
-                }*/
+                ['points', 'scoring'].forEach(field => {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = `<strong>${_(args[field])}</strong>`;
+                    }
+                });
 
                 for (const property in args) {
                     if (args[property]?.indexOf?.(']') > 0) {

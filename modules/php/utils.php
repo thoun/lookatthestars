@@ -177,6 +177,10 @@ trait UtilTrait {
         return $this->array_some($arrayOfCoordinates, fn($iCoord) => $coordinates[0] == $iCoord[0] && $coordinates[1] == $iCoord[1]);
     }
 
+    function lineInArray(array $line, array $lines) {
+        return $this->array_some($lines, fn($iLine) => $this->sameLine($iLine, $line));
+    }
+
     function sameCoordinates(array $coordinates1, array $coordinates2) {
         return $coordinates1[0] == $coordinates2[0] && $coordinates1[1] == $coordinates2[1];
     }
@@ -247,7 +251,6 @@ trait UtilTrait {
 
     function getPossiblePositions(int $playerId, array $shapeLines, bool $keysAsString, bool $canTouchLines) {
         $player = $this->getPlayer($playerId);
-        //$this->debug([$playerId, $player]);
         $playerSheet = $this->SHEETS[$player->sheet];
         $placedLines = array_merge(
             $this->linesStrToLines($player->lines),
@@ -357,13 +360,39 @@ trait UtilTrait {
         }
     }
 
+    private function findShape(array $lines, array $shapeLines, bool $allowLineReuse = false) {
+        $shapesFound = [];
+
+        for ($x = -1; $x <= 7; $x++) {
+            for ($y = -1; $y <= 8; $y++) {
+                for ($rotation = 0; $rotation <= 3; $rotation++) {
+                    $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
+                    if ($this->array_every($shiftedLines, fn($shapeLine) => $this->lineInArray($shapeLine, $lines))
+                        && ($allowLineReuse || !$this->array_some($shapeLines, fn($shapeLine) => $this->array_some($shapesFound, fn($shapeFound) => $this->array_some($shapeFound, fn($line) => $this->sameLine($shapeLine, $line)))))
+                    ) {
+                        $shapesFound[] = $shiftedLines;
+                    }
+                }
+            }
+        }
+
+        return $shapesFound;
+    }
+
     private function calculateStar1Score(PlayerScore &$playerScore, array $lines) {
         $objective = $this->STAR1[intval($this->getGameStateValue(STAR1))];
-        // TODO
+
+        $shapesFound = $this->findShape($lines, $objective->lines);
+
+        $playerScore->star1 += count($shapesFound) * $objective->points;
     }
 
     private function calculateStar2Score(PlayerScore &$playerScore) {
+        $points = 0;
+
         // TODO
+
+        $playerScore->star2 += $points;
     }
 
     private function getPlayerScore(LatsPlayer $player) {
@@ -377,7 +406,6 @@ trait UtilTrait {
 
         $constellations = $this->getConstellations($placedLines);
         $validConstellations = $this->getValidConstellations($constellations);
-        //$player->id == 2343492 && $this->debug($validConstellations);
         $planets = $playerSheet->planets;
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
