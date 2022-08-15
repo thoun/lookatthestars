@@ -41,9 +41,9 @@
     #star1 {
       background: url('img/stars1.png');
 
-      @for $index from 1 through 10 {
+      @for $index from 0 through 9 {
         &[data-index="#{$index}"] { 
-            background-position-x: #{($index - 1) * 100% / 9};
+            background-position-x: #{$index * 100% / 9};
         }
       }
     }
@@ -51,9 +51,9 @@
     #star2 {
       background: url('img/stars2.png');
 
-      @for $index from 1 through 9 {
+      @for $index from 0 through 8 {
         &[data-index="#{$index}"] { 
-            background-position-x: #{($index - 1) * 100% / 8};
+            background-position-x: #{$index * 100% / 8};
         }
       }
     }

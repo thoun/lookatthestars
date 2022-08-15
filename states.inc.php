@@ -95,6 +95,7 @@ $playerActionsGameStates = [
         "possibleactions" => [ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ],
         "transitions" => [
           'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
+          'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
         ]
     ],
 

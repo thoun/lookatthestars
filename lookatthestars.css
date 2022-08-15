@@ -198,64 +198,64 @@
 #cards #objectives #star1 {
   background: url("img/stars1.png");
 }
-#cards #objectives #star1[data-index="1"] {
+#cards #objectives #star1[data-index="0"] {
   background-position-x: 0%;
 }
-#cards #objectives #star1[data-index="2"] {
+#cards #objectives #star1[data-index="1"] {
   background-position-x: 11.1111111111%;
 }
-#cards #objectives #star1[data-index="3"] {
+#cards #objectives #star1[data-index="2"] {
   background-position-x: 22.2222222222%;
 }
-#cards #objectives #star1[data-index="4"] {
+#cards #objectives #star1[data-index="3"] {
   background-position-x: 33.3333333333%;
 }
-#cards #objectives #star1[data-index="5"] {
+#cards #objectives #star1[data-index="4"] {
   background-position-x: 44.4444444444%;
 }
-#cards #objectives #star1[data-index="6"] {
+#cards #objectives #star1[data-index="5"] {
   background-position-x: 55.5555555556%;
 }
-#cards #objectives #star1[data-index="7"] {
+#cards #objectives #star1[data-index="6"] {
   background-position-x: 66.6666666667%;
 }
-#cards #objectives #star1[data-index="8"] {
+#cards #objectives #star1[data-index="7"] {
   background-position-x: 77.7777777778%;
 }
-#cards #objectives #star1[data-index="9"] {
+#cards #objectives #star1[data-index="8"] {
   background-position-x: 88.8888888889%;
 }
-#cards #objectives #star1[data-index="10"] {
+#cards #objectives #star1[data-index="9"] {
   background-position-x: 100%;
 }
 #cards #objectives #star2 {
   background: url("img/stars2.png");
 }
-#cards #objectives #star2[data-index="1"] {
+#cards #objectives #star2[data-index="0"] {
   background-position-x: 0%;
 }
-#cards #objectives #star2[data-index="2"] {
+#cards #objectives #star2[data-index="1"] {
   background-position-x: 12.5%;
 }
-#cards #objectives #star2[data-index="3"] {
+#cards #objectives #star2[data-index="2"] {
   background-position-x: 25%;
 }
-#cards #objectives #star2[data-index="4"] {
+#cards #objectives #star2[data-index="3"] {
   background-position-x: 37.5%;
 }
-#cards #objectives #star2[data-index="5"] {
+#cards #objectives #star2[data-index="4"] {
   background-position-x: 50%;
 }
-#cards #objectives #star2[data-index="6"] {
+#cards #objectives #star2[data-index="5"] {
   background-position-x: 62.5%;
 }
-#cards #objectives #star2[data-index="7"] {
+#cards #objectives #star2[data-index="6"] {
   background-position-x: 75%;
 }
-#cards #objectives #star2[data-index="8"] {
+#cards #objectives #star2[data-index="7"] {
   background-position-x: 87.5%;
 }
-#cards #objectives #star2[data-index="9"] {
+#cards #objectives #star2[data-index="8"] {
   background-position-x: 100%;
 }
 
@@ -561,163 +561,6 @@ html, .mode_3d #game_play_area_background {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.shape {
-  background: url("img/shapes.png");
-  width: 101px;
-  height: 31px;
-  display: inline-block;
-  background-size: auto 500%;
-  vertical-align: middle;
-}
-.shape[data-shape="[0,1]"] {
-  background-position-x: 0%;
-  margin: 0 -30px;
-}
-.shape[data-shape="[0,2]"] {
-  background-position-x: 20%;
-  margin: 0 -35px;
-}
-.shape[data-shape="[0,0]"] {
-  background-position-x: 40%;
-  margin: 0 -18px;
-}
-.shape[data-shape="[0]"] {
-  background-position-x: 60%;
-  margin: 0 -35px;
-}
-.shape[data-shape="[0,1,1]"] {
-  background-position-x: 80%;
-  margin: 0 -25px;
-}
-.shape[data-shape="[0,2,2]"] {
-  background-position-x: 100%;
-  margin: 0 -15px;
-}
-.shape[data-step="0"] {
-  background-position-y: 0%;
-}
-.shape[data-step="1"] {
-  background-position-y: 25%;
-}
-.shape[data-step="2"] {
-  background-position-y: 50%;
-}
-.shape[data-step="3"] {
-  background-position-y: 75%;
-}
-.shape[data-step="4"] {
-  background-position-y: 100%;
-}
-
-#round-panel {
-  position: absolute;
-  background: url("img/round-number.png");
-  width: 120px;
-  height: 37px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-left: 16px;
-  box-sizing: border-box;
-  font-weight: bold;
-  font-size: 85%;
-  color: white;
-}
-
-#page-title .ticket {
-  display: inline-block;
-  width: 42px;
-  height: 60px;
-  background: url("img/tickets.png");
-  background-size: auto 100%;
-  border-radius: 4px;
-  transform-origin: center;
-  transform: rotate(90deg);
-  vertical-align: middle;
-  margin: -10px 10px;
-}
-#page-title .ticket[data-ticket="1"] {
-  background-position-x: 8.3333333333%;
-}
-#page-title .ticket[data-ticket="2"] {
-  background-position-x: 16.6666666667%;
-}
-#page-title .ticket[data-ticket="3"] {
-  background-position-x: 25%;
-}
-#page-title .ticket[data-ticket="4"] {
-  background-position-x: 33.3333333333%;
-}
-#page-title .ticket[data-ticket="5"] {
-  background-position-x: 41.6666666667%;
-}
-#page-title .ticket[data-ticket="6"] {
-  background-position-x: 50%;
-}
-#page-title .ticket[data-ticket="7"] {
-  background-position-x: 58.3333333333%;
-}
-#page-title .ticket[data-ticket="8"] {
-  background-position-x: 66.6666666667%;
-}
-#page-title .ticket[data-ticket="9"] {
-  background-position-x: 75%;
-}
-#page-title .ticket[data-ticket="10"] {
-  background-position-x: 83.3333333333%;
-}
-#page-title .ticket[data-ticket="11"] {
-  background-position-x: 91.6666666667%;
-}
-#page-title .ticket[data-ticket="12"] {
-  background-position-x: 100%;
-}
-
-.map-icon {
-  display: inline-block;
-  position: relative;
-  width: 32px;
-  height: 32px;
-  background-image: url("img/map-icons.png");
-  background-size: auto 100%;
-  vertical-align: middle;
-}
-.map-icon[data-element="0"] {
-  background-position: 0% 0%;
-}
-.map-icon[data-element="20"] {
-  background-position: 12.5% 0%;
-}
-.map-icon[data-element="30"] {
-  background-position: 25% 0%;
-}
-.map-icon[data-element="32"] {
-  background-position: 37.5% 0%;
-}
-.map-icon[data-element="40"] {
-  background-position: 50% 0%;
-}
-.map-icon[data-element="41"] {
-  background-position: 62.5% 0%;
-}
-.map-icon[data-element="42"] {
-  background-position: 75% 0%;
-}
-.map-icon[data-element="50"] {
-  background-position: 87.5% 0%;
-}
-.map-icon[data-element="51"] {
-  background-position: 100% 0%;
-}
-
-.tooltip-section:not(:first-child) {
-  margin-top: 2em;
-}
-.tooltip-section .map-icon {
-  width: 24px;
-  height: 24px;
 }
 
 .setShootingStarSizeButton {

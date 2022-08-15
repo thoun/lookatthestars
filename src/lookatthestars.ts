@@ -155,6 +155,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
     //
     public onUpdateActionButtons(stateName: string, args: any) {
         switch (stateName) {
+            case 'playCard':
+                if (!(this as any).isCurrentPlayerActive()) {
+                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+                }
+                break;
             case 'placeShape':
                 const playerActive = (this as any).isCurrentPlayerActive();
                 if (playerActive) {
@@ -396,9 +401,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public cancelPlaceShape() {
-        if(!(this as any).checkAction('cancelPlaceShape')) {
+        /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
-        }
+        }*/
 
         this.takeAction('cancelPlaceShape');
     }

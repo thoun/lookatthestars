@@ -62,5 +62,11 @@ trait ArgsTrait {
             return $this->argPlaceShapeForStandardShape($currentCard, $playersIds);
         }
     }
+
+    function argPlaceLine(int $playerId) {
+        return [
+            // TODO
+        ];
+    }
     
 }

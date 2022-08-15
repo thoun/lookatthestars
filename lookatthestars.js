@@ -732,6 +732,11 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
         switch (stateName) {
+            case 'playCard':
+                if (!this.isCurrentPlayerActive()) {
+                    this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                }
+                break;
             case 'placeShape':
                 var playerActive = this.isCurrentPlayerActive();
                 if (playerActive) {
@@ -937,9 +942,9 @@ var LookAtTheStars = /** @class */ (function () {
         this.takeAction('placeShootingStar', informations);
     };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
-        if (!this.checkAction('cancelPlaceShape')) {
+        /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
-        }
+        }*/
         this.takeAction('cancelPlaceShape');
     };
     LookAtTheStars.prototype.skipCard = function () {

@@ -11,6 +11,9 @@ trait DebugUtilTrait {
             return;
         } 
 
+        //$this->insertLinesStr(2343492, ['4445', '3545', '4546', '4555']);
+        $this->insertLinesStr(2343492, ['0011', '1122', '2233']);
+
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);
     }
@@ -48,6 +51,10 @@ trait DebugUtilTrait {
         }
 
         $linesStr = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $lines);
+        $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($linesStr)."' WHERE `player_id` = $playerId");
+    }
+
+    function insertLinesStr(int $playerId, array $linesStr) {
         $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($linesStr)."' WHERE `player_id` = $playerId");
     }
 

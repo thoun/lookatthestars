@@ -117,6 +117,7 @@ trait ActionTrait {
         ]);
 
         $this->gamestate->setPlayersMultiactive([$playerId], 'next', false);
+        $this->gamestate->initializePrivateState($playerId);
     }
 
     public function skipCard() {
