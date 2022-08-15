@@ -125,11 +125,12 @@ class LookAtTheStars extends Table {
     */
     protected function getAllDatas() {
         $result = [];
-        $isEndScore = true;//intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        //$isEndScore = true;
+        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_round_lines `roundLines`, player_objects objects FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_sheet_type sheetType, player_lines `lines`, player_round_lines `roundLines`, player_objects objects, player_round_objects `roundObjects` FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
   
         $cards = Card::linesAsString($this->getCardsFromDb($this->shapes->getCardsInLocation('piles', null, 'location_arg')));
@@ -143,15 +144,15 @@ class LookAtTheStars extends Table {
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
             $playerDb['lines'] = $playerDb['lines'] ? json_decode($playerDb['lines'], true) : [];
             $playerDb['roundLines'] = $playerDb['roundLines'] ? json_decode($playerDb['roundLines'], true) : [];
-            $playerDb['objects'] = $playerDb['objects'] ?? json_decode('{}');
+            $playerDb['objects'] = $playerDb['objects'] ?? new Objects();
+            $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new Objects();
             $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($this->getPlayer($playerId)) : null;
         }
 
         $result['cards'] = $maskedCards;
         $result['star1'] = intval($this->getGameStateValue(STAR1));
         $result['star2'] = intval($this->getGameStateValue(STAR2));
-        $result['SHAPES'] = $this->SHAPES;
-        $result['SHEETS'] = $this->SHEETS;
+        $result['SHOOTING_STAR_SIZES'] = ShootingStarType::linesAndHeadAsString($this->SHOOTING_STAR_SIZES);
   
         return $result;
     }

@@ -41,8 +41,20 @@
         $y = self::getArg("y", AT_posint, true);
         $rotation = self::getArg("rotation", AT_posint, true);
 
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
         $this->game->placeShape($x, $y, $rotation);
+
+        self::ajaxResponse();
+    }
+
+    public function placeShootingStar() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+        $rotation = self::getArg("rotation", AT_posint, true);
+        $size = self::getArg("size", AT_posint, true);
+
+        $this->game->placeShootingStar($x, $y, $rotation, $size);
 
         self::ajaxResponse();
     }
@@ -55,10 +67,10 @@
       self::ajaxResponse();
     }
 
-    public function skipShape() {
+    public function skipCard() {
       self::setAjaxMode();
 
-      $this->game->skipShape();
+      $this->game->skipCard();
 
       self::ajaxResponse();
     }

@@ -9,6 +9,7 @@ class LatsPlayer {
     public array $lines;
     public array $roundLines;
     public object $objects;
+    public object $roundObjects;
 
     public function __construct($dbPlayer) {
         $this->id = intval($dbPlayer['player_id']);
@@ -18,7 +19,8 @@ class LatsPlayer {
         $this->sheet = intval($dbPlayer['player_sheet_type']);
         $this->lines = $dbPlayer['player_lines'] != null ? json_decode($dbPlayer['player_lines'], true) : [];
         $this->roundLines = $dbPlayer['player_round_lines'] != null ? json_decode($dbPlayer['player_round_lines'], true) : [];
-        $this->objects = json_decode($dbPlayer['player_objects'] ?? '{}');
+        $this->objects = $dbPlayer['player_objects'] != null ? json_decode($dbPlayer['player_objects']) : new Objects();
+        $this->roundObjects = $dbPlayer['player_round_objects'] != null ? json_decode($dbPlayer['player_round_objects']) : new Objects();
     } 
 }
 ?>

@@ -719,3 +719,10 @@ html, .mode_3d #game_play_area_background {
   width: 24px;
   height: 24px;
 }
+
+.setShootingStarSizeButton {
+  border: 3px solid #dddddd;
+}
+.setShootingStarSizeButton.current-size {
+  border-color: #4871b6;
+}

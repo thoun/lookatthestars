@@ -5,6 +5,9 @@
 interface Shape {
     lines: string[];
 }
+interface ShootingStar extends Shape {
+    head: string;
+}
 
 interface Card extends Shape {
     id: number;
@@ -29,6 +32,7 @@ interface PlayerScore {
 }
 
 interface Objects {
+    shootingStars: ShootingStar[];
     // TODO
 }
 
@@ -37,8 +41,9 @@ interface LookAtTheStarsPlayer extends Player {
     sheetType: number;
     playerScore?: PlayerScore;
     lines: string[];
-    roundLines: string[];
+    roundLines?: string[];
     objects: Objects;
+    roundObjects?: Objects;
 }
 
 interface LookAtTheStarsGamedatas {
@@ -57,8 +62,7 @@ interface LookAtTheStarsGamedatas {
     cards: Card[];
     star1: number;
     star2: number;
-    SHAPES: Shape[];
-    SHEETS: Sheet[];
+    SHOOTING_STAR_SIZES: { [size: number]: ShootingStar };
 }
 
 interface LookAtTheStarsGame extends Game {
@@ -69,9 +73,17 @@ interface LookAtTheStarsGame extends Game {
     setTooltip(id: string, html: string): void;
 }
 
-interface EnteringPlaceShapeArgs {
-    currentShape: Card;
+interface EnteringPlaceCardArgs {
+    shootingStar: boolean;
+    currentCard: Card;
+}
+
+interface EnteringPlaceShapeArgs extends EnteringPlaceCardArgs {
     possiblePositions: number[][][];
+}
+
+interface EnteringPlaceShootingStarArgs extends EnteringPlaceCardArgs {
+    possiblePositions: { [size: number]: number[][][] };
 }
 
 interface NotifCardArgs {
@@ -81,6 +93,9 @@ interface NotifCardArgs {
 interface NotifPlacedLinesArgs {
     playerId: number;
     lines: string[];
+}
+interface NotifPlacedShootingStarArgs extends NotifPlacedLinesArgs {
+    head: string;
 }
 
 interface NotifScoreArgs {

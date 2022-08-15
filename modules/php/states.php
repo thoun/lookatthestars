@@ -26,7 +26,9 @@ trait StateTrait {
             $allLines = array_merge($player->lines, $player->roundLines);
             $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
 
-            // TODO apply turn objects
+            // apply turn objects
+            $player->objects->shootingStars = array_merge($player->objects->shootingStars, $player->roundObjects->shootingStars);
+            $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
         }
         /*
         
@@ -49,13 +51,13 @@ trait StateTrait {
             self::notifyAllPlayers('log', clienttranslate('A pile has been ended, day is rising!'), []);
         }
 
-        $discardedCard = $this->getCurrentShape(true);
+        $discardedCard = $this->getCurrentCard(true);
         $this->shapes->moveCard($discardedCard->id, 'discard');
         self::notifyAllPlayers('discardShape', '', [
             'card' => $discardedCard,
         ]);
 
-        $newCard = $this->getCurrentShape(true);
+        $newCard = $this->getCurrentCard(true);
 
         self::notifyAllPlayers('newShape', clienttranslate('A new shape is revealed'), [
             'card' => $newCard,
@@ -137,7 +139,7 @@ trait StateTrait {
 
     private function scoreStar1(int $playerId, PlayerScore &$playerScore) {
         $this->incPlayerScore($playerId, $playerScore->star1);
-        $this->notifyAllPlayers('scoreShootingStars', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+        $this->notifyAllPlayers('scoreStar1', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'points' => $playerScore->star1,
@@ -149,7 +151,7 @@ trait StateTrait {
 
     private function scoreStar2(int $playerId, PlayerScore &$playerScore) {
         $this->incPlayerScore($playerId, $playerScore->star2);
-        $this->notifyAllPlayers('scoreShootingStars', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
+        $this->notifyAllPlayers('scoreStar2', clienttranslate('${player_name} scores ${points} points for ${scoring}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'points' => $playerScore->star2,
@@ -175,6 +177,6 @@ trait StateTrait {
             //$this->computeStats($playerId);
         }
 
-        //$this->gamestate->nextState('endGame');
+        //TODO TEMP $this->gamestate->nextState('endGame');
     }
 }

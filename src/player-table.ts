@@ -13,13 +13,15 @@ function isSafari() {
 class PlayerTable {
     public playerId: number;
 
-    private currentShape: Card;
+    private currentCard: Card;
     private shapeX: number;
     private shapeY: number;
     private shapeRotation: number;
     private possiblePositions: number[][];
+    private shootingStarPossiblePositions: number[][][];
+    private shootingStarSize: number;
 
-    constructor(game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
+    constructor(private game: LookAtTheStarsGame, player: LookAtTheStarsPlayer, day: number) {
         this.playerId = Number(player.id);
 
         let html = `
@@ -49,7 +51,21 @@ class PlayerTable {
         dojo.place(html, document.getElementById('tables'));
 
         this.placeLines(player.lines);
-        this.placeLines(player.roundLines, ['round']);
+        player.roundObjects.shootingStars.forEach(shootingStar => {
+            this.placeLines(shootingStar.lines);
+            this.placeShootingStarHead(shootingStar.head);
+        });
+
+        if (player.roundLines) {
+            this.placeLines(player.roundLines, ['round']);
+        }
+        if (player.roundObjects) {
+            if (player.roundObjects.shootingStars?.length) {
+                const shootingStar = player.roundObjects.shootingStars[0];
+                this.placeLines(shootingStar.lines, ['round']);
+                this.placeShootingStarHead(shootingStar.head, ['round']);
+            }
+        }
 
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
@@ -101,6 +117,38 @@ class PlayerTable {
         ));
     }
 
+    placeShootingStarHead(head: string, additionalClass: string[] = []) {
+        const lineid = `shooting-star-head-${this.playerId}-${head}`;
+        const headLinesLength = 13;
+
+        const x = SVG_LEFT_MARGIN + parseInt(head[0], 16) * SVG_LINE_WIDTH;
+        const y = SVG_BOTTOM_MARGIN - parseInt(head[1], 16) * SVG_LINE_HEIGHT;
+
+        let newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
+        newLine.setAttribute('id', lineid+'1');
+        newLine.setAttribute('d', `M${x-headLinesLength} ${y} L${x+headLinesLength} ${y} Z`);
+        newLine.classList.add('line', ...additionalClass);
+        $('lats-svg-'+this.playerId).append(newLine);
+
+        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
+        newLine.setAttribute('id', lineid+'1');
+        newLine.setAttribute('d', `M${x} ${y-headLinesLength} L${x} ${y+headLinesLength} Z`);
+        newLine.classList.add('line', ...additionalClass);
+        $('lats-svg-'+this.playerId).append(newLine);
+
+        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
+        newLine.setAttribute('id', lineid+'1');
+        newLine.setAttribute('d', `M${x-headLinesLength} ${y-headLinesLength} L${x+headLinesLength} ${y+headLinesLength} Z`);
+        newLine.classList.add('line', ...additionalClass);
+        $('lats-svg-'+this.playerId).append(newLine);
+
+        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
+        newLine.setAttribute('id', lineid+'1');
+        newLine.setAttribute('d', `M${x+headLinesLength} ${y-headLinesLength} L${x-headLinesLength} ${y+headLinesLength} Z`);
+        newLine.classList.add('line', ...additionalClass);
+        $('lats-svg-'+this.playerId).append(newLine);
+    }
+
     private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass: string[] = []) {
         const lineid = `line-${this.playerId}-${line}`;
 
@@ -146,6 +194,12 @@ class PlayerTable {
             rotation: this.shapeRotation,
         };
     }
+    public getShootingStarInformations() {
+        return {
+            ...this.getShapeInformations(),
+            size: this.shootingStarSize,
+        };
+    }
 
     private setCardBorderPosition() {
         const x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
@@ -156,23 +210,34 @@ class PlayerTable {
     }
 
     private getValid(): boolean {
-        return this.possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
+        let possiblePositions;
+        if (this.currentCard.type == 1) {
+            possiblePositions = this.shootingStarPossiblePositions[this.shootingStarSize];
+        } else if (this.currentCard.type == 2) {
+            possiblePositions = this.possiblePositions;
+        }
+        return possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
     }
 
     private getValidClass(): string {
         return this.getValid() ? 'valid' : 'invalid';
     }
 
-    public setShapeToPlace(currentShape: Card, possiblePositions: number[][]) {
-        if (this.currentShape != null) {
+    public setShapeToPlace(currentShape: Card, possiblePositions: number[][] | number[][][]) {
+        if (this.currentCard != null) {
             return;
         }
 
-        this.currentShape = currentShape;
-        this.possiblePositions = possiblePositions;
+        this.currentCard = currentShape;
         this.shapeX = 3;
         this.shapeY = 3;
         this.shapeRotation = 0;
+        if (this.currentCard.type == 1) {
+            this.shootingStarPossiblePositions = possiblePositions as number[][][];
+            this.shootingStarSize = 3;
+        } else if (this.currentCard.type == 2) {
+            this.possiblePositions = possiblePositions as number[][];
+        }
 
         const validClass = this.getValidClass();
         dojo.place(`<div id="player-table-${this.playerId}-card-border" class="card-border" data-validity="${validClass}">
@@ -192,12 +257,8 @@ class PlayerTable {
         this.moveShape();
     }
 
-    private moveShape() {
-        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
-        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
-        const validClass = this.getValidClass();
-
-        let rotatedLines = this.currentShape.lines.map(line => line);
+    private getRotatedAndShiftedLines(lines: string[]): string[] {
+        let rotatedLines = lines.map(line => line);
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
             rotatedLines = rotatedLines.map(line => 
@@ -223,7 +284,51 @@ class PlayerTable {
             (Number.parseInt(line[2], 16) + this.shapeX).toString(16) + 
             (Number.parseInt(line[3], 16) + this.shapeY).toString(16) 
         );
+
+        return rotatedAndShiftedLines;
+    };
+
+    private getRotatedAndShiftedCoordinates(coordinates: string): string {
+        let rotatedCoordinates = ''+coordinates;
+        if (this.shapeRotation == 1 || this.shapeRotation == 3) {
+            // rotate 90°
+            rotatedCoordinates = 
+                (Number.parseInt(rotatedCoordinates[1], 16)).toString(16) + 
+                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16);
+        }
+        if (this.shapeRotation == 2 || this.shapeRotation == 3) {
+            // rotate 180°
+            rotatedCoordinates = 
+                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16) + 
+                (3 - Number.parseInt(rotatedCoordinates[1], 16)).toString(16);
+        }
+
+        let rotatedAndShiftedCoordinates = 
+            (Number.parseInt(rotatedCoordinates[0], 16) + this.shapeX).toString(16) + 
+            (Number.parseInt(rotatedCoordinates[1], 16) + this.shapeY).toString(16);
+
+        return rotatedAndShiftedCoordinates;
+    };
+
+    private moveShape() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+        const validClass = this.getValidClass();
+
+        let lines = [];
+        if (this.currentCard.type == 1) {
+            lines = (this.game as any).gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].lines;
+        } else if (this.currentCard.type == 2) {
+            lines = this.currentCard.lines;
+        }
+        let rotatedAndShiftedLines = this.getRotatedAndShiftedLines(lines);
         this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
+
+        if (this.currentCard.type == 1) {     
+            const head = (this.game as any).gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].head;       
+            const rotatedAndShiftedHead = this.getRotatedAndShiftedCoordinates(head);
+            this.placeShootingStarHead(rotatedAndShiftedHead, ['temp-line', validClass]);
+        }
 
         this.setCardBorderPosition();
         document.getElementById(`player-table-${this.playerId}-card-border`).dataset.validity = validClass;
@@ -274,7 +379,7 @@ class PlayerTable {
 
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
-        this.currentShape = null;
+        this.currentCard = null;
     }
     
     public cancelPlacedLines() {
@@ -316,6 +421,14 @@ class PlayerTable {
         // validate round lines
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.classList.remove('round'));
+    }
+
+    public setShootingStarSize(size: number) {
+        this.shootingStarSize = size;
+        this.moveShape();
+
+        const buttons = Array.from(document.getElementsByClassName('setShootingStarSizeButton')) as HTMLElement[];
+        buttons.forEach(button => button.classList.toggle('current-size', button.dataset.shootingStarSize == ''+size));
     }
 
 }

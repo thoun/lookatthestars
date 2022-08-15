@@ -129,3 +129,9 @@ $this->ALWAYS_FORBIDDEN_POINTS = [
   [0, 8],                                      [9, 8],
   [0, 7],                                      [9, 7],
 ];
+
+$this->SHOOTING_STAR_SIZES = [
+  1 => new ShootingStarType([[[1, 1], [2, 2]]], [1, 1]),
+  2 => new ShootingStarType([[[0, 0], [1, 1]], [[1, 1], [2, 2]]], [0, 0]),
+  3 => new ShootingStarType([[[0, 0], [1, 1]], [[1, 1], [2, 2]], [[2, 2], [3, 3]]], [0, 0]),
+];

@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/objects/shape.php');
+require_once(__DIR__.'/objects/objects.php');
 require_once(__DIR__.'/objects/player.php');
 require_once(__DIR__.'/objects/constellation.php');
 
@@ -131,9 +132,9 @@ trait UtilTrait {
         $this->setGameStateInitialValue(STAR2, $star2);
     }
 
-    function getCurrentShape(bool $linesAsString) {
-        $shape = $this->getCardFromDb($this->shapes->getCardOnTop('piles'), $linesAsString);
-        return $linesAsString ? Card::linesAsString($shape) : $shape;
+    function getCurrentCard(bool $linesAsString) {
+        $card = $this->getCardFromDb($this->shapes->getCardOnTop('piles'), $linesAsString);
+        return $linesAsString ? Card::linesAsString($card) : $card;
     }
 
     function shiftLines(array $lines, int $x, int $y, int $rotation) {
@@ -155,6 +156,21 @@ trait UtilTrait {
 
         $rotatedAndShiftedLines = array_map(fn($line) => [[$x + $line[0][0], $y + $line[0][1]], [$x + $line[1][0], $y + $line[1][1]]], $rotatedLines);
         return $rotatedAndShiftedLines;
+    }
+
+    function shiftCoordinates(array $coordinates, int $x, int $y, int $rotation) {
+        $rotatedCoordinates = json_decode(json_encode($coordinates), true);
+        if ($rotation == 1 || $rotation == 3) {
+            // rotate 90°
+            $rotatedCoordinates = [$rotatedCoordinates[1], 3 - $rotatedCoordinates[0]];
+        }
+        if ($rotation == 2 || $rotation == 3) {
+            // rotate 180°
+            $rotatedCoordinates = [3 - $rotatedCoordinates[0], 3 - $rotatedCoordinates[1]];
+        }
+
+        $rotatedAndShiftedCoordinates = [$x + $rotatedCoordinates[0], $y + $rotatedCoordinates[1]];
+        return $rotatedAndShiftedCoordinates;
     }
 
     function coordinatesInArray(array $coordinates, array $arrayOfCoordinates) {
@@ -183,7 +199,7 @@ trait UtilTrait {
             ($line[0][1] + $line[1][1] == $withLine[0][1] + $withLine[1][1]);
     }
 
-    function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines) {
+    function isPossiblePosition(array $shiftedLines, Sheet $playerSheet, array $placedLines, object $placedObjects, bool $canTouchLines) {
         // not oustside the board
         if ($this->array_some($shiftedLines, fn($line) => $this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < 0 || $coordinates[1] > 10))) {
             return false;
@@ -205,10 +221,19 @@ trait UtilTrait {
             return false;
         }
 
+        if (!$canTouchLines && $this->array_some($shiftedLines, fn($line) => $this->array_some($placedLines, fn($placedLine) => $this->lineConnected($line, $placedLine)))) {
+            return false;
+        }
+
+        // no touching a shooting star
+        if ($this->array_some($shiftedLines, fn($line) => $this->array_some($placedObjects->shootingStars, fn($shootingStar) => $this->array_some($shootingStar->lines, fn($shootingStarLine) => $this->lineConnected($line, $shootingStarLine))))) {
+            return false;
+        }
+
         return true;
     }
 
-    function getPossiblePositions(int $playerId, array $shapeLines, bool $keysAsString) {
+    function getPossiblePositions(int $playerId, array $shapeLines, bool $keysAsString, bool $canTouchLines) {
         $player = $this->getPlayer($playerId);
         //$this->debug([$playerId, $player]);
         $playerSheet = $this->SHEETS[$player->sheet];
@@ -216,6 +241,9 @@ trait UtilTrait {
             $this->linesStrToLines($player->lines),
             $playerSheet->lines
         );
+        $placedObjects = $player->objects;
+        $placedObjects->shootingStars = ShootingStarType::linesAndHeadAsArrays($placedObjects->shootingStars);
+
         $result = [];
 
         for ($x = -1; $x <= 7; $x++) {
@@ -227,7 +255,9 @@ trait UtilTrait {
                     if ($this->isPossiblePosition(
                         $shiftedLines,
                         $playerSheet,
-                        $placedLines
+                        $placedLines, 
+                        $placedObjects,
+                        $canTouchLines
                     )) {
                         $possibleRotationsForPosition[] = $rotation;
                     }
@@ -309,8 +339,10 @@ trait UtilTrait {
         }
     }
 
-    private function calculateShootingStarsScore(PlayerScore &$playerScore) {
-        // TODO
+    private function calculateShootingStarsScore(PlayerScore &$playerScore, array $shootingStars) {
+        foreach ($shootingStars as $shootingStar) {
+            $playerScore->shootingStars += count($shootingStar->lines);
+        }
     }
 
     private function calculateStar1Score(PlayerScore &$playerScore) {
@@ -328,6 +360,8 @@ trait UtilTrait {
             $this->linesStrToLines($player->lines),
             $playerSheet->lines,
         );
+        $placedObjects = $player->objects;
+
         $constellations = $this->getConstellations($placedLines);
         $validConstellations = $this->getValidConstellations($constellations);
         //$player->id == 2343492 && $this->debug($validConstellations);
@@ -335,7 +369,7 @@ trait UtilTrait {
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
         $this->calculatePlanetsScore($playerScore, $validConstellations, $planets);
-        $this->calculateShootingStarsScore($playerScore);
+        $this->calculateShootingStarsScore($playerScore, $placedObjects->shootingStars);
         $this->calculateStar1Score($playerScore);
         $this->calculateStar2Score($playerScore);
         

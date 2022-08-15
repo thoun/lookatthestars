@@ -253,6 +253,17 @@ var TableCenter = /** @class */ (function () {
     }
     return TableCenter;
 }());
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -274,6 +285,9 @@ function isSafari() {
 }
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, day) {
+        var _this = this;
+        var _a;
+        this.game = game;
         this.playerId = Number(player.id);
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
         for (var i = 3; i <= 8; i++) {
@@ -282,7 +296,20 @@ var PlayerTable = /** @class */ (function () {
         html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         this.placeLines(player.lines);
-        this.placeLines(player.roundLines, ['round']);
+        player.roundObjects.shootingStars.forEach(function (shootingStar) {
+            _this.placeLines(shootingStar.lines);
+            _this.placeShootingStarHead(shootingStar.head);
+        });
+        if (player.roundLines) {
+            this.placeLines(player.roundLines, ['round']);
+        }
+        if (player.roundObjects) {
+            if ((_a = player.roundObjects.shootingStars) === null || _a === void 0 ? void 0 : _a.length) {
+                var shootingStar = player.roundObjects.shootingStars[0];
+                this.placeLines(shootingStar.lines, ['round']);
+                this.placeShootingStarHead(shootingStar.head, ['round']);
+            }
+        }
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
             this.setPlanetScore(player.playerScore.planets);
@@ -310,6 +337,34 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         if (additionalClass === void 0) { additionalClass = []; }
         lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
+    };
+    PlayerTable.prototype.placeShootingStarHead = function (head, additionalClass) {
+        var _a, _b, _c, _d;
+        if (additionalClass === void 0) { additionalClass = []; }
+        var lineid = "shooting-star-head-".concat(this.playerId, "-").concat(head);
+        var headLinesLength = 13;
+        var x = SVG_LEFT_MARGIN + parseInt(head[0], 16) * SVG_LINE_WIDTH;
+        var y = SVG_BOTTOM_MARGIN - parseInt(head[1], 16) * SVG_LINE_HEIGHT;
+        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newLine.setAttribute('id', lineid + '1');
+        newLine.setAttribute('d', "M".concat(x - headLinesLength, " ").concat(y, " L").concat(x + headLinesLength, " ").concat(y, " Z"));
+        (_a = newLine.classList).add.apply(_a, __spreadArray(['line'], additionalClass, false));
+        $('lats-svg-' + this.playerId).append(newLine);
+        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newLine.setAttribute('id', lineid + '1');
+        newLine.setAttribute('d', "M".concat(x, " ").concat(y - headLinesLength, " L").concat(x, " ").concat(y + headLinesLength, " Z"));
+        (_b = newLine.classList).add.apply(_b, __spreadArray(['line'], additionalClass, false));
+        $('lats-svg-' + this.playerId).append(newLine);
+        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newLine.setAttribute('id', lineid + '1');
+        newLine.setAttribute('d', "M".concat(x - headLinesLength, " ").concat(y - headLinesLength, " L").concat(x + headLinesLength, " ").concat(y + headLinesLength, " Z"));
+        (_c = newLine.classList).add.apply(_c, __spreadArray(['line'], additionalClass, false));
+        $('lats-svg-' + this.playerId).append(newLine);
+        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newLine.setAttribute('id', lineid + '1');
+        newLine.setAttribute('d', "M".concat(x + headLinesLength, " ").concat(y - headLinesLength, " L").concat(x - headLinesLength, " ").concat(y + headLinesLength, " Z"));
+        (_d = newLine.classList).add.apply(_d, __spreadArray(['line'], additionalClass, false));
+        $('lats-svg-' + this.playerId).append(newLine);
     };
     PlayerTable.prototype.placeLine = function (line, xfrom, yfrom, xto, yto, additionalClass) {
         var _a;
@@ -352,6 +407,9 @@ var PlayerTable = /** @class */ (function () {
             rotation: this.shapeRotation,
         };
     };
+    PlayerTable.prototype.getShootingStarInformations = function () {
+        return __assign(__assign({}, this.getShapeInformations()), { size: this.shootingStarSize });
+    };
     PlayerTable.prototype.setCardBorderPosition = function () {
         var x = SVG_LEFT_MARGIN + (this.shapeX * SVG_LINE_WIDTH);
         var y = SVG_BOTTOM_MARGIN - (this.shapeY * SVG_LINE_HEIGHT);
@@ -360,21 +418,34 @@ var PlayerTable = /** @class */ (function () {
         cardBorderDiv.style.top = "".concat(y - 180, "px");
     };
     PlayerTable.prototype.getValid = function () {
-        return this.possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
+        var possiblePositions;
+        if (this.currentCard.type == 1) {
+            possiblePositions = this.shootingStarPossiblePositions[this.shootingStarSize];
+        }
+        else if (this.currentCard.type == 2) {
+            possiblePositions = this.possiblePositions;
+        }
+        return possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
     };
     PlayerTable.prototype.getValidClass = function () {
         return this.getValid() ? 'valid' : 'invalid';
     };
     PlayerTable.prototype.setShapeToPlace = function (currentShape, possiblePositions) {
         var _this = this;
-        if (this.currentShape != null) {
+        if (this.currentCard != null) {
             return;
         }
-        this.currentShape = currentShape;
-        this.possiblePositions = possiblePositions;
+        this.currentCard = currentShape;
         this.shapeX = 3;
         this.shapeY = 3;
         this.shapeRotation = 0;
+        if (this.currentCard.type == 1) {
+            this.shootingStarPossiblePositions = possiblePositions;
+            this.shootingStarSize = 3;
+        }
+        else if (this.currentCard.type == 2) {
+            this.possiblePositions = possiblePositions;
+        }
         var validClass = this.getValidClass();
         dojo.place("<div id=\"player-table-".concat(this.playerId, "-card-border\" class=\"card-border\" data-validity=\"").concat(validClass, "\">\n            <div id=\"player-table-").concat(this.playerId, "-button-left\" type=\"button\" class=\"arrow left\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-right\" type=\"button\" class=\"arrow right\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-top\" type=\"button\" class=\"arrow top\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-bottom\" type=\"button\" class=\"arrow bottom\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-button-rotate\" type=\"button\" class=\"arrow rotate\"></div>\n        </div>"), "player-table-".concat(this.playerId, "-main"));
         this.setCardBorderPosition();
@@ -385,13 +456,9 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-button-rotate")).addEventListener('click', function () { return _this.rotateShape(); });
         this.moveShape();
     };
-    PlayerTable.prototype.moveShape = function () {
+    PlayerTable.prototype.getRotatedAndShiftedLines = function (lines) {
         var _this = this;
-        var _a;
-        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
-        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
-        var validClass = this.getValidClass();
-        var rotatedLines = this.currentShape.lines.map(function (line) { return line; });
+        var rotatedLines = lines.map(function (line) { return line; });
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
             rotatedLines = rotatedLines.map(function (line) {
@@ -416,7 +483,47 @@ var PlayerTable = /** @class */ (function () {
                 (Number.parseInt(line[2], 16) + _this.shapeX).toString(16) +
                 (Number.parseInt(line[3], 16) + _this.shapeY).toString(16);
         });
+        return rotatedAndShiftedLines;
+    };
+    ;
+    PlayerTable.prototype.getRotatedAndShiftedCoordinates = function (coordinates) {
+        var rotatedCoordinates = '' + coordinates;
+        if (this.shapeRotation == 1 || this.shapeRotation == 3) {
+            // rotate 90°
+            rotatedCoordinates =
+                (Number.parseInt(rotatedCoordinates[1], 16)).toString(16) +
+                    (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16);
+        }
+        if (this.shapeRotation == 2 || this.shapeRotation == 3) {
+            // rotate 180°
+            rotatedCoordinates =
+                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16) +
+                    (3 - Number.parseInt(rotatedCoordinates[1], 16)).toString(16);
+        }
+        var rotatedAndShiftedCoordinates = (Number.parseInt(rotatedCoordinates[0], 16) + this.shapeX).toString(16) +
+            (Number.parseInt(rotatedCoordinates[1], 16) + this.shapeY).toString(16);
+        return rotatedAndShiftedCoordinates;
+    };
+    ;
+    PlayerTable.prototype.moveShape = function () {
+        var _a;
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        var validClass = this.getValidClass();
+        var lines = [];
+        if (this.currentCard.type == 1) {
+            lines = this.game.gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].lines;
+        }
+        else if (this.currentCard.type == 2) {
+            lines = this.currentCard.lines;
+        }
+        var rotatedAndShiftedLines = this.getRotatedAndShiftedLines(lines);
         this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
+        if (this.currentCard.type == 1) {
+            var head = this.game.gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].head;
+            var rotatedAndShiftedHead = this.getRotatedAndShiftedCoordinates(head);
+            this.placeShootingStarHead(rotatedAndShiftedHead, ['temp-line', validClass]);
+        }
         this.setCardBorderPosition();
         document.getElementById("player-table-".concat(this.playerId, "-card-border")).dataset.validity = validClass;
         (_a = document.getElementById('placeShape_button')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', !this.getValid());
@@ -459,7 +566,7 @@ var PlayerTable = /** @class */ (function () {
         (_a = cardBorderDiv === null || cardBorderDiv === void 0 ? void 0 : cardBorderDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(cardBorderDiv);
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
-        this.currentShape = null;
+        this.currentCard = null;
     };
     PlayerTable.prototype.cancelPlacedLines = function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
@@ -492,6 +599,12 @@ var PlayerTable = /** @class */ (function () {
         // validate round lines
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
         oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round'); });
+    };
+    PlayerTable.prototype.setShootingStarSize = function (size) {
+        this.shootingStarSize = size;
+        this.moveShape();
+        var buttons = Array.from(document.getElementsByClassName('setShootingStarSizeButton'));
+        buttons.forEach(function (button) { return button.classList.toggle('current-size', button.dataset.shootingStarSize == '' + size); });
     };
     return PlayerTable;
 }());
@@ -607,7 +720,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentShape, args.possiblePositions[this.getPlayerId()]);
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions[this.getPlayerId()]);
     };
     LookAtTheStars.prototype.onEnteringNextShape = function () {
         this.playersTables.forEach(function (playerTable) { return playerTable.nextShape(); });
@@ -643,8 +756,21 @@ var LookAtTheStars = /** @class */ (function () {
                     this.onLeavingPlaceShape();
                 }
                 if (playerActive) {
-                    this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
-                    this.addActionButton("skipShape_button", _("Skip turn"), function () { return _this.skipShape(); });
+                    var placeCardArg = args;
+                    if (placeCardArg.currentCard.type == 1) {
+                        [1, 2, 3].forEach(function (size) {
+                            _this.addActionButton("setShootingStarSize_button".concat(size), _('${size}-line(s) shooting star').replace('${size}', size), function () { return _this.getCurrentPlayerTable().setShootingStarSize(size); }, null, null, 'gray');
+                            var buttonDiv = document.getElementById("setShootingStarSize_button".concat(size));
+                            buttonDiv.classList.add('setShootingStarSizeButton');
+                            buttonDiv.dataset.shootingStarSize = '' + size;
+                            buttonDiv.classList.toggle('current-size', size == 3);
+                        });
+                        this.addActionButton("placeShootingStar_button", _("Place shooting star"), function () { return _this.placeShootingStar(); });
+                    }
+                    else if (placeCardArg.currentCard.type == 2) {
+                        this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
+                    }
+                    this.addActionButton("skipCard_button", _("Skip this card"), function () { return _this.skipCard(); }, null, null, 'red');
                 }
                 else {
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
@@ -816,17 +942,24 @@ var LookAtTheStars = /** @class */ (function () {
         var informations = this.getCurrentPlayerTable().getShapeInformations();
         this.takeAction('placeShape', informations);
     };
+    LookAtTheStars.prototype.placeShootingStar = function () {
+        if (!this.checkAction('placeShootingStar')) {
+            return;
+        }
+        var informations = this.getCurrentPlayerTable().getShootingStarInformations();
+        this.takeAction('placeShootingStar', informations);
+    };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
         if (!this.checkAction('cancelPlaceShape')) {
             return;
         }
         this.takeAction('cancelPlaceShape');
     };
-    LookAtTheStars.prototype.skipShape = function () {
-        if (!this.checkAction('skipShape')) {
+    LookAtTheStars.prototype.skipCard = function () {
+        if (!this.checkAction('skipCard')) {
             return;
         }
-        this.takeAction('skipShape');
+        this.takeAction('skipCard');
     };
     LookAtTheStars.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -876,10 +1009,14 @@ var LookAtTheStars = /** @class */ (function () {
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
             ['placedLines', 1],
+            ['placedShootingStar', 1],
             ['cancelPlacedLines', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
             ['scorePlanets', SCORE_MS],
+            ['scoreShootingStars', SCORE_MS],
+            ['scoreStar1', SCORE_MS],
+            ['scoreStar2', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -895,6 +1032,10 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.notif_placedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
     };
+    LookAtTheStars.prototype.notif_placedShootingStar = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
+        this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
+    };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
     };
@@ -906,6 +1047,15 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_scorePlanets = function (notif) {
         this.getPlayerTable(notif.args.playerId).setPlanetScore(notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_scoreShootingStars = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setShootingStarsScore(notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_scoreStar1 = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setStar1Score(notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_scoreStar2 = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setStar2Score(notif.args.score);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
