@@ -11,8 +11,10 @@ trait DebugUtilTrait {
             return;
         } 
 
-        // for bonus lines
-        //$this->insertLinesStr(2343492, ['0011', '1122', '2233']);
+        // for bonus : line
+        $this->insertLinesStr(2343492, ['0011', '1122', '2233']);
+        // for bonus : planet
+        //$this->insertLinesStr(2343492, ['0001', '0102', '0203']);
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);

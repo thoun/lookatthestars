@@ -91,7 +91,7 @@ $playerActionsGameStates = [
         "name" => "placeShape",
         "descriptionmyturn" => clienttranslate('${you} must place the shape'),
         "type" => "private",
-        "args" => "argPlaceShape", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "args" => "argPlaceShape",
         "possibleactions" => [ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ],
         "transitions" => [
           'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
@@ -103,7 +103,7 @@ $playerActionsGameStates = [
         "name" => "placePlanet",
         "descriptionmyturn" => clienttranslate('${you} can place a new planet on an unused star'),
         "type" => "private",
-        "args" => "argPlacePlanet", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "args" => "argPlacePlanet",
         "possibleactions" => [ "placePlanet", "skipBonus", "cancelPlaceShape" ],
         "transitions" => []
     ],
@@ -112,7 +112,7 @@ $playerActionsGameStates = [
         "name" => "placeLine",
         "descriptionmyturn" => clienttranslate('${you} can place a new line between 2 adjacent stars'),
         "type" => "private",
-        "args" => "argPlaceLine", //this method will be called with playerId as a parametar and is used to calculate arguments for this action for specific player
+        "args" => "argPlaceLine",
         "possibleactions" => [ "placeLine", "skipBonus", "cancelPlaceShape" ],
         "transitions" => []
     ],

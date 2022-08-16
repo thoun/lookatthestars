@@ -72,6 +72,17 @@
         self::ajaxResponse();
     }
 
+    public function placePlanet() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placePlanet($x, $y);
+
+        self::ajaxResponse();
+    }
+
     public function cancelPlaceShape() {
       self::setAjaxMode();
 

@@ -214,15 +214,43 @@ trait UtilTrait {
         return $day;
     }
 
-    function isPossiblePositionForLine(array $line, LatsPlayer $player, bool $canTouchLines) {
+    function isFreeCoordinates(array $coordinates, LatsPlayer $player, int $day) {
         // not outside the board
-        $minY = 2 * $this->getDay();
+        $minY = 2 * $day;
+        if ($coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10) {
+            return false;
+        }
+
+        // no always forbidden points, sheet forbidden points, or planet
+        $forbiddenCoordinates = $player->getForbiddenCoordinates();
+
+        if ($this->coordinatesInArray($coordinates, $forbiddenCoordinates)) {
+            return false;
+        }
+
+        $placedLines = $player->getLines();
+        if ($this->array_some($placedLines, fn($placedLine) => $this->coordinatesInArray($coordinates, $placedLine))) {
+            return false;
+        }
+
+        // no touching a shooting star
+        $shootingStars = $player->getShootingStars();
+        if ($this->array_some($shootingStars, fn($shootingStar) => $this->array_some($shootingStar->lines, fn($shootingStarLine) => $this->coordinatesInArray($coordinates, $shootingStarLine)))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function isPossiblePositionForLine(array $line, LatsPlayer $player, int $day, bool $canTouchLines) {
+        // not outside the board
+        $minY = 2 * $day;
         if ($this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10)) {
             return false;
         }
 
         // no always forbidden points, sheet forbidden points, or planet
-        $forbiddenCoordinates = $player->getforbiddenCoordinates();
+        $forbiddenCoordinates = $player->getForbiddenCoordinates();
 
         if ($this->array_some($line, fn($coordinates) => $this->coordinatesInArray($coordinates, $forbiddenCoordinates))) {
             return false;
@@ -247,12 +275,13 @@ trait UtilTrait {
         return true;
     }
 
-    function isPossiblePositionForLines(array $shiftedLines, LatsPlayer $player, bool $canTouchLines) {
-        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $player, $canTouchLines));
+    function isPossiblePositionForLines(array $shiftedLines, LatsPlayer $player, int $day, bool $canTouchLines) {
+        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $player, $day, $canTouchLines));
     }
 
     function getPossiblePositions(int $playerId, array $shapeLines, bool $canTouchLines) {
         $player = $this->getPlayer($playerId);
+        $day = $this->getDay();
 
         $result = [];
 
@@ -264,6 +293,7 @@ trait UtilTrait {
                     if ($this->isPossiblePositionForLines(
                         $shiftedLines,
                         $player,
+                        $day,
                         $canTouchLines
                     )) {
                         $possibleRotationsForPosition[] = $rotation;
@@ -278,6 +308,7 @@ trait UtilTrait {
 
     function getPossiblePositionsForLine(int $playerId) {
         $player = $this->getPlayer($playerId);
+        $day = $this->getDay();
 
         $possibleLines = [];
 
@@ -285,7 +316,8 @@ trait UtilTrait {
             for ($y = 0; $y <= 10; $y++) {
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x+1, $y]], // to the right
-                    $player,
+                    $player, 
+                    $day,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y);
@@ -293,6 +325,7 @@ trait UtilTrait {
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x, $y+1]], // to the top
                     $player,
+                    $day,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x).dechex($y+1);
@@ -300,6 +333,7 @@ trait UtilTrait {
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x+1, $y+1]], // to top right
                     $player,
+                    $day,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y+1);
@@ -307,6 +341,7 @@ trait UtilTrait {
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y+1], [$x+1, $y]], // the other diagonal
                     $player,
+                    $day,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y+1).dechex($x+1).dechex($y);
@@ -315,6 +350,25 @@ trait UtilTrait {
         }
 
         return $possibleLines;
+    }
+
+    function getFreeCoordinates(LatsPlayer $player) {
+        $day = $this->getDay();
+
+        $result = [];
+
+        for ($x = 0; $x <= 9; $x++) {
+            for ($y = 0; $y <= 10; $y++) {
+                if ($this->isFreeCoordinates(
+                    [$x, $y],
+                    $player,
+                    $day
+                )) {
+                    $result[] = dechex($x).dechex($y);
+                }
+            }
+        }
+        return $result;
     }
 
     function getValidConstellations(array $constellations) {
@@ -394,8 +448,9 @@ trait UtilTrait {
         }
     }
 
-    private function findShape(array $lines, array $shapeLines, bool $allowLineReuse = false) {
+    private function findShape(array $allLines, array $shapeLines, array $ignoreLines, bool $allowLineReuse = false) {
         $shapesFound = [];
+        $lines = array_values(array_filter($allLines, fn($line) => !$this->lineInArray($line, $ignoreLines)));
 
         for ($x = -1; $x <= 7; $x++) {
             for ($y = -1; $y <= 8; $y++) {
@@ -416,7 +471,7 @@ trait UtilTrait {
     private function calculateStar1Score(PlayerScore &$playerScore, array $lines) {
         $objective = $this->STAR1[intval($this->getGameStateValue(STAR1))];
 
-        $shapesFound = $this->findShape($lines, $objective->lines);
+        $shapesFound = $this->findShape($lines, $objective->lines, []);
 
         $playerScore->star1 += count($shapesFound) * $objective->points;
     }

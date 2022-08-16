@@ -21,6 +21,7 @@ trait ActionTrait {
             throw new \BgaUserException("Current card is not a standard shape");
         }
 
+        $player = $this->getPlayer($playerId);
         $possiblePositions = $this->getPossiblePositions(
             $playerId, 
             $card->lines, 
@@ -44,13 +45,8 @@ trait ActionTrait {
         ]);
 
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
-
-        $player = $this->getPlayer($playerId);
-        $allLines = $this->linesStrToLines(array_merge(
-            $player->lines,
-            $player->roundLines
-        ));
-        $shapesFound = $this->findShape($allLines, $objective->lines);
+        $allLines = $player->getLines(true);
+        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
         if (count($shapesFound) > 0) { // TODO ignore already applied
             $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
         } else {
@@ -78,8 +74,6 @@ trait ActionTrait {
         if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
             throw new \BgaUserException("Invalid position");
         }
-
-        
 
         $shiftedLines = $this->shiftLines($shootingStar->lines, $x, $y, $rotation);
         $shiftedHead = $this->shiftCoordinates($shootingStar->head, $x, $y, $rotation);
@@ -119,13 +113,48 @@ trait ActionTrait {
             throw new \BgaUserException("Invalid position");
         }
 
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+        $player = $this->getPlayer($playerId);
+        $allLines = $player->getLines(true);
+        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+        if (count($shapesFound) == 0) {
+            throw new \BgaUserException("No valid shape for bonus");
+        }
+
         $roundObjects = new Objects();
         $roundObjects->line = $fromStr.$toStr;
+        $roundObjects->linesUsedForPower = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedLines', '', [
             'playerId' => $playerId,
             'lines' => [$fromStr.$toStr],
+        ]);
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    }
+    
+    public function placePlanet(int $x, int $y) {
+        self::checkAction('placePlanet'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $possibleCoordinates = $this->getFreeCoordinates($this->getPlayer($playerId));
+
+        $coordinatesStr = dechex($x).dechex($y);
+        if (!$this->array_some($possibleCoordinates, fn($possibleCoordinate) => $possibleCoordinate == $coordinatesStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+        
+        $roundObjects = new Objects();
+        $roundObjects->planets = [
+            $coordinatesStr
+        ];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedPlanet', '', [
+            'playerId' => $playerId,
+            'coordinates' => $coordinatesStr
         ]);
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');

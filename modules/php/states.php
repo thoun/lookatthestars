@@ -32,6 +32,7 @@ trait StateTrait {
 
             // apply turn objects
             $player->objects->shootingStars = array_merge($player->objects->shootingStars, $player->roundObjects->shootingStars);
+            $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
         }
 

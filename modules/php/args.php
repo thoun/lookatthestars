@@ -59,5 +59,13 @@ trait ArgsTrait {
             'possibleLines' => $possibleLines,
         ];
     }
+
+    function argPlacePlanet(int $playerId) {
+        $possibleCoordinates = $this->getFreeCoordinates($this->getPlayer($playerId));
+
+        return [
+            'possibleCoordinates' => $possibleCoordinates,
+        ];
+    }
     
 }
