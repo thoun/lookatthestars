@@ -96,7 +96,17 @@ $playerActionsGameStates = [
         "transitions" => [
           'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
           'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
+          'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
+    ],
+
+    ST_PRIVATE_CONFIRM_TURN => [
+        "name" => "confirmTurn",
+        "descriptionmyturn" => clienttranslate('${you} must confirm your turn'),
+        "type" => "private",
+        "args" => "argConfirmTurn",
+        "possibleactions" => [ "confirmTurn", "cancelBonus", "cancelPlaceShape" ],
+        "transitions" => []
     ],
 
     ST_PRIVATE_PLACE_PLANET => [
@@ -105,7 +115,9 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placePlanet", "skipBonus", "cancelPlaceShape" ],
-        "transitions" => []
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
     ],
 
     ST_PRIVATE_PLACE_LINE => [
@@ -114,7 +126,9 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argPlaceLine",
         "possibleactions" => [ "placeLine", "skipBonus", "cancelPlaceShape" ],
-        "transitions" => []
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
     ],
 ];
 

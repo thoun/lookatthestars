@@ -42,3 +42,15 @@ $game_options = [
         'default' => 1,
     ],
 ];
+
+$game_preferences = [
+    200 => [
+        'name' => totranslate('Countdown timer for confirmation'),
+        'needReload' => false,
+        'values' => [
+            1 => ['name' => totranslate('Enabled')],
+            2 => ['name' => totranslate('Disabled')],
+        ],
+        'default' => 1,
+    ],
+];

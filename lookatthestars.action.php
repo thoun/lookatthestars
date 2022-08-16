@@ -91,6 +91,14 @@
       self::ajaxResponse();
     }
 
+    public function cancelBonus() {
+      self::setAjaxMode();
+
+      $this->game->cancelBonus();
+
+      self::ajaxResponse();
+    }
+
     public function skipCard() {
       self::setAjaxMode();
 
@@ -103,6 +111,14 @@
       self::setAjaxMode();
 
       $this->game->skipBonus();
+
+      self::ajaxResponse();
+    }
+
+    public function confirmTurn() {
+      self::setAjaxMode();
+
+      $this->game->confirmTurn();
 
       self::ajaxResponse();
     }

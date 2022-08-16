@@ -33,7 +33,7 @@ interface PlayerScore {
 
 interface Objects {
     shootingStars: ShootingStar[];
-    
+
     planets: string[];
     // TODO
 }
@@ -95,6 +95,10 @@ interface EnteringPlaceLineArgs {
 
 interface EnteringChooseCoordinatesArgs {
     possibleCoordinates: string[];
+}
+
+interface EnteringConfirmTurnArgs {
+    canCancelBonus: boolean;
 }
 
 interface NotifCardArgs {

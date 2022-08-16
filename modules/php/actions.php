@@ -50,7 +50,7 @@ trait ActionTrait {
         if (count($shapesFound) > 0) { // TODO ignore already applied
             $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
         } else {
-            $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
         }
     }
 
@@ -96,7 +96,7 @@ trait ActionTrait {
             'head' => $headStr
         ]);
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
     public function placeLine(int $xFrom, int $yFrom, int $xTo, int $yTo) {
@@ -131,7 +131,7 @@ trait ActionTrait {
             'lines' => [$fromStr.$toStr],
         ]);
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
     
     public function placePlanet(int $x, int $y) {
@@ -157,7 +157,7 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
     public function cancelPlaceShape() {
@@ -182,6 +182,14 @@ trait ActionTrait {
     }
 
     public function skipBonus() {
+        $playerId = intval($this->getCurrentPlayerId());
+
+        // TODO notif?
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    }
+
+    public function confirmTurn() {
         $playerId = intval($this->getCurrentPlayerId());
 
         // TODO notif?

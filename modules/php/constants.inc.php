@@ -12,6 +12,8 @@ define('ST_PRIVATE_PLACE_SHAPE', 30);
 define('ST_PRIVATE_PLACE_PLANET', 40);
 define('ST_PRIVATE_PLACE_LINE', 41);
 
+define('ST_PRIVATE_CONFIRM_TURN', 60);
+
 define('ST_NEXT_SHAPE', 70);
 
 define('ST_END_SCORE', 90);

@@ -67,5 +67,13 @@ trait ArgsTrait {
             'possibleCoordinates' => $possibleCoordinates,
         ];
     }
+
+    function argConfirmTurn(int $playerId) {
+        $bonusPlayed = $this->getUniqueValueFromDB("SELECT player_round_objects FROM player WHERE player_id = $playerId") != null;
+
+        return [
+            'canCancelBonus' => $bonusPlayed,
+        ];
+    }
     
 }

@@ -212,6 +212,15 @@ class LookAtTheStars implements LookAtTheStarsGame {
                     (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                     break;
+                case 'confirmTurn':
+                    (this as any).addActionButton(`confirmTurn_button`, _("Confirm turn"), () => this.confirmTurn());
+                    this.startActionTimer(`confirmTurn_button`, 10);
+                    const confirmTurnArgs = args as EnteringConfirmTurnArgs;
+                    if (confirmTurnArgs.canCancelBonus) {
+                        (this as any).addActionButton(`cancelBonus_button`, _("Cancel bonus"), () => this.cancelBonus(), null, null, 'gray');
+                    }
+                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel turn"), () => this.cancelPlaceShape(), null, null, 'gray');
+                    break;
             }
         } else if (stateName == 'playCard') {
             (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
@@ -426,6 +435,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('cancelPlaceShape');
     }
 
+    public cancelBonus() {
+        if(!(this as any).checkAction('cancelBonus')) {
+            return;
+        }
+
+        this.takeAction('cancelBonus');
+    }
+
     public skipCard() {
         if(!(this as any).checkAction('skipCard')) {
             return;
@@ -442,6 +459,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('skipBonus');
     }
 
+    public confirmTurn() {
+        if(!(this as any).checkAction('confirmTurn')) {
+            return;
+        }
+
+        this.takeAction('confirmTurn');
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
@@ -449,7 +474,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     private startActionTimer(buttonId: string, time: number) {
-        if (Number((this as any).prefs[202]?.value) === 2) {
+        if (Number((this as any).prefs[200]?.value) === 2) {
             return;
         }
 

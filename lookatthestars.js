@@ -924,6 +924,15 @@ var LookAtTheStars = /** @class */ (function () {
                     this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
                     break;
+                case 'confirmTurn':
+                    this.addActionButton("confirmTurn_button", _("Confirm turn"), function () { return _this.confirmTurn(); });
+                    this.startActionTimer("confirmTurn_button", 10);
+                    var confirmTurnArgs = args;
+                    if (confirmTurnArgs.canCancelBonus) {
+                        this.addActionButton("cancelBonus_button", _("Cancel bonus"), function () { return _this.cancelBonus(); }, null, null, 'gray');
+                    }
+                    this.addActionButton("cancelPlaceShape_button", _("Cancel turn"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                    break;
             }
         }
         else if (stateName == 'playCard') {
@@ -1096,6 +1105,12 @@ var LookAtTheStars = /** @class */ (function () {
         }*/
         this.takeAction('cancelPlaceShape');
     };
+    LookAtTheStars.prototype.cancelBonus = function () {
+        if (!this.checkAction('cancelBonus')) {
+            return;
+        }
+        this.takeAction('cancelBonus');
+    };
     LookAtTheStars.prototype.skipCard = function () {
         if (!this.checkAction('skipCard')) {
             return;
@@ -1108,6 +1123,12 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('skipBonus');
     };
+    LookAtTheStars.prototype.confirmTurn = function () {
+        if (!this.checkAction('confirmTurn')) {
+            return;
+        }
+        this.takeAction('confirmTurn');
+    };
     LookAtTheStars.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -1115,7 +1136,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.startActionTimer = function (buttonId, time) {
         var _a;
-        if (Number((_a = this.prefs[202]) === null || _a === void 0 ? void 0 : _a.value) === 2) {
+        if (Number((_a = this.prefs[200]) === null || _a === void 0 ? void 0 : _a.value) === 2) {
             return;
         }
         var button = document.getElementById(buttonId);
