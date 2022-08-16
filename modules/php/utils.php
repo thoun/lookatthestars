@@ -68,15 +68,15 @@ trait UtilTrait {
     }
 
     function getPlayer(int $id) {
-        $sql = "SELECT * FROM player WHERE player_id = $id";// SELECT * FROM player WHERE player_id = 2343493
+        $sql = "SELECT * FROM player WHERE player_id = $id";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbResult) => new LatsPlayer($dbResult), array_values($dbResults))[0];
+        return array_map(fn($dbResult) => new LatsPlayer($dbResult, $this->SHEETS), array_values($dbResults))[0];
     }
 
     function getPlayers() {
         $sql = "SELECT * FROM player ORDER BY player_no";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbResult) => new LatsPlayer($dbResult), array_values($dbResults));
+        return array_map(fn($dbResult) => new LatsPlayer($dbResult, $this->SHEETS), array_values($dbResults));
     }
 
     function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
@@ -214,7 +214,7 @@ trait UtilTrait {
         return $day;
     }
 
-    function isPossiblePositionForLine(array $line, Sheet $playerSheet, array $placedLines, object $placedObjects, bool $canTouchLines) {
+    function isPossiblePositionForLine(array $line, LatsPlayer $player, bool $canTouchLines) {
         // not outside the board
         $minY = 2 * $this->getDay();
         if ($this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10)) {
@@ -222,16 +222,13 @@ trait UtilTrait {
         }
 
         // no always forbidden points, sheet forbidden points, or planet
-        $forbiddenCoordinates = array_merge(
-            $this->ALWAYS_FORBIDDEN_POINTS,
-            $playerSheet->forbiddenStars,
-            $playerSheet->planets,
-        );
+        $forbiddenCoordinates = $player->getforbiddenCoordinates();
 
         if ($this->array_some($line, fn($coordinates) => $this->coordinatesInArray($coordinates, $forbiddenCoordinates))) {
             return false;
         }
 
+        $placedLines = $player->getLines();
         // no pre-existing line
         if ($this->array_some($placedLines, fn($placedLine) => $this->sameLine($line, $placedLine))) {
             return false;
@@ -242,26 +239,20 @@ trait UtilTrait {
         }
 
         // no touching a shooting star
-        if ($this->array_some($placedObjects->shootingStars, fn($shootingStar) => $this->array_some($shootingStar->lines, fn($shootingStarLine) => $this->lineConnected($line, $shootingStarLine)))) {
+        $shootingStars = $player->getShootingStars();
+        if ($this->array_some($shootingStars, fn($shootingStar) => $this->array_some($shootingStar->lines, fn($shootingStarLine) => $this->lineConnected($line, $shootingStarLine)))) {
             return false;
         }
 
         return true;
     }
 
-    function isPossiblePositionForLines(array $shiftedLines, Sheet $playerSheet, array $placedLines, object $placedObjects, bool $canTouchLines) {
-        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $playerSheet, $placedLines, $placedObjects, $canTouchLines));
+    function isPossiblePositionForLines(array $shiftedLines, LatsPlayer $player, bool $canTouchLines) {
+        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $player, $canTouchLines));
     }
 
     function getPossiblePositions(int $playerId, array $shapeLines, bool $canTouchLines) {
         $player = $this->getPlayer($playerId);
-        $playerSheet = $this->SHEETS[$player->sheet];
-        $placedLines = array_merge(
-            $this->linesStrToLines($player->lines),
-            $playerSheet->lines
-        );
-        $placedObjects = $player->objects;
-        $placedObjects->shootingStars = ShootingStarType::linesAndHeadAsArrays($placedObjects->shootingStars);
 
         $result = [];
 
@@ -272,9 +263,7 @@ trait UtilTrait {
                     $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
                     if ($this->isPossiblePositionForLines(
                         $shiftedLines,
-                        $playerSheet,
-                        $placedLines, 
-                        $placedObjects,
+                        $player,
                         $canTouchLines
                     )) {
                         $possibleRotationsForPosition[] = $rotation;
@@ -289,14 +278,6 @@ trait UtilTrait {
 
     function getPossiblePositionsForLine(int $playerId) {
         $player = $this->getPlayer($playerId);
-        $playerSheet = $this->SHEETS[$player->sheet];
-        $placedLines = array_merge(
-            $this->linesStrToLines($player->lines),
-            $this->linesStrToLines($player->roundLines),
-            $playerSheet->lines
-        );
-        $placedObjects = $player->objects;
-        $placedObjects->shootingStars = ShootingStarType::linesAndHeadAsArrays($placedObjects->shootingStars);
 
         $possibleLines = [];
 
@@ -304,36 +285,28 @@ trait UtilTrait {
             for ($y = 0; $y <= 10; $y++) {
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x+1, $y]], // to the right
-                    $playerSheet,
-                    $placedLines, 
-                    $placedObjects,
+                    $player,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y);
                 }
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x, $y+1]], // to the top
-                    $playerSheet,
-                    $placedLines, 
-                    $placedObjects,
+                    $player,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x).dechex($y+1);
                 }
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y], [$x+1, $y+1]], // to top right
-                    $playerSheet,
-                    $placedLines, 
-                    $placedObjects,
+                    $player,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y+1);
                 }
                 if ($this->isPossiblePositionForLine(
                     [[$x, $y+1], [$x+1, $y]], // the other diagonal
-                    $playerSheet,
-                    $placedLines, 
-                    $placedObjects,
+                    $player,
                     true
                 )) {
                     $possibleLines[] = dechex($x).dechex($y+1).dechex($x+1).dechex($y);
