@@ -77,15 +77,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
-        Object.values(gamedatas.players).forEach(player => {
-            //this.highlightObjectiveLetters(player);
-            //this.setObjectivesCounters(Number(player.id), player.scoreSheets.current);
-        });
-
-        /*document.getElementById('round-panel').innerHTML = `${_('Round')}&nbsp;<span id="round-number-counter"></span>&nbsp;/&nbsp;12`;
-        this.roundNumberCounter = new ebg.counter();
-        this.roundNumberCounter.create(`round-number-counter`);
-        this.roundNumberCounter.setValue(gamedatas.roundNumber);*/
 
         this.setupNotifications();
         this.setupPreferences();
@@ -520,6 +511,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
             ['cancelPlacedLines', 1],
+            ['cancelBonus', 1],
             ['day', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
@@ -551,11 +543,15 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
     }
     notif_placedPlanet(notif: Notif<NotifPlacedCoordinatesArgs>) {
-        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round']);
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
+    }
+
+    notif_cancelBonus(notif: Notif<NotifPlacedLinesArgs>) {
+        this.getPlayerTable(notif.args.playerId).cancelBonus();
     }
 
     notif_day(notif: Notif<NotifDayArgs>) {

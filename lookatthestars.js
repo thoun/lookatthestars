@@ -299,7 +299,7 @@ var PlayerTable = /** @class */ (function () {
             this.placeLines(player.roundLines, ['round']);
         }
         if (player.roundObjects) {
-            this.placeInitialObjects(player.roundObjects, ['round']);
+            this.placeInitialObjects(player.roundObjects, ['round', 'round-bonus']);
         }
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
@@ -684,6 +684,10 @@ var PlayerTable = /** @class */ (function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
     };
+    PlayerTable.prototype.cancelBonus = function () {
+        var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round-bonus'));
+        oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+    };
     PlayerTable.prototype.setConstellationsScore = function (checkedConstellations, score) {
         for (var i = 3; i <= 8; i++) {
             if (checkedConstellations.includes(i)) {
@@ -799,14 +803,6 @@ var LookAtTheStars = /** @class */ (function () {
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
-        Object.values(gamedatas.players).forEach(function (player) {
-            //this.highlightObjectiveLetters(player);
-            //this.setObjectivesCounters(Number(player.id), player.scoreSheets.current);
-        });
-        /*document.getElementById('round-panel').innerHTML = `${_('Round')}&nbsp;<span id="round-number-counter"></span>&nbsp;/&nbsp;12`;
-        this.roundNumberCounter = new ebg.counter();
-        this.roundNumberCounter.create(`round-number-counter`);
-        this.roundNumberCounter.setValue(gamedatas.roundNumber);*/
         this.setupNotifications();
         this.setupPreferences();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
@@ -1180,6 +1176,7 @@ var LookAtTheStars = /** @class */ (function () {
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
             ['cancelPlacedLines', 1],
+            ['cancelBonus', 1],
             ['day', 1],
             ['score', 1],
             ['scoreConstellations', SCORE_MS],
@@ -1207,10 +1204,13 @@ var LookAtTheStars = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
     };
     LookAtTheStars.prototype.notif_placedPlanet = function (notif) {
-        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round']);
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
+    };
+    LookAtTheStars.prototype.notif_cancelBonus = function (notif) {
+        this.getPlayerTable(notif.args.playerId).cancelBonus();
     };
     LookAtTheStars.prototype.notif_day = function (notif) {
         var _this = this;

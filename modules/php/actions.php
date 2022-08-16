@@ -173,7 +173,24 @@ trait ActionTrait {
         $this->gamestate->initializePrivateState($playerId);
     }
 
+    public function cancelBonus() {
+        self::checkAction('cancelBonus'); 
+
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $this->DbQuery("UPDATE player SET `player_round_objects` = NULL WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('cancelBonus', '', [
+            'playerId' => $playerId,
+        ]);
+
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+        $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
+    }
+
     public function skipCard() {
+        self::checkAction('skipCard'); 
+
         $playerId = intval($this->getCurrentPlayerId());
 
         // TODO notif?
@@ -182,6 +199,8 @@ trait ActionTrait {
     }
 
     public function skipBonus() {
+        self::checkAction('skipBonus'); 
+
         $playerId = intval($this->getCurrentPlayerId());
 
         // TODO notif?
@@ -190,6 +209,8 @@ trait ActionTrait {
     }
 
     public function confirmTurn() {
+        self::checkAction('confirmTurn'); 
+
         $playerId = intval($this->getCurrentPlayerId());
 
         // TODO notif?

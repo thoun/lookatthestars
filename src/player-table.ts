@@ -58,7 +58,7 @@ class PlayerTable {
             this.placeLines(player.roundLines, ['round']);
         }
         if (player.roundObjects) {
-            this.placeInitialObjects(player.roundObjects, ['round']);
+            this.placeInitialObjects(player.roundObjects, ['round', 'round-bonus']);
         }
 
         if (player.playerScore) {
@@ -520,6 +520,11 @@ class PlayerTable {
     
     public cancelPlacedLines() {
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+    }
+    
+    public cancelBonus() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round-bonus')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
 

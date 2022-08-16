@@ -106,7 +106,10 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argConfirmTurn",
         "possibleactions" => [ "confirmTurn", "cancelBonus", "cancelPlaceShape" ],
-        "transitions" => []
+        "transitions" => [
+            'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
+            'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
+        ]
     ],
 
     ST_PRIVATE_PLACE_PLANET => [
