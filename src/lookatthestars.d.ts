@@ -33,6 +33,8 @@ interface PlayerScore {
 
 interface Objects {
     shootingStars: ShootingStar[];
+    
+    planets: string[];
     // TODO
 }
 
@@ -91,6 +93,10 @@ interface EnteringPlaceLineArgs {
     possibleLines: string[];
 }
 
+interface EnteringChooseCoordinatesArgs {
+    possibleCoordinates: string[];
+}
+
 interface NotifCardArgs {
     card: Card;
 }
@@ -101,6 +107,10 @@ interface NotifPlacedLinesArgs {
 }
 interface NotifPlacedShootingStarArgs extends NotifPlacedLinesArgs {
     head: string;
+}
+interface NotifPlacedCoordinatesArgs {
+    playerId: number;
+    coordinates: string;
 }
 
 interface NotifDayArgs {

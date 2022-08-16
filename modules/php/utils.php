@@ -125,8 +125,8 @@ trait UtilTrait {
     function setupObjectives() {
         $default = $this->getGameStateValue(OBJECTIVES) == '1';
 
-        $star1 = $default ? 2 : bga_rand(0, 9);
-        $star2 = $default ? 3 : bga_rand(0, 8);
+        $star1 = $default ? DEFAULT_STAR1 : bga_rand(0, 9);
+        $star2 = $default ? DEFAULT_STAR2 : bga_rand(0, 8);
         
         $this->setGameStateInitialValue(STAR1, $star1);
         $this->setGameStateInitialValue(STAR2, $star2);
@@ -228,7 +228,7 @@ trait UtilTrait {
             return false;
         }
 
-        $placedLines = $player->getLines();
+        $placedLines = $player->getLines(true);
         if ($this->array_some($placedLines, fn($placedLine) => $this->coordinatesInArray($coordinates, $placedLine))) {
             return false;
         }
@@ -507,21 +507,16 @@ trait UtilTrait {
 
     private function getPlayerScore(LatsPlayer $player) {
         $playerScore = new PlayerScore();
-        $playerSheet = $this->SHEETS[$player->sheet];
-        $placedLines = array_merge(
-            $this->linesStrToLines($player->lines),
-            $playerSheet->lines,
-        );
-        $placedObjects = $player->objects;
 
-        $constellations = $this->getConstellations($placedLines);
+        $lines = $player->getLines();
+
+        $constellations = $this->getConstellations($lines);
         $validConstellations = $this->getValidConstellations($constellations);
-        $planets = $playerSheet->planets;
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
-        $this->calculatePlanetsScore($playerScore, $validConstellations, $planets);
-        $this->calculateShootingStarsScore($playerScore, $placedObjects->shootingStars);
-        $this->calculateStar1Score($playerScore, $placedLines);
+        $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets());
+        $this->calculateShootingStarsScore($playerScore, $player->getShootingStars());
+        $this->calculateStar1Score($playerScore, $lines);
         $this->calculateStar2Score($playerScore);
         
         $playerScore->calculateTotal();

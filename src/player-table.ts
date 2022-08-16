@@ -52,20 +52,13 @@ class PlayerTable {
         dojo.place(html, document.getElementById('tables'));
 
         this.placeLines(player.lines);
-        player.roundObjects.shootingStars.forEach(shootingStar => {
-            this.placeLines(shootingStar.lines);
-            this.placeShootingStarHead(shootingStar.head);
-        });
+        this.placeInitialObjects(player.objects);
 
         if (player.roundLines) {
             this.placeLines(player.roundLines, ['round']);
         }
         if (player.roundObjects) {
-            if (player.roundObjects.shootingStars?.length) {
-                const shootingStar = player.roundObjects.shootingStars[0];
-                this.placeLines(shootingStar.lines, ['round']);
-                this.placeShootingStarHead(shootingStar.head, ['round']);
-            }
+            this.placeInitialObjects(player.roundObjects, ['round']);
         }
 
         if (player.playerScore) {
@@ -85,6 +78,15 @@ class PlayerTable {
                     svg.setAttribute('filter',"url(#PencilTexture)");
             },800);
         }*/
+    }
+
+    private placeInitialObjects(objects: Objects, classes: string[] = []) {
+        objects.shootingStars?.forEach(shootingStar => {
+            this.placeLines(shootingStar.lines, classes);
+            this.placeShootingStarHead(shootingStar.head, classes);
+        });
+
+        objects.planets?.forEach(planet => this.placeObject(planet, 'planet', classes));
     }
 
     public setDay(day: number) {
@@ -148,6 +150,24 @@ class PlayerTable {
         newLine.setAttribute('d', `M${x+headLinesLength} ${y-headLinesLength} L${x-headLinesLength} ${y+headLinesLength} Z`);
         newLine.classList.add('line', ...additionalClass);
         $('lats-svg-'+this.playerId).append(newLine);
+    }
+
+    placeObject(coordinates: string, type: 'planet', additionalClass: string[] = []) {
+        const newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+
+        const xCoordinate = parseInt(coordinates[0], 16);
+        const yCoordinate = parseInt(coordinates[1], 16);
+        const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
+        const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
+
+        newObject.setAttribute('id', type+coordinates);
+        newObject.setAttribute('x', `${x - 20}`);
+        newObject.setAttribute('y', `${y - 20}`);
+        newObject.setAttribute('width', `40`);
+        newObject.setAttribute('height', `40`);
+        newObject.setAttribute('href', `${g_gamethemeurl}img/objects.png`);
+        newObject.classList.add('object', ...additionalClass);
+        document.getElementById('lats-svg-'+this.playerId).after(newObject);
     }
 
     private placeLine(line: string, xfrom: number, yfrom: number, xto: number, yto: number, additionalClass: string[] = []) {
@@ -545,6 +565,30 @@ class PlayerTable {
 
         const buttons = Array.from(document.getElementsByClassName('setShootingStarSizeButton')) as HTMLElement[];
         buttons.forEach(button => button.classList.toggle('current-size', button.dataset.shootingStarSize == ''+size));
+    }
+    
+    public setStarSelection(possibleCoordinates: string[], placeFunction: (x: number, y: number) => void) {
+        possibleCoordinates.forEach(possibleCoordinate => {
+            const xCoordinate = parseInt(possibleCoordinate[0], 16);
+            const yCoordinate = parseInt(possibleCoordinate[1], 16);
+            const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
+            const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
+
+            let newLine = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            newLine.setAttribute('id', 'possible-coordinates-'+possibleCoordinates);
+            newLine.setAttribute('cx', `${x}`);
+            newLine.setAttribute('cy', `${y}`);
+            newLine.setAttribute('r', `10`);
+            newLine.classList.add('coordinates-selector');
+            $('lats-svg-'+this.playerId).append(newLine);
+
+            newLine.addEventListener('click', () => placeFunction(xCoordinate, yCoordinate));
+        });
+    }
+
+    public removeStarSelection() {
+        const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('coordinates-selector')) as HTMLElement[];
+        oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
     }
 
 }

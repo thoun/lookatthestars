@@ -144,7 +144,7 @@ class LookAtTheStars extends Table {
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
             $playerDb['lines'] = $playerDb['lines'] ? json_decode($playerDb['lines'], true) : [];
             $playerDb['roundLines'] = $playerDb['roundLines'] ? json_decode($playerDb['roundLines'], true) : [];
-            $playerDb['objects'] = $playerDb['objects'] ?? new Objects();
+            $playerDb['objects'] = json_decode($playerDb['objects']) ?? new Objects();
             $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new Objects();
             $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($this->getPlayer($playerId)) : null;
         }

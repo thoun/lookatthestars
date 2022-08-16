@@ -33,6 +33,14 @@ class LatsPlayer {
         return array_map(fn($lineStr) => $this->lineStrToLine($lineStr), $linesStr);
     }
 
+    private function coordinateStrToCoordinate(string $coordinatesStr) {
+        return [hexdec($coordinatesStr[0]), hexdec($coordinatesStr[1])];
+    }
+
+    private function coordinatesStrToCoordinates(array $coordinatesStr) {
+        return array_map(fn($coordinateStr) => $this->coordinateStrToCoordinate($coordinateStr), $coordinatesStr);
+    }
+
     public function getForbiddenCoordinates() {
         $forbiddenCoordinates = array_merge(
             ALWAYS_FORBIDDEN_POINTS,
@@ -72,8 +80,19 @@ class LatsPlayer {
     }
 
     public function getPlanets(bool $includeRound = false) {
-        // TODO
-        return $this->sheet->planets;
+        $planets = array_merge(
+            $this->coordinatesStrToCoordinates($this->objects->planets),
+            $this->sheet->planets
+        );
+
+        if ($includeRound) {
+            return array_merge(
+                $planets,
+                $this->coordinatesStrToCoordinates($this->roundObjects->planets)
+            );
+        } else {
+            return $planets;
+        }
     }
 }
 ?>

@@ -119,6 +119,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeLine':
                 this.onEnteringPlaceLine(args.args);
                 break;
+            case 'placePlanet':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placePlanet(x, y));
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -134,6 +137,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
     
     private onEnteringPlaceLine(args: EnteringPlaceLineArgs) {
         this.getCurrentPlayerTable()?.setLineToPlace(args.possibleLines as any);
+    }
+    
+    onEnteringStarSelection(args: EnteringChooseCoordinatesArgs, placeFunction: (x: number, y: number) => void) {
+        this.getCurrentPlayerTable()?.setStarSelection(args.possibleCoordinates, placeFunction);
     }
 
     onEnteringNextShape() {
@@ -154,6 +161,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeLine':
                 this.onLeavingPlaceLine();
                 break;
+            case 'placePlanet':
+                this.onLeavingStarSelection();
+                break;
         }
     }
     
@@ -163,6 +173,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     private onLeavingPlaceLine() {
         this.getCurrentPlayerTable()?.removeLineToPlace();
+    }
+
+    private onLeavingStarSelection() {
+        this.getCurrentPlayerTable()?.removeStarSelection();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -194,11 +208,16 @@ class LookAtTheStars implements LookAtTheStarsGame {
                     (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                     break;
+                case 'placePlanet':
+                    (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
+                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+                    break;
             }
         } else if (stateName == 'playCard') {
             (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
-            this.getCurrentPlayerTable()?.removeShapeToPlace();
-            this.getCurrentPlayerTable()?.removeLineToPlace();
+            this.onLeavingPlaceShape();
+            this.onLeavingPlaceLine();
+            this.onLeavingStarSelection();
         }
     } 
     
@@ -391,6 +410,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placeLine', informations);
     }
 
+    public placePlanet(x: number, y: number) {
+        if(!(this as any).checkAction('placePlanet')) {
+            return;
+        }
+
+        this.takeAction('placePlanet', { x, y });
+    }
+
     public cancelPlaceShape() {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -466,6 +493,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['newShape', ANIMATION_MS],
             ['placedLines', 1],
             ['placedShootingStar', 1],
+            ['placedPlanet', 1],
             ['cancelPlacedLines', 1],
             ['day', 1],
             ['score', 1],
@@ -496,6 +524,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     notif_placedShootingStar(notif: Notif<NotifPlacedShootingStarArgs>) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
         this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
+    }
+    notif_placedPlanet(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

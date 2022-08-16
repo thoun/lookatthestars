@@ -61,9 +61,20 @@ $invalidColor: #FF000099;
           &.invalid {
             stroke: $invalidColor;
           }
-          &.round {
-            animation: unvalidated-animation 1s alternate infinite ease-in-out;
-          }
+        }
+
+        .coordinates-selector {
+          fill: $validColor;
+          cursor: pointer;
+        }
+
+        .object {
+          background-image: url('img/objects.png');
+          background-size: auto 100%;
+        }
+
+        .round {
+          animation: unvalidated-animation 1s alternate infinite ease-in-out;
         }
       }
     }

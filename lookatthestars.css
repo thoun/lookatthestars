@@ -333,7 +333,15 @@
 .player-table .main .svg-wrapper svg .line.invalid {
   stroke: rgba(255, 0, 0, 0.6);
 }
-.player-table .main .svg-wrapper svg .line.round {
+.player-table .main .svg-wrapper svg .coordinates-selector {
+  fill: rgba(0, 255, 0, 0.6);
+  cursor: pointer;
+}
+.player-table .main .svg-wrapper svg .object {
+  background-image: url("img/objects.png");
+  background-size: auto 100%;
+}
+.player-table .main .svg-wrapper svg .round {
   animation: unvalidated-animation 1s alternate infinite ease-in-out;
 }
 .player-table .main .border {
