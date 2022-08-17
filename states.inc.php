@@ -71,6 +71,12 @@ $basicGameStates = [
     ],
 ];
 
+$transitionsToPower = [
+    'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
+    'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
+    'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
+    'place'.POWER_BLACK_HOLE => ST_PRIVATE_PLACE_BLACK_HOLE,
+];
 
 $playerActionsGameStates = [
 
@@ -93,10 +99,7 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argPlaceShape",
         "possibleactions" => [ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ],
-        "transitions" => [
-          'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
-          'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
-          'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
+        "transitions" => $transitionsToPower + [
           'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -107,11 +110,7 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argConfirmTurn",
         "possibleactions" => [ "confirmTurn", "cancelBonus", "cancelPlaceShape" ],
-        "transitions" => [
-            'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
-            'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
-            'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
-        ]
+        "transitions" => $transitionsToPower
     ],
 
     ST_PRIVATE_PLACE_PLANET => [
@@ -133,6 +132,17 @@ $playerActionsGameStates = [
         "possibleactions" => [ "placeStar", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
             'next' => ST_PRIVATE_PLACE_STAR,
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_BLACK_HOLE => [
+        "name" => "placeBlackHole",
+        "descriptionmyturn" => clienttranslate('${you} can place a black hole'),
+        "type" => "private",
+        "args" => "argPlacePlanet",
+        "possibleactions" => [ "placeBlackHole", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],

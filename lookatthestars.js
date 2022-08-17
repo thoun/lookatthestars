@@ -387,7 +387,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.placeInitialObjects = function (objects, classes) {
         var _this = this;
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         if (classes === void 0) { classes = []; }
         (_a = objects.shootingStars) === null || _a === void 0 ? void 0 : _a.forEach(function (shootingStar) {
             _this.placeLines(shootingStar.lines, classes);
@@ -395,6 +395,7 @@ var PlayerTable = /** @class */ (function () {
         });
         (_b = objects.planets) === null || _b === void 0 ? void 0 : _b.forEach(function (planet) { return _this.placeObject(planet, 'planet', classes); });
         (_c = objects.stars) === null || _c === void 0 ? void 0 : _c.forEach(function (star) { return _this.placeObject(star, 'star', classes); });
+        (_d = objects.blackHoles) === null || _d === void 0 ? void 0 : _d.forEach(function (star) { return _this.placeObject(star, 'black-hole', classes); });
     };
     PlayerTable.prototype.setDay = function (day) {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
@@ -914,6 +915,9 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeStar':
                 this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeStar(x, y); });
                 break;
+            case 'placeBlackHole':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeBlackHole(x, y); });
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -952,6 +956,7 @@ var LookAtTheStars = /** @class */ (function () {
                 break;
             case 'placePlanet':
             case 'placeStar':
+            case 'placeBlackHole':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -1206,6 +1211,12 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('placeStar', { x: x, y: y });
     };
+    LookAtTheStars.prototype.placeBlackHole = function (x, y) {
+        if (!this.checkAction('placeBlackHole')) {
+            return;
+        }
+        this.takeAction('placeBlackHole', { x: x, y: y });
+    };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -1287,6 +1298,7 @@ var LookAtTheStars = /** @class */ (function () {
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
             ['placedStar', 1],
+            ['placedBlackHole', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -1320,6 +1332,9 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_placedStar = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'star', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedBlackHole = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'black-hole', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();

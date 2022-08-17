@@ -119,6 +119,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeStar':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeStar(x, y));
                 break;
+            case 'placeBlackHole':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeBlackHole(x, y));
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -160,6 +163,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 break;
             case 'placePlanet':
             case 'placeStar':
+            case 'placeBlackHole':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -463,6 +467,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placeStar', { x, y });
     }
 
+    public placeBlackHole(x: number, y: number) {
+        if(!(this as any).checkAction('placeBlackHole')) {
+            return;
+        }
+
+        this.takeAction('placeBlackHole', { x, y });
+    }
+
     public cancelPlaceShape() {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -556,6 +568,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
             ['placedStar', 1],
+            ['placedBlackHole', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -593,6 +606,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     notif_placedStar(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'star', ['round', 'round-bonus']);
+    }
+    notif_placedBlackHole(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'black-hole', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

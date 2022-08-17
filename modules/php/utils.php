@@ -88,6 +88,14 @@ trait UtilTrait {
         ] + $args);
     }
 
+    function coordinateStrToCoordinate(string $coordinatesStr) {
+        return [hexdec($coordinatesStr[0]), hexdec($coordinatesStr[1])];
+    }
+
+    function coordinatesStrToCoordinates(array $coordinatesStr) {
+        return array_map(fn($coordinateStr) => $this->coordinateStrToCoordinate($coordinateStr), $coordinatesStr);
+    }
+
     function lineStrToLine(string $lineStr) {
         return [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]];
     }
@@ -214,7 +222,7 @@ trait UtilTrait {
         return $day;
     }
 
-    function isFreeCoordinates(array $coordinates, LatsPlayer $player, int $day) {
+    function isFreeCoordinates(array $coordinates, LatsPlayer $player, int $day, bool $ignoreBlackHole = false) {
         // not outside the board
         $minY = 2 * $day;
         if ($coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10) {
@@ -222,7 +230,7 @@ trait UtilTrait {
         }
 
         // no always forbidden points, sheet forbidden points, or planet
-        $forbiddenCoordinates = $player->getForbiddenCoordinates();
+        $forbiddenCoordinates = $player->getForbiddenCoordinates($ignoreBlackHole);
 
         if ($this->coordinatesInArray($coordinates, $forbiddenCoordinates)) {
             return false;
@@ -450,7 +458,7 @@ trait UtilTrait {
         $planetConstellations = [];
         for ($x = $planet[0]-1; $x <= $planet[0]+1; $x++) {
             for ($y = $planet[1]-1; $y <= $planet[1]+1; $y++) {
-                if ($x != 0 || $y != 0) {
+                if ($x != $planet[0] || $y != $planet[1]) {
                     $coordinates = [$x, $y];
                     $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
                         $this->coordinatesInArray($coordinates, $line)
@@ -505,7 +513,7 @@ trait UtilTrait {
         $playerScore->star1 += count($shapesFound) * $objective->points;
     }
 
-    private function calculateStar2Score(PlayerScore &$playerScore) {
+    private function calculateStar2Score(PlayerScore &$playerScore, LatsPlayer $player) {
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
 
         $points = 0;
@@ -527,7 +535,19 @@ trait UtilTrait {
                 // TODO Each constellation which has at least 1 star in a vertical or horizontal alignment with the crescent moon scores 1 additional victory point at the end of the game.
                 break;
             case POWER_BLACK_HOLE:
-                // TODO score 1 point for each unused star adjacent to the black hole. You can only draw one black hole per game.
+                foreach ($player->objects->blackHoles as $blackHoleStr) {
+                    $blackHole = $this->coordinateStrToCoordinate($blackHoleStr);
+                    for ($x = $blackHole[0]-1; $x <= $blackHole[0]+1; $x++) {
+                        for ($y = $blackHole[1]-1; $y <= $blackHole[1]+1; $y++) {
+                            if ($x != $blackHole[0] || $y != $blackHole[1]) {
+                                $coordinates = [$x, $y];
+                                if ($this->isFreeCoordinates($coordinates, $player, 0, true)) {
+                                    $playerScore->star2 += 1;
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
         }
 
@@ -546,10 +566,27 @@ trait UtilTrait {
         $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets());
         $this->calculateShootingStarsScore($playerScore, $player->getShootingStars());
         $this->calculateStar1Score($playerScore, $lines);
-        $this->calculateStar2Score($playerScore);
+        $this->calculateStar2Score($playerScore, $player);
         
         $playerScore->calculateTotal();
 
         return $playerScore;
+    }
+
+    private function getPowerCurrentShape(LatsPlayer $player) {
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+
+        // for unique usage powers
+        if (count($player->objects->linesUsedForPower) > 0 && in_array($objective->power, [
+            POWER_BLACK_HOLE,
+            POWER_CRESCENT_MOON,
+        ])) {
+            return [];
+        }
+
+        $allLines = $player->getLines(true);
+        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+
+        return $shapesFound;
     }
 }

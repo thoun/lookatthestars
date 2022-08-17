@@ -44,10 +44,9 @@ trait ActionTrait {
             'lines' => $newLines,
         ]);
 
-        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
-        $allLines = $player->getLines(true);
-        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
-        if (count($shapesFound) > 0) { // TODO ignore already applied
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) > 0) {
+            $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
             $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
         } else {
             $this->gamestate->nextPrivateState($playerId, 'confirm');
@@ -113,10 +112,8 @@ trait ActionTrait {
             throw new \BgaUserException("Invalid position");
         }
 
-        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
         $player = $this->getPlayer($playerId);
-        $allLines = $player->getLines(true);
-        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+        $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
             throw new \BgaUserException("No valid shape for bonus");
         }
@@ -146,9 +143,7 @@ trait ActionTrait {
             throw new \BgaUserException("Invalid position");
         }
         
-        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
-        $allLines = $player->getLines(true);
-        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+        $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
             throw new \BgaUserException("No valid shape for bonus");
         }
@@ -180,9 +175,7 @@ trait ActionTrait {
             throw new \BgaUserException("Invalid position");
         }
         
-        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
-        $allLines = $player->getLines(true);
-        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+        $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
             throw new \BgaUserException("No valid shape for bonus");
         }
@@ -198,6 +191,38 @@ trait ActionTrait {
         ]);
 
         $this->gamestate->nextPrivateState($playerId, count($roundObjects->stars) < 2 ? 'next' : 'confirm');
+    }
+    
+    public function placeBlackHole(int $x, int $y) {
+        self::checkAction('placeBlackHole'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+        $player = $this->getPlayer($playerId);
+        $possibleCoordinates = $this->getFreeCoordinates($player);
+
+        $coordinatesStr = dechex($x).dechex($y);
+        if (!$this->array_some($possibleCoordinates, fn($possibleCoordinate) => $possibleCoordinate == $coordinatesStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+        
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            throw new \BgaUserException("No valid shape for bonus");
+        }
+        
+        $roundObjects = new Objects();
+        $roundObjects->blackHoles = [
+            $coordinatesStr
+        ];
+        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedBlackHole', '', [
+            'playerId' => $playerId,
+            'coordinates' => $coordinatesStr
+        ]);
+
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
     public function cancelPlaceShape() {

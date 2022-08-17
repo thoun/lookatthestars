@@ -157,6 +157,7 @@ class PlayerTable {
 
         objects.planets?.forEach(planet => this.placeObject(planet, 'planet', classes));
         objects.stars?.forEach(star => this.placeObject(star, 'star', classes));
+        objects.blackHoles?.forEach(star => this.placeObject(star, 'black-hole', classes));
     }
 
     public setDay(day: number) {
@@ -222,7 +223,7 @@ class PlayerTable {
         $('lats-svg-'+this.playerId).append(newLine);
     }
 
-    placeObject(coordinates: string, type: 'planet' | 'star', additionalClass: string[] = []) {
+    placeObject(coordinates: string, type: 'planet' | 'star' | 'black-hole', additionalClass: string[] = []) {
         const newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
 
         const xCoordinate = parseInt(coordinates[0], 16);

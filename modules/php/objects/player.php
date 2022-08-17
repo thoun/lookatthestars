@@ -25,12 +25,23 @@ class LatsPlayer {
         $this->roundObjects = $dbPlayer['player_round_objects'] != null ? json_decode($dbPlayer['player_round_objects']) : new Objects();
     }
 
-    public function getForbiddenCoordinates() {
+    public function getForbiddenCoordinates(bool $ignoreBlackHole = false) {
         $forbiddenCoordinates = array_merge(
             ALWAYS_FORBIDDEN_POINTS,
             $this->getSheetForbiddenCoordinates(),
             $this->getPlanets(),
         );
+
+        if (!$ignoreBlackHole) {
+            foreach ($this->objects->blackHoles as $blackHole) {
+                $coordinates = $this->coordinateStrToCoordinate($blackHole);
+                for ($x = $coordinates[0]-1; $x <= $coordinates[0]+1; $x++) {
+                    for ($y = $coordinates[1]-1; $y <= $coordinates[1]+1; $y++) {
+                        $forbiddenCoordinates[] = [$x, $y];
+                    }
+                }
+            }
+        }
 
         return $forbiddenCoordinates;
     }
