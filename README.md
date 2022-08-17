@@ -33,12 +33,9 @@ Make sure ftp-sync.json and node_modules are in .gitignore
 
 # TODO
 POWER_LUMINOUS_AURA
-POWER_NEW_STARS
 POWER_GALAXY
 POWER_BLACK_HOLE
 POWER_NOVA
 POWER_TWINKLING_STAR
 POWER_CRESCENT_MOON
 show constellations size next to the shape
-keyboard navigation 
-hint forkeyboard navigation like Azul zoom

@@ -317,7 +317,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         );
 
         try {
-            (document.getElementById('preference_control_203').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
+            (document.getElementById('preference_control_299').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
         } catch (e) {}
     }
       
@@ -329,6 +329,36 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 205:
                 document.getElementsByTagName('html')[0].dataset.noGrid = (prefValue == 2).toString();
                 break;
+            case 299: 
+                this.toggleKeysNotice(prefValue == 1);
+                break;
+        }
+    }
+
+    private toggleKeysNotice(visible: boolean) {
+        const elem = document.getElementById('keys-notice');
+        if (visible) {
+            if (!elem) {
+                const table = this.getCurrentPlayerTable();
+                if (table) {
+                    dojo.place(`
+                    <div id="keys-notice">
+                        ${_("If you have a keyboard, you can use Arrows to move the shape, Space to turn it, and Enter to validate.")}
+                        <div style="text-align: center; margin-top: 10px;"><a id="hide-keys-notice">${_("Got it!")}</a></div>
+                    </div>
+                    `, `player-table-${table.playerId}`);
+
+                    document.getElementById('hide-keys-notice').addEventListener('click', () => {
+                        const select = document.getElementById('preference_control_299') as HTMLSelectElement;
+                        select.value = '2';
+        
+                        var event = new Event('change');
+                        select.dispatchEvent(event);
+                    });
+                }
+            }
+        } else if (elem) {
+            elem.parentElement.removeChild(elem);
         }
     }
 
