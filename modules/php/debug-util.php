@@ -16,9 +16,9 @@ trait DebugUtilTrait {
         // for bonus : planet
         //$this->insertLinesStr(2343492, ['0001', '0102', '0203']);
         // for bonus : stars
-        //$this->insertLinesStr(2343492, ['0001', '0010', '0111']);
+        $this->insertLinesStr(2343492, ['0001', '0010', '0111']);
         // for bonus : black hole
-        $this->insertLinesStr(2343492, ['0110', '0111', '0112']);
+        //$this->insertLinesStr(2343492, ['0110', '0111', '0112']);
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);

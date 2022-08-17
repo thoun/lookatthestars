@@ -257,7 +257,7 @@ trait UtilTrait {
             return false;
         }
 
-        return $this->coordinatesInArray($coordinates, $player->getSheetForbiddenCoordinates(true));
+        return $this->coordinatesInArray($coordinates, $player->getSheetForbiddenCoordinates(true, true));
     }
 
     function isPossiblePositionForLine(array $line, LatsPlayer $player, int $day, bool $canTouchLines) {

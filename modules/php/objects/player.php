@@ -46,10 +46,13 @@ class LatsPlayer {
         return $forbiddenCoordinates;
     }
 
-    public function getSheetForbiddenCoordinates(bool $includeRound = false) {
+    public function getSheetForbiddenCoordinates(bool $includeRound = false, bool $ignoreAlwaysForbidden = false) {
         $sheetForbiddenCoordinates = array_values(array_filter($this->sheet->forbiddenStars, fn($coordinates) =>
             !$this->coordinatesInArray($coordinates, $this->objects->stars)
         ));
+        if (!$ignoreAlwaysForbidden) {
+            $sheetForbiddenCoordinates = array_merge($sheetForbiddenCoordinates, $this->sheet->alwaysForbiddenStars);
+        }
 
         if ($includeRound) {
             return array_values(array_filter($sheetForbiddenCoordinates, fn($coordinates) =>
