@@ -79,6 +79,78 @@ class PlayerTable {
             },800);
         }*/
     }
+    
+    public onKeyPress(event: KeyboardEvent): void {
+        if (['TEXTAREA', 'INPUT'].includes((event.target as HTMLElement).nodeName)) {
+            return;
+        }
+        console.log(event.key, event.keyCode);
+        /*Enter 13
+        Tab 9
+        Control 17
+        Alt 18*/
+
+        let action: 'Shape' | `Line` | null = null;
+        if (this.currentCard) {
+            action = 'Shape';
+        } else if (this.linePossiblePositions) {
+            action = 'Line';
+        }
+
+        if (action != null) {
+            switch (event.key) { // event.keyCode
+                case 'ArrowUp': // 38
+                    this[`move${action}Top`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowRight': // 39
+                    this[`move${action}Right`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowDown': // 40
+                    this[`move${action}Bottom`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowLeft': // 37
+                    this[`move${action}Left`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case ' ': // 32
+                case 'Space': // 32
+                case 'Shift': // 16
+                case 'Control': // 17
+                    this[`rotate${action}`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Alt': // 18
+                    this[`rotate${action}Backwards`]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Enter': // 13
+                    switch (action) {
+                        case 'Shape':
+                            if (this.getValid()) {
+                                this.game.placeShape();
+                            }
+                            break;
+                        case 'Line':
+                            if (this.getValidForLine()) {
+                                this.game.placeLine();
+                            }
+                            break;
+                    }
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+            }
+        }
+    }
 
     private placeInitialObjects(objects: Objects, classes: string[] = []) {
         objects.shootingStars?.forEach(shootingStar => {
@@ -431,6 +503,11 @@ class PlayerTable {
         this.moveShape();
     }
 
+    private rotateShapeBackwards() {
+        this.shapeRotation = (4 + this.shapeRotation - 1) % 4;
+        this.moveShape();
+    }
+
     private moveShapeLeft() {
         if (this.shapeX <= -1) {
             return;
@@ -449,7 +526,11 @@ class PlayerTable {
 
     private rotateLine() {
         this.shapeRotation = (this.shapeRotation + 1) % 8;
-        // TODO 
+        this.moveLine();
+    }
+
+    private rotateLineBackwards() {
+        this.shapeRotation = (8 + this.shapeRotation - 1) % 8;
         this.moveLine();
     }
 
@@ -516,6 +597,7 @@ class PlayerTable {
 
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('temp-line')) as HTMLElement[];
         oldLines.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+        this.linePossiblePositions = null;
     }
     
     public cancelPlacedLines() {

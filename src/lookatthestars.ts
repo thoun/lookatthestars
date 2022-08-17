@@ -78,6 +78,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
 
+        //document.addEventListener('keyup', e => this.getCurrentPlayerTable()?.onKeyPress(e));
+        document.getElementsByTagName('body')[0].addEventListener('keydown', e => this.getCurrentPlayerTable()?.onKeyPress(e));
+
         this.setupNotifications();
         this.setupPreferences();
 

@@ -318,6 +318,76 @@ var PlayerTable = /** @class */ (function () {
             },800);
         }*/
     }
+    PlayerTable.prototype.onKeyPress = function (event) {
+        if (['TEXTAREA', 'INPUT'].includes(event.target.nodeName)) {
+            return;
+        }
+        console.log(event.key, event.keyCode);
+        /*Enter 13
+        Tab 9
+        Control 17
+        Alt 18*/
+        var action = null;
+        if (this.currentCard) {
+            action = 'Shape';
+        }
+        else if (this.linePossiblePositions) {
+            action = 'Line';
+        }
+        if (action != null) {
+            switch (event.key) { // event.keyCode
+                case 'ArrowUp': // 38
+                    this["move".concat(action, "Top")]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowRight': // 39
+                    this["move".concat(action, "Right")]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowDown': // 40
+                    this["move".concat(action, "Bottom")]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'ArrowLeft': // 37
+                    this["move".concat(action, "Left")]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case ' ': // 32
+                case 'Space': // 32
+                case 'Shift': // 16
+                case 'Control': // 17
+                    this["rotate".concat(action)]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Alt': // 18
+                    this["rotate".concat(action, "Backwards")]();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Enter': // 13
+                    switch (action) {
+                        case 'Shape':
+                            if (this.getValid()) {
+                                this.game.placeShape();
+                            }
+                            break;
+                        case 'Line':
+                            if (this.getValidForLine()) {
+                                this.game.placeLine();
+                            }
+                            break;
+                    }
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+            }
+        }
+    };
     PlayerTable.prototype.placeInitialObjects = function (objects, classes) {
         var _this = this;
         var _a, _b;
@@ -604,6 +674,10 @@ var PlayerTable = /** @class */ (function () {
         this.shapeRotation = (this.shapeRotation + 1) % 4;
         this.moveShape();
     };
+    PlayerTable.prototype.rotateShapeBackwards = function () {
+        this.shapeRotation = (4 + this.shapeRotation - 1) % 4;
+        this.moveShape();
+    };
     PlayerTable.prototype.moveShapeLeft = function () {
         if (this.shapeX <= -1) {
             return;
@@ -620,7 +694,10 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.rotateLine = function () {
         this.shapeRotation = (this.shapeRotation + 1) % 8;
-        // TODO 
+        this.moveLine();
+    };
+    PlayerTable.prototype.rotateLineBackwards = function () {
+        this.shapeRotation = (8 + this.shapeRotation - 1) % 8;
         this.moveLine();
     };
     PlayerTable.prototype.moveLineBottom = function () {
@@ -679,6 +756,7 @@ var PlayerTable = /** @class */ (function () {
         (_a = cardBorderDiv === null || cardBorderDiv === void 0 ? void 0 : cardBorderDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(cardBorderDiv);
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        this.linePossiblePositions = null;
     };
     PlayerTable.prototype.cancelPlacedLines = function () {
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
@@ -803,6 +881,8 @@ var LookAtTheStars = /** @class */ (function () {
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
         this.createPlayerJumps(gamedatas);
+        //document.addEventListener('keyup', e => this.getCurrentPlayerTable()?.onKeyPress(e));
+        document.getElementsByTagName('body')[0].addEventListener('keydown', function (e) { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.onKeyPress(e); });
         this.setupNotifications();
         this.setupPreferences();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });

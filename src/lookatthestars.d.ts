@@ -74,6 +74,8 @@ interface LookAtTheStarsGame extends Game {
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
     setTooltip(id: string, html: string): void;
+    placeShape(): void;
+    placeLine(): void;
 }
 
 interface EnteringPlaceCardArgs {
