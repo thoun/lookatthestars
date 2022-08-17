@@ -96,6 +96,7 @@ $playerActionsGameStates = [
         "transitions" => [
           'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
           'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
+          'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
           'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -109,6 +110,7 @@ $playerActionsGameStates = [
         "transitions" => [
             'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
             'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
+            'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
         ]
     ],
 
@@ -119,6 +121,18 @@ $playerActionsGameStates = [
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placePlanet", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_STAR => [
+        "name" => "placeStar",
+        "descriptionmyturn" => clienttranslate('${you} can place a new star (${number}/2)'),
+        "type" => "private",
+        "args" => "argPlaceStar",
+        "possibleactions" => [ "placeStar", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'next' => ST_PRIVATE_PLACE_STAR,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],

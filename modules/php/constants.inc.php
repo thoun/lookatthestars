@@ -11,6 +11,7 @@ define('ST_PRIVATE_PLACE_SHAPE', 30);
 
 define('ST_PRIVATE_PLACE_PLANET', 40);
 define('ST_PRIVATE_PLACE_LINE', 41);
+define('ST_PRIVATE_PLACE_STAR', 42);
 
 define('ST_PRIVATE_CONFIRM_TURN', 60);
 
@@ -51,7 +52,7 @@ define('POWER_CRESCENT_MOON', 9);
  * Other
  */
 define('DEFAULT_STAR1', 2);
-define('DEFAULT_STAR2', 3 /* TODO TEMP 3 */);
+define('DEFAULT_STAR2', 2 /* TODO TEMP 3 */);
 define('ALWAYS_FORBIDDEN_POINTS', [
     [0, 10], [1, 10], [2, 10], [7, 10], [8, 10], [9, 10],
     [0, 9],  [1, 9],                    [8, 9],  [9, 9],

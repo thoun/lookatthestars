@@ -83,6 +83,17 @@
         self::ajaxResponse();
     }
 
+    public function placeStar() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeStar($x, $y);
+
+        self::ajaxResponse();
+    }
+
     public function cancelPlaceShape() {
       self::setAjaxMode();
 

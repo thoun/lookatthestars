@@ -5,6 +5,7 @@ class Objects {
 
     public /*string|null*/ $line = null;
     public array $planets = [];
+    public array $stars = [];
 
     public array $linesUsedForPower = [];
 }

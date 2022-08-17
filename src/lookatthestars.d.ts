@@ -35,6 +35,7 @@ interface Objects {
     shootingStars: ShootingStar[];
 
     planets: string[];
+    stars: string[];
     // TODO
 }
 

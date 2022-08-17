@@ -116,6 +116,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placePlanet':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placePlanet(x, y));
                 break;
+            case 'placeStar':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeStar(x, y));
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -156,6 +159,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 this.onLeavingPlaceLine();
                 break;
             case 'placePlanet':
+            case 'placeStar':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -421,6 +425,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placePlanet', { x, y });
     }
 
+    public placeStar(x: number, y: number) {
+        if(!(this as any).checkAction('placeStar')) {
+            return;
+        }
+
+        this.takeAction('placeStar', { x, y });
+    }
+
     public cancelPlaceShape() {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -513,6 +525,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedLines', 1],
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
+            ['placedStar', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -547,6 +560,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     notif_placedPlanet(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);
+    }
+    notif_placedStar(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'star', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

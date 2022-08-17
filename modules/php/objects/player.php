@@ -25,30 +25,28 @@ class LatsPlayer {
         $this->roundObjects = $dbPlayer['player_round_objects'] != null ? json_decode($dbPlayer['player_round_objects']) : new Objects();
     }
 
-    private function lineStrToLine(string $lineStr) {
-        return [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]];
-    }
-
-    private function linesStrToLines(array $linesStr) {
-        return array_map(fn($lineStr) => $this->lineStrToLine($lineStr), $linesStr);
-    }
-
-    private function coordinateStrToCoordinate(string $coordinatesStr) {
-        return [hexdec($coordinatesStr[0]), hexdec($coordinatesStr[1])];
-    }
-
-    private function coordinatesStrToCoordinates(array $coordinatesStr) {
-        return array_map(fn($coordinateStr) => $this->coordinateStrToCoordinate($coordinateStr), $coordinatesStr);
-    }
-
     public function getForbiddenCoordinates() {
         $forbiddenCoordinates = array_merge(
             ALWAYS_FORBIDDEN_POINTS,
-            $this->sheet->forbiddenStars,
+            $this->getSheetForbiddenCoordinates(),
             $this->getPlanets(),
         );
 
         return $forbiddenCoordinates;
+    }
+
+    public function getSheetForbiddenCoordinates(bool $includeRound = false) {
+        $sheetForbiddenCoordinates = array_values(array_filter($this->sheet->forbiddenStars, fn($coordinates) =>
+            !$this->coordinatesInArray($coordinates, $this->objects->stars)
+        ));
+
+        if ($includeRound) {
+            return array_values(array_filter($sheetForbiddenCoordinates, fn($coordinates) =>
+                !$this->coordinatesInArray($coordinates, $this->roundObjects->stars)
+            ));
+        } else {
+            return $sheetForbiddenCoordinates;
+        }
     }
 
     public function getLines(bool $includeRound = false) {
@@ -93,6 +91,37 @@ class LatsPlayer {
         } else {
             return $planets;
         }
+    }
+
+    
+
+    private function lineStrToLine(string $lineStr) {
+        return [[hexdec($lineStr[0]), hexdec($lineStr[1])], [hexdec($lineStr[2]), hexdec($lineStr[3])]];
+    }
+
+    private function linesStrToLines(array $linesStr) {
+        return array_map(fn($lineStr) => $this->lineStrToLine($lineStr), $linesStr);
+    }
+
+    private function coordinateStrToCoordinate(string $coordinatesStr) {
+        return [hexdec($coordinatesStr[0]), hexdec($coordinatesStr[1])];
+    }
+
+    private function coordinatesStrToCoordinates(array $coordinatesStr) {
+        return array_map(fn($coordinateStr) => $this->coordinateStrToCoordinate($coordinateStr), $coordinatesStr);
+    }
+
+    function array_some(array $array, callable $fn) {
+        foreach ($array as $value) {
+            if($fn($value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function coordinatesInArray(array $coordinates, array $arrayOfCoordinates) {
+        return $this->array_some($arrayOfCoordinates, fn($iCoord) => $coordinates[0] == $iCoord[0] && $coordinates[1] == $iCoord[1]);
     }
 }
 ?>

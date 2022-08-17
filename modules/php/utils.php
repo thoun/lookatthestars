@@ -242,6 +242,16 @@ trait UtilTrait {
         return true;
     }
 
+    function isFreeCoordinatesForStar(array $coordinates, LatsPlayer $player, int $day) {
+        // not outside the board
+        $minY = 2 * $day;
+        if ($coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10) {
+            return false;
+        }
+
+        return $this->coordinatesInArray($coordinates, $player->getSheetForbiddenCoordinates(true));
+    }
+
     function isPossiblePositionForLine(array $line, LatsPlayer $player, int $day, bool $canTouchLines) {
         // not outside the board
         $minY = 2 * $day;
@@ -360,6 +370,25 @@ trait UtilTrait {
         for ($x = 0; $x <= 9; $x++) {
             for ($y = 0; $y <= 10; $y++) {
                 if ($this->isFreeCoordinates(
+                    [$x, $y],
+                    $player,
+                    $day
+                )) {
+                    $result[] = dechex($x).dechex($y);
+                }
+            }
+        }
+        return $result;
+    }
+
+    function getFreeCoordinatesForStar(LatsPlayer $player) {
+        $day = $this->getDay();
+
+        $result = [];
+
+        for ($x = 0; $x <= 9; $x++) {
+            for ($y = 0; $y <= 10; $y++) {
+                if ($this->isFreeCoordinatesForStar(
                     [$x, $y],
                     $player,
                     $day

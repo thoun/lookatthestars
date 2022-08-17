@@ -387,13 +387,14 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.placeInitialObjects = function (objects, classes) {
         var _this = this;
-        var _a, _b;
+        var _a, _b, _c;
         if (classes === void 0) { classes = []; }
         (_a = objects.shootingStars) === null || _a === void 0 ? void 0 : _a.forEach(function (shootingStar) {
             _this.placeLines(shootingStar.lines, classes);
             _this.placeShootingStarHead(shootingStar.head, classes);
         });
         (_b = objects.planets) === null || _b === void 0 ? void 0 : _b.forEach(function (planet) { return _this.placeObject(planet, 'planet', classes); });
+        (_c = objects.stars) === null || _c === void 0 ? void 0 : _c.forEach(function (star) { return _this.placeObject(star, 'star', classes); });
     };
     PlayerTable.prototype.setDay = function (day) {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
@@ -447,7 +448,7 @@ var PlayerTable = /** @class */ (function () {
         newObject.setAttribute('y', "".concat(y - 20));
         newObject.setAttribute('width', "40");
         newObject.setAttribute('height', "40");
-        newObject.setAttribute('href', "".concat(g_gamethemeurl, "img/objects.png"));
+        newObject.setAttribute('href', "".concat(g_gamethemeurl, "img/object-").concat(type, ".png"));
         (_a = newObject.classList).add.apply(_a, __spreadArray(['object'], additionalClass, false));
         document.getElementById('lats-svg-' + this.playerId).after(newObject);
     };
@@ -804,14 +805,14 @@ var PlayerTable = /** @class */ (function () {
             var yCoordinate = parseInt(possibleCoordinate[1], 16);
             var x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
             var y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
-            var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            newLine.setAttribute('id', 'possible-coordinates-' + possibleCoordinates);
-            newLine.setAttribute('cx', "".concat(x));
-            newLine.setAttribute('cy', "".concat(y));
-            newLine.setAttribute('r', "10");
-            newLine.classList.add('coordinates-selector');
-            $('lats-svg-' + _this.playerId).append(newLine);
-            newLine.addEventListener('click', function () { return placeFunction(xCoordinate, yCoordinate); });
+            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('id', 'possible-coordinates-' + possibleCoordinates);
+            circle.setAttribute('cx', "".concat(x));
+            circle.setAttribute('cy', "".concat(y));
+            circle.setAttribute('r', "10");
+            circle.classList.add('coordinates-selector');
+            $('lats-svg-' + _this.playerId).after(circle);
+            circle.addEventListener('click', function () { return placeFunction(xCoordinate, yCoordinate); });
         });
     };
     PlayerTable.prototype.removeStarSelection = function () {
@@ -910,6 +911,9 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placePlanet':
                 this.onEnteringStarSelection(args.args, function (x, y) { return _this.placePlanet(x, y); });
                 break;
+            case 'placeStar':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeStar(x, y); });
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -947,6 +951,7 @@ var LookAtTheStars = /** @class */ (function () {
                 this.onLeavingPlaceLine();
                 break;
             case 'placePlanet':
+            case 'placeStar':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -1172,6 +1177,12 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('placePlanet', { x: x, y: y });
     };
+    LookAtTheStars.prototype.placeStar = function (x, y) {
+        if (!this.checkAction('placeStar')) {
+            return;
+        }
+        this.takeAction('placeStar', { x: x, y: y });
+    };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -1252,6 +1263,7 @@ var LookAtTheStars = /** @class */ (function () {
             ['placedLines', 1],
             ['placedShootingStar', 1],
             ['placedPlanet', 1],
+            ['placedStar', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -1282,6 +1294,9 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_placedPlanet = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedStar = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'star', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();

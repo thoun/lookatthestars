@@ -156,6 +156,7 @@ class PlayerTable {
         });
 
         objects.planets?.forEach(planet => this.placeObject(planet, 'planet', classes));
+        objects.stars?.forEach(star => this.placeObject(star, 'star', classes));
     }
 
     public setDay(day: number) {
@@ -221,7 +222,7 @@ class PlayerTable {
         $('lats-svg-'+this.playerId).append(newLine);
     }
 
-    placeObject(coordinates: string, type: 'planet', additionalClass: string[] = []) {
+    placeObject(coordinates: string, type: 'planet' | 'star', additionalClass: string[] = []) {
         const newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
 
         const xCoordinate = parseInt(coordinates[0], 16);
@@ -234,7 +235,7 @@ class PlayerTable {
         newObject.setAttribute('y', `${y - 20}`);
         newObject.setAttribute('width', `40`);
         newObject.setAttribute('height', `40`);
-        newObject.setAttribute('href', `${g_gamethemeurl}img/objects.png`);
+        newObject.setAttribute('href', `${g_gamethemeurl}img/object-${type}.png`);
         newObject.classList.add('object', ...additionalClass);
         document.getElementById('lats-svg-'+this.playerId).after(newObject);
     }
@@ -658,15 +659,15 @@ class PlayerTable {
             const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
             const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
-            let newLine = document.createElementNS('http://www.w3.org/2000/svg','circle');
-            newLine.setAttribute('id', 'possible-coordinates-'+possibleCoordinates);
-            newLine.setAttribute('cx', `${x}`);
-            newLine.setAttribute('cy', `${y}`);
-            newLine.setAttribute('r', `10`);
-            newLine.classList.add('coordinates-selector');
-            $('lats-svg-'+this.playerId).append(newLine);
+            let circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            circle.setAttribute('id', 'possible-coordinates-'+possibleCoordinates);
+            circle.setAttribute('cx', `${x}`);
+            circle.setAttribute('cy', `${y}`);
+            circle.setAttribute('r', `10`);
+            circle.classList.add('coordinates-selector');
+            $('lats-svg-'+this.playerId).after(circle);
 
-            newLine.addEventListener('click', () => placeFunction(xCoordinate, yCoordinate));
+            circle.addEventListener('click', () => placeFunction(xCoordinate, yCoordinate));
         });
     }
 

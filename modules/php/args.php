@@ -68,6 +68,16 @@ trait ArgsTrait {
         ];
     }
 
+    function argPlaceStar(int $playerId) {
+        $player = $this->getPlayer($playerId);
+        $possibleCoordinates = $this->getFreeCoordinatesForStar($player);
+
+        return [
+            'possibleCoordinates' => $possibleCoordinates,
+            'number' => count($player->roundObjects->stars) + 1,
+        ];
+    }
+
     function argConfirmTurn(int $playerId) {
         $bonusPlayed = $this->getUniqueValueFromDB("SELECT player_round_objects FROM player WHERE player_id = $playerId") != null;
 
