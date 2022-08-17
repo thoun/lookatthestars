@@ -84,11 +84,7 @@ class PlayerTable {
         if (['TEXTAREA', 'INPUT'].includes((event.target as HTMLElement).nodeName)) {
             return;
         }
-        console.log(event.key, event.keyCode);
-        /*Enter 13
-        Tab 9
-        Control 17
-        Alt 18*/
+        //console.log(event.key, event.keyCode);
 
         let action: 'Shape' | `Line` | null = null;
         if (this.currentCard) {
@@ -121,6 +117,7 @@ class PlayerTable {
                     break;
                 case ' ': // 32
                 case 'Space': // 32
+                case 'Tab': // 9
                 case 'Shift': // 16
                 case 'Control': // 17
                     this[`rotate${action}`]();
@@ -299,7 +296,7 @@ class PlayerTable {
             xFrom: this.shapeX,
             yFrom: this.shapeY,
             xTo: [1, 2, 3].includes(this.shapeRotation) ? this.shapeX + 1 : ([5, 6, 7].includes(this.shapeRotation) ? this.shapeX - 1 : this.shapeX),
-            yTo: [7, 0, 1].includes(this.shapeRotation) ? this.shapeY + 1 : ([3, 4, 5].includes(this.shapeRotation) ? this.shapeY - 1 : this.shapeX),
+            yTo: [7, 0, 1].includes(this.shapeRotation) ? this.shapeY + 1 : ([3, 4, 5].includes(this.shapeRotation) ? this.shapeY - 1 : this.shapeY),
         };
     }
 
