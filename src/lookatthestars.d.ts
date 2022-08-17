@@ -36,7 +36,10 @@ interface Objects {
 
     planets: string[];
     stars: string[];
-    // TODO
+    galaxies: string[];
+    twinklingStars: string[];
+    novas: string[];
+    luminousAuras: string[];
     crescentMoons: string[];
     blackHoles: string[];
 }

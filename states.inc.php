@@ -77,6 +77,10 @@ $transitionsToPower = [
     'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
     'place'.POWER_BLACK_HOLE => ST_PRIVATE_PLACE_BLACK_HOLE,
     'place'.POWER_CRESCENT_MOON => ST_PRIVATE_PLACE_CRESCENT_MOON,
+    'place'.POWER_LUMINOUS_AURA => ST_PRIVATE_PLACE_LUMINOUS_AURA,
+    'place'.POWER_GALAXY => ST_PRIVATE_PLACE_GALAXY,
+    'place'.POWER_NOVA => ST_PRIVATE_PLACE_NOVA,
+    'place'.POWER_TWINKLING_STAR => ST_PRIVATE_PLACE_TWINKLING_STAR,
 ];
 
 $playerActionsGameStates = [
@@ -154,6 +158,50 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placeCrescentMoon", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_LUMINOUS_AURA => [
+        "name" => "placeLuminousAura",
+        "descriptionmyturn" => clienttranslate('${you} can place a luminous aura'),
+        "type" => "private",
+        "args" => "argPlaceLuminousAura",
+        "possibleactions" => [ "placeLuminousAura", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_GALAXY => [
+        "name" => "placeGalaxy",
+        "descriptionmyturn" => clienttranslate('${you} can place a galaxy'),
+        "type" => "private",
+        "args" => "argPlaceGalaxy",
+        "possibleactions" => [ "placeGalaxy", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_NOVA => [
+        "name" => "placeNova",
+        "descriptionmyturn" => clienttranslate('${you} can place a nova'),
+        "type" => "private",
+        "args" => "argPlaceNova",
+        "possibleactions" => [ "placeNova", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_TWINKLING_STAR => [
+        "name" => "placeTwinklingStar",
+        "descriptionmyturn" => clienttranslate('${you} can place a twinkling star'),
+        "type" => "private",
+        "args" => "argPlacePlanet",
+        "possibleactions" => [ "placeTwinklingStar", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]

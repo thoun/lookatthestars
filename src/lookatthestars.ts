@@ -125,6 +125,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeCrescentMoon':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeCrescentMoon(x, y));
                 break;
+            case 'placeGalaxy':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeGalaxy(x, y));
+                break;
+            case 'placeTwinklingStars':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeTwinklingStars(x, y));
+                break;
+            case 'placeNova':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeNova(x, y));
+                break;
+            case 'placeLuminousAura':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeLuminousAura(x, y));
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -168,6 +180,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeStar':
             case 'placeBlackHole':
             case 'placeCrescentMoon':
+            case 'placeGalaxy':
+            case 'placeTwinklingStars':
+            case 'placeNova':
+            case 'placeLuminousAura':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -487,6 +503,38 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placeCrescentMoon', { x, y });
     }
 
+    public placeGalaxy(x: number, y: number) {
+        if(!(this as any).checkAction('placeGalaxy')) {
+            return;
+        }
+
+        this.takeAction('placeGalaxy', { x, y });
+    }
+
+    public placeTwinklingStars(x: number, y: number) {
+        if(!(this as any).checkAction('placeTwinklingStars')) {
+            return;
+        }
+
+        this.takeAction('placeTwinklingStars', { x, y });
+    }
+
+    public placeNova(x: number, y: number) {
+        if(!(this as any).checkAction('placeNova')) {
+            return;
+        }
+
+        this.takeAction('placeNova', { x, y });
+    }
+
+    public placeLuminousAura(x: number, y: number) {
+        if(!(this as any).checkAction('placeLuminousAura')) {
+            return;
+        }
+
+        this.takeAction('placeLuminousAura', { x, y });
+    }
+
     public cancelPlaceShape() {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -582,6 +630,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedStar', 1],
             ['placedBlackHole', 1],
             ['placedCrescentMoon', 1],
+            ['placedGalaxy', 1],
+            ['placedTwinklingStars', 1],
+            ['placedNova', 1],
+            ['placedLuminousAura', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -625,6 +677,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     notif_placedCrescentMoon(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'crescent-moon', ['round', 'round-bonus']);
+    }
+    notif_placedGalaxy(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'galaxy', ['round', 'round-bonus']);
+    }
+    notif_placedTwinklingStars(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'twinkling-star', ['round', 'round-bonus']);
+    }
+    notif_placedNova(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'nova', ['round', 'round-bonus']);
+    }
+    notif_placedLuminousAura(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-auta', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

@@ -34,7 +34,10 @@ trait StateTrait {
             $player->objects->shootingStars = array_merge($player->objects->shootingStars, $player->roundObjects->shootingStars);
             $player->objects->planets = array_merge($player->objects->planets, $player->roundObjects->planets);
             $player->objects->stars = array_merge($player->objects->stars, $player->roundObjects->stars);
-            // TODO
+            $player->objects->galaxies = array_merge($player->objects->galaxies, $player->roundObjects->galaxies);
+            $player->objects->twinklingStars = array_merge($player->objects->twinklingStars, $player->roundObjects->twinklingStars);
+            $player->objects->novas = array_merge($player->objects->novas, $player->roundObjects->novas);
+            $player->objects->luminousAuras = array_merge($player->objects->luminousAuras, $player->roundObjects->luminousAuras);
             $player->objects->crescentMoons = array_merge($player->objects->crescentMoons, $player->roundObjects->crescentMoons);
             $player->objects->blackHoles = array_merge($player->objects->blackHoles, $player->roundObjects->blackHoles);
             $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);

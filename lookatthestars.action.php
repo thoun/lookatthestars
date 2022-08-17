@@ -116,6 +116,50 @@
         self::ajaxResponse();
     }
 
+    public function placeGalaxy() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeGalaxy($x, $y);
+
+        self::ajaxResponse();
+    }
+
+    public function placeTwinklingStars() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeTwinklingStars($x, $y);
+
+        self::ajaxResponse();
+    }
+
+    public function placeNova() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeNova($x, $y);
+
+        self::ajaxResponse();
+    }
+
+    public function placeLuminousAura() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeLuminousAura($x, $y);
+
+        self::ajaxResponse();
+    }
+
     public function cancelPlaceShape() {
       self::setAjaxMode();
 

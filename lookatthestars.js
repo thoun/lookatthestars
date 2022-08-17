@@ -387,7 +387,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.placeInitialObjects = function (objects, classes) {
         var _this = this;
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         if (classes === void 0) { classes = []; }
         (_a = objects.shootingStars) === null || _a === void 0 ? void 0 : _a.forEach(function (shootingStar) {
             _this.placeLines(shootingStar.lines, classes);
@@ -397,6 +397,10 @@ var PlayerTable = /** @class */ (function () {
         (_c = objects.stars) === null || _c === void 0 ? void 0 : _c.forEach(function (object) { return _this.placeObject(object, 'star', classes); });
         (_d = objects.blackHoles) === null || _d === void 0 ? void 0 : _d.forEach(function (object) { return _this.placeObject(object, 'black-hole', classes); });
         (_e = objects.crescentMoons) === null || _e === void 0 ? void 0 : _e.forEach(function (object) { return _this.placeObject(object, 'crescent-moon', classes); });
+        (_f = objects.galaxies) === null || _f === void 0 ? void 0 : _f.forEach(function (object) { return _this.placeObject(object, 'galaxy', classes); });
+        (_g = objects.twinklingStars) === null || _g === void 0 ? void 0 : _g.forEach(function (object) { return _this.placeObject(object, 'twinkling-star', classes); });
+        (_h = objects.novas) === null || _h === void 0 ? void 0 : _h.forEach(function (object) { return _this.placeObject(object, 'nova', classes); });
+        (_j = objects.luminousAuras) === null || _j === void 0 ? void 0 : _j.forEach(function (object) { return _this.placeObject(object, 'luminous-auta', classes); });
     };
     PlayerTable.prototype.setDay = function (day) {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
@@ -922,6 +926,18 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeCrescentMoon':
                 this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeCrescentMoon(x, y); });
                 break;
+            case 'placeGalaxy':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeGalaxy(x, y); });
+                break;
+            case 'placeTwinklingStars':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeTwinklingStars(x, y); });
+                break;
+            case 'placeNova':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeNova(x, y); });
+                break;
+            case 'placeLuminousAura':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeLuminousAura(x, y); });
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -962,6 +978,10 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeStar':
             case 'placeBlackHole':
             case 'placeCrescentMoon':
+            case 'placeGalaxy':
+            case 'placeTwinklingStars':
+            case 'placeNova':
+            case 'placeLuminousAura':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -1228,6 +1248,30 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('placeCrescentMoon', { x: x, y: y });
     };
+    LookAtTheStars.prototype.placeGalaxy = function (x, y) {
+        if (!this.checkAction('placeGalaxy')) {
+            return;
+        }
+        this.takeAction('placeGalaxy', { x: x, y: y });
+    };
+    LookAtTheStars.prototype.placeTwinklingStars = function (x, y) {
+        if (!this.checkAction('placeTwinklingStars')) {
+            return;
+        }
+        this.takeAction('placeTwinklingStars', { x: x, y: y });
+    };
+    LookAtTheStars.prototype.placeNova = function (x, y) {
+        if (!this.checkAction('placeNova')) {
+            return;
+        }
+        this.takeAction('placeNova', { x: x, y: y });
+    };
+    LookAtTheStars.prototype.placeLuminousAura = function (x, y) {
+        if (!this.checkAction('placeLuminousAura')) {
+            return;
+        }
+        this.takeAction('placeLuminousAura', { x: x, y: y });
+    };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -1311,6 +1355,10 @@ var LookAtTheStars = /** @class */ (function () {
             ['placedStar', 1],
             ['placedBlackHole', 1],
             ['placedCrescentMoon', 1],
+            ['placedGalaxy', 1],
+            ['placedTwinklingStars', 1],
+            ['placedNova', 1],
+            ['placedLuminousAura', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -1350,6 +1398,18 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_placedCrescentMoon = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'crescent-moon', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedGalaxy = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'galaxy', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedTwinklingStars = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'twinkling-star', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedNova = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'nova', ['round', 'round-bonus']);
+    };
+    LookAtTheStars.prototype.notif_placedLuminousAura = function (notif) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-auta', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
