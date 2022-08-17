@@ -7,6 +7,7 @@ class Objects {
     public array $planets = [];
     public array $stars = [];
     // TODO
+    public array $crescentMoons = [];
     public array $blackHoles = [];
 
     public array $linesUsedForPower = [];

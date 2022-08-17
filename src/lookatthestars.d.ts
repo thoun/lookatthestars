@@ -37,6 +37,7 @@ interface Objects {
     planets: string[];
     stars: string[];
     // TODO
+    crescentMoons: string[];
     blackHoles: string[];
 }
 

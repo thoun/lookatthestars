@@ -122,6 +122,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeBlackHole':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeBlackHole(x, y));
                 break;
+            case 'placeCrescentMoon':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeCrescentMoon(x, y));
+                break;
             case 'nextShape':
                 this.onEnteringNextShape();
                 break;
@@ -164,6 +167,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placePlanet':
             case 'placeStar':
             case 'placeBlackHole':
+            case 'placeCrescentMoon':
                 this.onLeavingStarSelection();
                 break;
         }
@@ -475,6 +479,14 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placeBlackHole', { x, y });
     }
 
+    public placeCrescentMoon(x: number, y: number) {
+        if(!(this as any).checkAction('placeCrescentMoon')) {
+            return;
+        }
+
+        this.takeAction('placeCrescentMoon', { x, y });
+    }
+
     public cancelPlaceShape() {
         /*if(!(this as any).checkAction('cancelPlaceShape')) {
             return;
@@ -569,6 +581,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedPlanet', 1],
             ['placedStar', 1],
             ['placedBlackHole', 1],
+            ['placedCrescentMoon', 1],
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
@@ -609,6 +622,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     notif_placedBlackHole(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'black-hole', ['round', 'round-bonus']);
+    }
+    notif_placedCrescentMoon(notif: Notif<NotifPlacedCoordinatesArgs>) {
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'crescent-moon', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

@@ -105,6 +105,17 @@
         self::ajaxResponse();
     }
 
+    public function placeCrescentMoon() {
+        self::setAjaxMode();     
+
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+
+        $this->game->placeCrescentMoon($x, $y);
+
+        self::ajaxResponse();
+    }
+
     public function cancelPlaceShape() {
       self::setAjaxMode();
 

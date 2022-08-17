@@ -513,7 +513,7 @@ trait UtilTrait {
         $playerScore->star1 += count($shapesFound) * $objective->points;
     }
 
-    private function calculateStar2Score(PlayerScore &$playerScore, LatsPlayer $player) {
+    private function calculateStar2Score(PlayerScore &$playerScore, LatsPlayer $player, array $validConstellations) {
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
 
         $points = 0;
@@ -533,6 +533,29 @@ trait UtilTrait {
                 break;
             case POWER_CRESCENT_MOON:
                 // TODO Each constellation which has at least 1 star in a vertical or horizontal alignment with the crescent moon scores 1 additional victory point at the end of the game.
+                $crescentMoonConstellations = [];
+                foreach ($player->objects->crescentMoons as $crescentMoonStr) {
+                    $crescentMoon = $this->coordinateStrToCoordinate($crescentMoonStr);
+                    $axesCoordinates = [];
+                    for ($x = 0; $x <= 9; $x++) {
+                        $axesCoordinates[] = [$x, $crescentMoon[1]];
+                    }
+                    for ($y = 0; $y <= 10; $y++) {
+                        $axesCoordinates[] = [$crescentMoon[0], $y];
+                    }
+
+                    foreach ($axesCoordinates as $coordinates) {
+                        $constellation = $this->array_find($validConstellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
+                            $this->coordinatesInArray($coordinates, $line)
+                        ));
+                        if ($constellation && !in_array($constellation->key, $crescentMoonConstellations)) {
+                            $crescentMoonConstellations[] = $constellation->key;
+                        }
+                    }
+                }
+
+                $playerScore->star2 += count($crescentMoonConstellations);
+
                 break;
             case POWER_BLACK_HOLE:
                 foreach ($player->objects->blackHoles as $blackHoleStr) {
@@ -566,7 +589,7 @@ trait UtilTrait {
         $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets());
         $this->calculateShootingStarsScore($playerScore, $player->getShootingStars());
         $this->calculateStar1Score($playerScore, $lines);
-        $this->calculateStar2Score($playerScore, $player);
+        $this->calculateStar2Score($playerScore, $player, $validConstellations);
         
         $playerScore->calculateTotal();
 

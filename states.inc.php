@@ -76,6 +76,7 @@ $transitionsToPower = [
     'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
     'place'.POWER_NEW_STARS => ST_PRIVATE_PLACE_STAR,
     'place'.POWER_BLACK_HOLE => ST_PRIVATE_PLACE_BLACK_HOLE,
+    'place'.POWER_CRESCENT_MOON => ST_PRIVATE_PLACE_CRESCENT_MOON,
 ];
 
 $playerActionsGameStates = [
@@ -142,6 +143,17 @@ $playerActionsGameStates = [
         "type" => "private",
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placeBlackHole", "skipBonus", "cancelPlaceShape" ],
+        "transitions" => [
+            'confirm' => ST_PRIVATE_CONFIRM_TURN,
+        ]
+    ],
+
+    ST_PRIVATE_PLACE_CRESCENT_MOON => [
+        "name" => "placeCrescentMoon",
+        "descriptionmyturn" => clienttranslate('${you} can place a crescent moon'),
+        "type" => "private",
+        "args" => "argPlacePlanet",
+        "possibleactions" => [ "placeCrescentMoon", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]

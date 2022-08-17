@@ -37,6 +37,5 @@ POWER_GALAXY
 POWER_BLACK_HOLE
 POWER_NOVA
 POWER_TWINKLING_STAR
-POWER_CRESCENT_MOON
 show constellations size next to the shape
 help

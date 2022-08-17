@@ -35,6 +35,7 @@ trait StateTrait {
             $player->objects->planets = array_merge($player->objects->planets, $player->roundObjects->planets);
             $player->objects->stars = array_merge($player->objects->stars, $player->roundObjects->stars);
             // TODO
+            $player->objects->crescentMoons = array_merge($player->objects->crescentMoons, $player->roundObjects->crescentMoons);
             $player->objects->blackHoles = array_merge($player->objects->blackHoles, $player->roundObjects->blackHoles);
             $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
