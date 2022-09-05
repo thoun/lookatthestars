@@ -1123,11 +1123,8 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
-            case 204:
-                document.getElementsByTagName('html')[0].dataset.noBuilding = (prefValue == 2).toString();
-                break;
-            case 205:
-                document.getElementsByTagName('html')[0].dataset.noGrid = (prefValue == 2).toString();
+            case 201:
+                document.getElementsByTagName('html')[0].dataset.noCounter = (prefValue == 2).toString();
                 break;
             case 299:
                 this.toggleKeysNotice(prefValue == 1);

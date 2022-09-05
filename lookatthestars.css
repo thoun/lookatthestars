@@ -436,6 +436,7 @@
   color: white;
   font-family: "blzeeregular";
   font-size: 24pt;
+  pointer-events: none;
 }
 .player-table .name {
   position: absolute;
@@ -524,6 +525,10 @@
     opacity: 1;
   }
 }
+html[data-no-counter=true] .constellation-counter {
+  display: none;
+}
+
 html, .mode_3d #game_play_area_background {
   background: #101010;
 }

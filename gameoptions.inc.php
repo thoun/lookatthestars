@@ -54,6 +54,16 @@ $game_preferences = [
         'default' => 1,
     ],
 
+    201 => [
+        'name' => totranslate('Show constellations size'),
+        'needReload' => false,
+        'values' => [
+            1 => ['name' => totranslate('Enabled')],
+            2 => ['name' => totranslate('Disabled')],
+        ],
+        'default' => 1,
+    ],
+
     299 => [
         'name' => '',
         'needReload' => false,
