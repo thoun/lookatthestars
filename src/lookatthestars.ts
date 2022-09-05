@@ -672,7 +672,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     notif_placedLines(notif: Notif<NotifPlacedLinesArgs>) {
-        this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.placeLines(notif.args.lines, ['round']);
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     }
     notif_placedShootingStar(notif: Notif<NotifPlacedShootingStarArgs>) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
@@ -704,11 +706,15 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {
-        this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.cancelPlacedLines();
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     }
 
     notif_cancelBonus(notif: Notif<NotifPlacedLinesArgs>) {
-        this.getPlayerTable(notif.args.playerId).cancelBonus();
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.cancelBonus();
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     }
 
     notif_day(notif: Notif<NotifDayArgs>) {

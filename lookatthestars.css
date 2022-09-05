@@ -431,6 +431,12 @@
 .player-table .main .day[data-level="2"] {
   height: 231px;
 }
+.player-table .main .constellation-counter {
+  position: absolute;
+  color: white;
+  font-family: "blzeeregular";
+  font-size: 24pt;
+}
 .player-table .name {
   position: absolute;
   bottom: 0;

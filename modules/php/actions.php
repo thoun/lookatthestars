@@ -43,6 +43,7 @@ trait ActionTrait {
         self::notifyAllPlayers('placedLines', '', [
             'playerId' => $playerId,
             'lines' => $newLines,
+            'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
 
         $shapesFound = $this->getPowerCurrentShape($player);
@@ -124,9 +125,11 @@ trait ActionTrait {
         $roundObjects->linesUsedForPower = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
+        $player->roundObjects = $roundObjects;
         self::notifyAllPlayers('placedLines', '', [
             'playerId' => $playerId,
             'lines' => [$fromStr.$toStr],
+            'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
 
         $this->gamestate->nextPrivateState($playerId, 'confirm');
@@ -293,10 +296,12 @@ trait ActionTrait {
     public function cancelPlaceShape() {
         $playerId = intval($this->getCurrentPlayerId());
 
-        $this->DbQuery("UPDATE player SET `player_round_lines` = NULL WHERE `player_id` = $playerId");
+        $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_round_objects` = NULL WHERE `player_id` = $playerId");
 
+        $player = $this->getPlayer($playerId);
         self::notifyAllPlayers('cancelPlacedLines', '', [
             'playerId' => $playerId,
+            'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
 
         $this->gamestate->setPlayersMultiactive([$playerId], 'next', false);
@@ -310,8 +315,10 @@ trait ActionTrait {
 
         $this->DbQuery("UPDATE player SET `player_round_objects` = NULL WHERE `player_id` = $playerId");
 
+        $player = $this->getPlayer($playerId);
         self::notifyAllPlayers('cancelBonus', '', [
             'playerId' => $playerId,
+            'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
 
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];

@@ -146,7 +146,10 @@ class LookAtTheStars extends Table {
             $playerDb['roundLines'] = $playerDb['roundLines'] ? json_decode($playerDb['roundLines'], true) : [];
             $playerDb['objects'] = json_decode($playerDb['objects']) ?? new Objects();
             $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new Objects();
-            $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($this->getPlayer($playerId)) : null;
+
+            $player = $this->getPlayer($playerId);
+            $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($player) : null;
+            $playerDb['currentConstellations'] = $this->getConstellations($player->getLines(true));
         }
 
         $result['cards'] = $maskedCards;

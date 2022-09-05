@@ -44,6 +44,11 @@ interface Objects {
     blackHoles: string[];
 }
 
+interface Constellation {
+    key: string; // string coordinates of the lowest star (y coordinate). If multiple stars at same lowest, the closest to the left (x coordinate).
+    lines: string[];
+}
+
 interface LookAtTheStarsPlayer extends Player {
     playerNo: number;
     sheetType: number;
@@ -52,6 +57,7 @@ interface LookAtTheStarsPlayer extends Player {
     roundLines?: string[];
     objects: Objects;
     roundObjects?: Objects;
+    currentConstellations: Constellation[];
 }
 
 interface LookAtTheStarsGamedatas {
@@ -117,6 +123,7 @@ interface NotifCardArgs {
 interface NotifPlacedLinesArgs {
     playerId: number;
     lines: string[];
+    currentConstellations: Constellation[];
 }
 interface NotifPlacedShootingStarArgs extends NotifPlacedLinesArgs {
     head: string;

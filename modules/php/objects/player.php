@@ -74,13 +74,17 @@ class LatsPlayer {
         );
 
         if ($includeRound) {
-            return array_merge(
+            $lines = array_merge(
                 $lines,
                 $this->linesStrToLines($this->roundLines)
             );
-        } else {
-            return $lines;
+
+            if ($this->roundObjects->line != null) {
+                $lines[] = $this->lineStrToLine($this->roundObjects->line);
+            }
+
         }
+        return $lines;
     }
 
     public function getShootingStars(bool $includeRound = false) {        

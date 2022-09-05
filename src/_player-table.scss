@@ -163,6 +163,13 @@ $invalidColor: #FF000099;
         height: 231px;
       }
     }
+
+    .constellation-counter {
+      position: absolute;
+      color: white;
+      font-family: 'blzeeregular';
+      font-size: 24pt;
+    }
   }
 
   .name {

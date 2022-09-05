@@ -61,6 +61,8 @@ class PlayerTable {
             this.placeInitialObjects(player.roundObjects, ['round', 'round-bonus']);
         }
 
+        this.setConstellationsCounters(player.currentConstellations);
+
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
             this.setPlanetScore(player.playerScore.planets);
@@ -78,6 +80,31 @@ class PlayerTable {
                     svg.setAttribute('filter',"url(#PencilTexture)");
             },800);
         }*/
+    }
+
+    public setConstellationsCounters(constellations: Constellation[]) {
+        const oldCounters = Array.from(document.getElementById(`player-table-${this.playerId}-main`).getElementsByClassName('constellation-counter')) as HTMLElement[];
+        oldCounters.forEach(oldLine => oldLine.parentElement?.removeChild(oldLine));
+
+        constellations.forEach(constellation => {
+            const counterId = `constellation-counter-${this.playerId}-${constellation.key}`;
+
+            const xCoordinate = parseInt(constellation.key[0], 16);
+            const yCoordinate = parseInt(constellation.key[1], 16);
+
+            const c1 = {
+                x: 554 - (SVG_LEFT_MARGIN + (xCoordinate * SVG_LINE_WIDTH)),
+                y: SVG_BOTTOM_MARGIN - (yCoordinate * SVG_LINE_HEIGHT) - 17,
+            };
+
+            let newCounter = document.createElement('div');
+            newCounter.setAttribute('id', counterId);
+            newCounter.setAttribute('style', `right: ${c1.x}px; top: ${c1.y}px;`);
+            newCounter.classList.add('constellation-counter');
+            newCounter.innerText = '' + constellation.lines.length;
+
+            $(`player-table-${this.playerId}-main`).append(newCounter);
+        });
     }
     
     public onKeyPress(event: KeyboardEvent): void {

@@ -260,6 +260,7 @@ var PlayerTable = /** @class */ (function () {
         if (player.roundObjects) {
             this.placeInitialObjects(player.roundObjects, ['round', 'round-bonus']);
         }
+        this.setConstellationsCounters(player.currentConstellations);
         if (player.playerScore) {
             this.setConstellationsScore(player.playerScore.checkedConstellations, player.playerScore.constellations);
             this.setPlanetScore(player.playerScore.planets);
@@ -277,6 +278,26 @@ var PlayerTable = /** @class */ (function () {
             },800);
         }*/
     }
+    PlayerTable.prototype.setConstellationsCounters = function (constellations) {
+        var _this = this;
+        var oldCounters = Array.from(document.getElementById("player-table-".concat(this.playerId, "-main")).getElementsByClassName('constellation-counter'));
+        oldCounters.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
+        constellations.forEach(function (constellation) {
+            var counterId = "constellation-counter-".concat(_this.playerId, "-").concat(constellation.key);
+            var xCoordinate = parseInt(constellation.key[0], 16);
+            var yCoordinate = parseInt(constellation.key[1], 16);
+            var c1 = {
+                x: 554 - (SVG_LEFT_MARGIN + (xCoordinate * SVG_LINE_WIDTH)),
+                y: SVG_BOTTOM_MARGIN - (yCoordinate * SVG_LINE_HEIGHT) - 17,
+            };
+            var newCounter = document.createElement('div');
+            newCounter.setAttribute('id', counterId);
+            newCounter.setAttribute('style', "right: ".concat(c1.x, "px; top: ").concat(c1.y, "px;"));
+            newCounter.classList.add('constellation-counter');
+            newCounter.innerText = '' + constellation.lines.length;
+            $("player-table-".concat(_this.playerId, "-main")).append(newCounter);
+        });
+    };
     PlayerTable.prototype.onKeyPress = function (event) {
         if (['TEXTAREA', 'INPUT'].includes(event.target.nodeName)) {
             return;
@@ -1355,7 +1376,9 @@ var LookAtTheStars = /** @class */ (function () {
         this.cards.createMoveOrUpdateCard(notif.args.card);
     };
     LookAtTheStars.prototype.notif_placedLines = function (notif) {
-        this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
+        var playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.placeLines(notif.args.lines, ['round']);
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     };
     LookAtTheStars.prototype.notif_placedShootingStar = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
@@ -1386,10 +1409,14 @@ var LookAtTheStars = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-auta', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
-        this.getPlayerTable(notif.args.playerId).cancelPlacedLines();
+        var playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.cancelPlacedLines();
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     };
     LookAtTheStars.prototype.notif_cancelBonus = function (notif) {
-        this.getPlayerTable(notif.args.playerId).cancelBonus();
+        var playerTable = this.getPlayerTable(notif.args.playerId);
+        playerTable.cancelBonus();
+        playerTable.setConstellationsCounters(notif.args.currentConstellations);
     };
     LookAtTheStars.prototype.notif_day = function (notif) {
         var _this = this;

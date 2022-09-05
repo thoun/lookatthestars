@@ -442,7 +442,7 @@ trait UtilTrait {
             }
         }
 
-        return $constellations;
+        return array_values(array_filter($constellations, fn($constellation) => $constellation->getSize() >= 3));
     }
 
     private function calculateConstellationsScore(PlayerScore &$playerScore, array $constellations) {
