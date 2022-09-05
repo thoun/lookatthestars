@@ -36,5 +36,4 @@ POWER_LUMINOUS_AURA
 POWER_GALAXY
 POWER_NOVA
 POWER_TWINKLING_STAR
-show constellations size next to the shape
 help

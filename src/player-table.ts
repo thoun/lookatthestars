@@ -80,6 +80,48 @@ class PlayerTable {
                     svg.setAttribute('filter',"url(#PencilTexture)");
             },800);
         }*/
+
+        let title = ``;
+        let description = ``;
+        switch (Number(player.sheetType) + 1) {
+            case 1:
+                title = _(`SOUTHERN AFRICA`);
+                description = _(`For the Tswana and Sotho, Dithutlwa (the giraffes) are represented by the stars of the Southern Cross. For the San, Aldebaran and Betelgeuse are known as the male and female hartebeest.`);
+                break;
+            case 2:
+                title = _(`CHINA`);
+                description = _(`Tshang-Lung, the blue dragon, is associated with the East and spring. Its appearance in the sky marked the beginning of the spring rains. Tchou-Niao, the red bird, associated with the South and summer, is represented as a hybrid of birds, a quail, or a phoenix.`);
+                break;
+            case 3:
+                title = _(`ANCIENT EGYPT`);
+                description = _(`The constellations of the Ibis and the Scarab would correspond to Cancer and Sagittarius. The scarab is the symbol of the god Khepri who was believed to roll the disk of the sun across the sky. The sacred ibis is associated with Thoth, god of wisdom and writing.`);
+                break;
+            case 4:
+                title = _(`ANCIENT GREECE`);
+                description = _(`The elongated shape of the Hydra female constellation represents the giant snake that Hercules faced during one of his twelve labors. The Lyre allowed Orpheus to charm the creatures of the Underworld.`);
+                break;
+            case 5:
+                title = _(`INDIA`);
+                description = _(`Kalaparusha (or Prajapati) was transformed into a deer for being cruel to his daughter. The Belt of Orion represents the arrow that pierced him. The couple Soma and Vishnu, with the lyre and the club of knowledge, are associated with the duos sun/moon and day/night.`);
+                break;
+            case 6:
+                title = _(`INUITS`);
+                description = _(`In Alaska, the Pleiades represent a red fox. Its Inuit name is Kaguyagat. The Big Dipper is known as Tukturjuit, the caribou.`);
+                break;
+            case 7:
+                title = _(`NAVAJO`);
+                description = _(`Ma’ii Bizò‘, the Coyote Star, was placed by the god Coyote in the South, its twinkle visible to the Navajo at the winter solstice. Náhookòs Bikò‘, the North Star, symbolizes the central fire of the hogan (Navajo home). It never moves and so brings stability and balance to the other stars.`);
+                break;
+            case 8:
+                title = _(`POLYNESIANS`);
+                description = _(`The demigod Maui is said to have raised the islands of Hawaii by pulling them up from the ocean floor with his magic hook, Ka Makau Nui o Maui. Nāmāhoe, the twins, is composed of Nānā Mua, "who looks forward" (Castor), and Nānā Hope, "who looks back" (Pollux).`);
+                break;
+        }
+        html = `<div>
+            <strong>${title}</strong><br><br>
+            ${description}
+        </div>`;
+        this.game.setTooltip(`player-table-${this.playerId}-main`, html);
     }
 
     public setConstellationsCounters(constellations: Constellation[]) {
