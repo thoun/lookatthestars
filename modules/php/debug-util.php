@@ -20,7 +20,9 @@ trait DebugUtilTrait {
         // for bonus : black hole
         //$this->insertLinesStr(2343492, ['0110', '0111', '0112']);
         // for bonus : moon
-        $this->insertLinesStr(2343492, ['0110', '1020', '2031']);
+        //$this->insertLinesStr(2343492, ['0110', '1020', '2031']);
+        // for bonus : twinkling star
+        $this->insertLinesStr(2343492, ['0011', '1102', '1122']);
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);

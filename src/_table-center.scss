@@ -4,6 +4,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 50px;
+  margin-top: 20px;
   margin-bottom: 20px;
 
   .card {
@@ -57,5 +58,18 @@
         }
       }
     }
+
+    .highlight-objective {
+      animation: highlight-objective-animation 1.5s alternate infinite ease-in-out;
+    }
+  }
+}
+
+@keyframes highlight-objective-animation {
+  0% { 
+    box-shadow: 0 0 20px 10px #f0da8c;
+  }
+  100% { 
+    box-shadow: 0 0 20px 10px #997835;
   }
 }

@@ -6,7 +6,7 @@ declare const _;
 declare const g_gamethemeurl;
 
 const ANIMATION_MS = 500;
-const SCORE_MS = 1/*TODO 000 */;
+const SCORE_MS = 1000;
 
 const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1/*, 1.25, 1.5*/];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0/*, 20, 33.34*/];
@@ -128,8 +128,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeGalaxy':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeGalaxy(x, y));
                 break;
-            case 'placeTwinklingStars':
-                this.onEnteringStarSelection(args.args, (x, y) => this.placeTwinklingStars(x, y));
+            case 'placeTwinklingStar':
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeTwinklingStar(x, y));
                 break;
             case 'placeNova':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeNova(x, y));
@@ -149,16 +149,22 @@ class LookAtTheStars implements LookAtTheStarsGame {
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs | EnteringPlaceShootingStarArgs) {
         this.getCurrentPlayerTable()?.setShapeToPlace(args.currentCard, args.possiblePositions as any);
     }
+
+    private onEnteringBonus() {
+        document.getElementById('star2').classList.add('highlight-objective');
+    }
     
     private onEnteringPlaceLine(args: EnteringPlaceLineArgs) {
         this.getCurrentPlayerTable()?.setLineToPlace(args.possibleLines as any);
+        this.onEnteringBonus();
     }
     
-    onEnteringStarSelection(args: EnteringChooseCoordinatesArgs, placeFunction: (x: number, y: number) => void) {
+    private onEnteringStarSelection(args: EnteringChooseCoordinatesArgs, placeFunction: (x: number, y: number) => void) {
         this.getCurrentPlayerTable()?.setStarSelection(args.possibleCoordinates, placeFunction);
+        this.onEnteringBonus();
     }
 
-    onEnteringNextShape() {
+    private onEnteringNextShape() {
         this.playersTables.forEach(playerTable => playerTable.nextShape());
     }
 
@@ -181,7 +187,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 'placeBlackHole':
             case 'placeCrescentMoon':
             case 'placeGalaxy':
-            case 'placeTwinklingStars':
+            case 'placeTwinklingStar':
             case 'placeNova':
             case 'placeLuminousAura':
                 this.onLeavingStarSelection();
@@ -193,12 +199,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.getCurrentPlayerTable()?.removeShapeToPlace();
     }
 
+    private onLeavingBonus() {
+        document.getElementById('star2').classList.remove('highlight-objective');
+    }
+
     private onLeavingPlaceLine() {
         this.getCurrentPlayerTable()?.removeLineToPlace();
+        this.onLeavingBonus();
     }
 
     private onLeavingStarSelection() {
         this.getCurrentPlayerTable()?.removeStarSelection();
+        this.onLeavingBonus();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -511,12 +523,12 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.takeAction('placeGalaxy', { x, y });
     }
 
-    public placeTwinklingStars(x: number, y: number) {
-        if(!(this as any).checkAction('placeTwinklingStars')) {
+    public placeTwinklingStar(x: number, y: number) {
+        if(!(this as any).checkAction('placeTwinklingStar')) {
             return;
         }
 
-        this.takeAction('placeTwinklingStars', { x, y });
+        this.takeAction('placeTwinklingStar', { x, y });
     }
 
     public placeNova(x: number, y: number) {

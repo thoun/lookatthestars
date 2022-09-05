@@ -183,6 +183,6 @@ trait StateTrait {
             //$this->computeStats($playerId);
         }
 
-        //$this->gamestate->nextState('endGame');
+        $this->gamestate->nextState('endGame');
     }
 }

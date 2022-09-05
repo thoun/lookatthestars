@@ -81,6 +81,7 @@ interface LookAtTheStarsGame extends Game {
     getPlayerColor(playerId: number): string;
     setTooltip(id: string, html: string): void;
     placeShape(): void;
+    placeShootingStar(): void;
     placeLine(): void;
 }
 

@@ -133,7 +133,11 @@ class PlayerTable {
                     switch (action) {
                         case 'Shape':
                             if (this.getValid()) {
-                                this.game.placeShape();
+                                if (document.getElementById('placeShootingStar_button')) {
+                                    this.game.placeShootingStar();
+                                } else {
+                                    this.game.placeShape();
+                                }
                             }
                             break;
                         case 'Line':

@@ -454,28 +454,32 @@ trait UtilTrait {
         }
     }
 
-    private function calculatePlanetScore(PlayerScore &$playerScore, array $constellations, array $planet) {
-        $planetConstellations = [];
-        for ($x = $planet[0]-1; $x <= $planet[0]+1; $x++) {
-            for ($y = $planet[1]-1; $y <= $planet[1]+1; $y++) {
-                if ($x != $planet[0] || $y != $planet[1]) {
-                    $coordinates = [$x, $y];
+    private function getConstellationsAroundCoordinates(array $constellations, array $coordinates) {
+        $foundConstellations = [];
+        for ($x = $coordinates[0]-1; $x <= $coordinates[0]+1; $x++) {
+            for ($y = $coordinates[1]-1; $y <= $coordinates[1]+1; $y++) {
+                if ($x != $coordinates[0] || $y != $coordinates[1]) {
                     $constellation = $this->array_find($constellations, fn($iConstellation) => $this->array_some($iConstellation->lines, fn($line) => 
-                        $this->coordinatesInArray($coordinates, $line)
+                        $this->coordinatesInArray([$x, $y], $line)
                     ));
-                    if ($constellation && !in_array($constellation->key, $planetConstellations)) {
-                        $planetConstellations[] = $constellation->key;
+                    if ($constellation && !in_array($constellation->key, $foundConstellations)) {
+                        $foundConstellations[] = $constellation->key;
                     }
                 }
             }
         }
 
+        return $foundConstellations;
+    }
+
+    private function calculatePlanetScore(PlayerScore &$playerScore, array $validConstellations, array $planet) {
+        $planetConstellations = $this->getConstellationsAroundCoordinates($validConstellations, $planet);
         $playerScore->planets += count($planetConstellations);
     }
 
-    private function calculatePlanetsScore(PlayerScore &$playerScore, array $constellations, array $planets) {
+    private function calculatePlanetsScore(PlayerScore &$playerScore, array $validConstellations, array $planets) {
         foreach ($planets as $planet) {
-            $this->calculatePlanetScore($playerScore, $constellations, $planet);
+            $this->calculatePlanetScore($playerScore, $validConstellations, $planet);
         }
     }
 
@@ -493,6 +497,7 @@ trait UtilTrait {
             for ($y = -1; $y <= 8; $y++) {
                 for ($rotation = 0; $rotation <= 3; $rotation++) {
                     $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
+
                     if ($this->array_every($shiftedLines, fn($shapeLine) => $this->lineInArray($shapeLine, $lines))
                         && ($allowLineReuse || !$this->array_some($shapeLines, fn($shapeLine) => $this->array_some($shapesFound, fn($shapeFound) => $this->array_some($shapeFound, fn($line) => $this->sameLine($shapeLine, $line)))))
                     ) {
@@ -513,26 +518,45 @@ trait UtilTrait {
         $playerScore->star1 += count($shapesFound) * $objective->points;
     }
 
-    private function calculateStar2Score(PlayerScore &$playerScore, LatsPlayer $player, array $validConstellations) {
+    private function calculateStar2Score(PlayerScore &$playerScore, LatsPlayer $player, array $validConstellations, array $allConstellations) {
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
 
         $points = 0;
 
         switch ($objective->power) {
             case POWER_GALAXY:
-                // TODO 2 points / galaxy
+                foreach ($player->objects->galaxies as $galaxy) {
+                    $playerScore->star2 += 2;
+                }
                 break;
             case POWER_TWINKLING_STAR:
-                // TODO 3 victory points if it is adjacent to exactly 2 constellations at the end of the game.
+                foreach ($player->objects->twinklingStars as $twinklingStarStr) {
+                    $twinklingStar = $this->coordinateStrToCoordinate($twinklingStarStr);
+                    $twinklingStarConstellations = $this->getConstellationsAroundCoordinates($validConstellations, $twinklingStar);
+                    if (count($twinklingStarConstellations) == 2) {
+                        $playerScore->star2 += 3;
+                    }
+                }
                 break;
             case POWER_NOVA:
-                /* TODO 9 or 10 points if nova on a 9/10 constellation. scored once .*/
+                foreach ($player->objects->novas as $novaStr) {
+                    $nova = $this->coordinateStrToCoordinate($novaStr);
+
+                    for ($size = 9; $size <= 10; $size++) {
+                        if ($this->array_some($allConstellations, fn($constellation) => $constellation->getSize() == $size && 
+                            $this->array_some($constellation->lines, fn($line) => $this->coordinatesInArray($nova, $line))
+                        )) {
+                            $playerScore->star2 += $size;
+                        }
+                    }
+                }
                 break;
-            case POWER_LUMINOUS_AURA:                
-                // TODO 2 points / LUMINOUS_AURA
+            case POWER_LUMINOUS_AURA: 
+                foreach ($player->objects->luminousAuras as $luminousAura) {
+                    $playerScore->star2 += 2;
+                }
                 break;
             case POWER_CRESCENT_MOON:
-                // TODO Each constellation which has at least 1 star in a vertical or horizontal alignment with the crescent moon scores 1 additional victory point at the end of the game.
                 $crescentMoonConstellations = [];
                 foreach ($player->objects->crescentMoons as $crescentMoonStr) {
                     $crescentMoon = $this->coordinateStrToCoordinate($crescentMoonStr);
@@ -582,14 +606,14 @@ trait UtilTrait {
 
         $lines = $player->getLines();
 
-        $constellations = $this->getConstellations($lines);
-        $validConstellations = $this->getValidConstellations($constellations);
+        $allConstellations = $this->getConstellations($lines);
+        $validConstellations = $this->getValidConstellations($allConstellations);
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
         $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets());
         $this->calculateShootingStarsScore($playerScore, $player->getShootingStars());
         $this->calculateStar1Score($playerScore, $lines);
-        $this->calculateStar2Score($playerScore, $player, $validConstellations);
+        $this->calculateStar2Score($playerScore, $player, $validConstellations, $allConstellations);
         
         $playerScore->calculateTotal();
 

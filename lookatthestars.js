@@ -78,7 +78,6 @@ var Cards = /** @class */ (function () {
         var existingDiv = document.getElementById("card-".concat(card.id));
         var side = card.type ? 'front' : 'back';
         if (existingDiv) {
-            this.game.removeTooltip("card-".concat(card.id));
             var oldType = Number(existingDiv.dataset.category);
             existingDiv.dataset.side = '' + side;
             if (!oldType && card.type) {
@@ -87,7 +86,6 @@ var Cards = /** @class */ (function () {
             else if (oldType && !card.type) {
                 setTimeout(function () { return _this.removeVisibleInformations(existingDiv); }, 500); // so we don't change face while it is still visible
             }
-            this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.family));
             if (!destinationId || existingDiv.parentElement.id == destinationId) {
                 return;
             }
@@ -112,9 +110,6 @@ var Cards = /** @class */ (function () {
             }
             if (card.type) {
                 this.setVisibleInformations(div, card);
-                if (!destinationId.startsWith('help-')) {
-                    this.game.setTooltip(div.id, this.getTooltip(card.type, card.family));
-                }
             }
         }
     };
@@ -124,43 +119,7 @@ var Cards = /** @class */ (function () {
     };
     Cards.prototype.removeVisibleInformations = function (div) {
         div.removeAttribute('data-type');
-        // TODO
-    };
-    Cards.prototype.getTooltip = function (category, family) {
-        return 'TODO';
-        switch (category) {
-            case 1:
-                return "\n                <div><strong>".concat(_("Mermaid"), "</strong></div>\n                ").concat(_("1 point for each card of the color the player has the most of. If they have more mermaid cards, they must look at which of the other colors they have more of. The same color cannot be counted for more than one mermaid card."), "\n                <br><br>\n                <strong>").concat(_("Effect: If they place 4 mermaid cards, the player immediately wins the game."), "</strong>");
-            case 2:
-                if (family >= 4) {
-                    return "<div><strong>".concat(_("Swimmer"), "/").concat(_("Shark"), "</strong></div>\n                    <div>").concat(_("1 point for each combination of swimmer and shark cards."), "</div><br>\n                    <div>").concat(_("Effect:"), " ").concat(_("The player steals a random card from another player and adds it to their hand."), "</div>");
-                }
-                var duoCards = [
-                    [_('Crab'), _("The player chooses a discard pile, consults it without shuffling it, and chooses a card from it to add to their hand. They do not have to show it to the other players.")],
-                    [_('Boat'), _("The player immediately takes another turn.")],
-                    [_('Fish'), _("The player adds the top card from the deck to their hand.")]
-                ];
-                var duo = duoCards[family - 1];
-                return "<div><strong>".concat(duo[0], "</strong></div>\n                <div>").concat(_("1 point for each pair of ${card} cards.").replace('${card}', duo[0]), "</div><br>\n                <div>").concat(_("Effect:"), " ").concat(_(duo[1]), "</div>");
-            case 3:
-                var collectorCards = [
-                    ['0, 2, 4, 6, 8, 10', '1, 2, 3, 4, 5, 6', _('Shell')],
-                    ['0, 3, 6, 9, 12', '1, 2, 3, 4, 5', _('Octopus')],
-                    ['1, 3, 5', '1, 2, 3', _('Penguin')],
-                    ['0, 5', '1,  2', _('Sailor')],
-                ];
-                var collector = collectorCards[family - 1];
-                return "<div><strong>".concat(collector[2], "</strong></div>\n                <div>").concat(_("${points} points depending on whether the player has ${numbers} ${card} cards.").replace('${points}', collector[0]).replace('${numbers}', collector[1]).replace('${card}', collector[2]), "</div>");
-            case 4:
-                var multiplierCards = [
-                    [_('The lighthouse'), _('Boat')],
-                    [_('The shoal of fish'), _('Fish')],
-                    [_('The penguin colony'), _('Penguin')],
-                    [_('The captain'), _('Sailor')],
-                ];
-                var multiplier = multiplierCards[family - 1];
-                return "<div><strong>".concat(multiplier[0], "</strong></div>\n                <div>").concat(_("1 point per ${card} card.").replace('${card}', multiplier[1]), "</div>\n                <div>").concat(_("This card does not count as a ${card} card.").replace('${card}', multiplier[1]), "</div>");
-        }
+        div.removeAttribute('data-type-arg');
     };
     return Cards;
 }());
@@ -370,7 +329,12 @@ var PlayerTable = /** @class */ (function () {
                     switch (action) {
                         case 'Shape':
                             if (this.getValid()) {
-                                this.game.placeShape();
+                                if (document.getElementById('placeShootingStar_button')) {
+                                    this.game.placeShootingStar();
+                                }
+                                else {
+                                    this.game.placeShape();
+                                }
                             }
                             break;
                         case 'Line':
@@ -828,7 +792,7 @@ var PlayerTable = /** @class */ (function () {
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
-var SCORE_MS = 1 /*TODO 000 */;
+var SCORE_MS = 1000;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1 /*, 1.25, 1.5*/];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0 /*, 20, 33.34*/];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
@@ -929,8 +893,8 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeGalaxy':
                 this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeGalaxy(x, y); });
                 break;
-            case 'placeTwinklingStars':
-                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeTwinklingStars(x, y); });
+            case 'placeTwinklingStar':
+                this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeTwinklingStar(x, y); });
                 break;
             case 'placeNova':
                 this.onEnteringStarSelection(args.args, function (x, y) { return _this.placeNova(x, y); });
@@ -950,13 +914,18 @@ var LookAtTheStars = /** @class */ (function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions);
     };
+    LookAtTheStars.prototype.onEnteringBonus = function () {
+        document.getElementById('star2').classList.add('highlight-objective');
+    };
     LookAtTheStars.prototype.onEnteringPlaceLine = function (args) {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setLineToPlace(args.possibleLines);
+        this.onEnteringBonus();
     };
     LookAtTheStars.prototype.onEnteringStarSelection = function (args, placeFunction) {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setStarSelection(args.possibleCoordinates, placeFunction);
+        this.onEnteringBonus();
     };
     LookAtTheStars.prototype.onEnteringNextShape = function () {
         this.playersTables.forEach(function (playerTable) { return playerTable.nextShape(); });
@@ -979,7 +948,7 @@ var LookAtTheStars = /** @class */ (function () {
             case 'placeBlackHole':
             case 'placeCrescentMoon':
             case 'placeGalaxy':
-            case 'placeTwinklingStars':
+            case 'placeTwinklingStar':
             case 'placeNova':
             case 'placeLuminousAura':
                 this.onLeavingStarSelection();
@@ -990,13 +959,18 @@ var LookAtTheStars = /** @class */ (function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeShapeToPlace();
     };
+    LookAtTheStars.prototype.onLeavingBonus = function () {
+        document.getElementById('star2').classList.remove('highlight-objective');
+    };
     LookAtTheStars.prototype.onLeavingPlaceLine = function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeLineToPlace();
+        this.onLeavingBonus();
     };
     LookAtTheStars.prototype.onLeavingStarSelection = function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeStarSelection();
+        this.onLeavingBonus();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -1254,11 +1228,11 @@ var LookAtTheStars = /** @class */ (function () {
         }
         this.takeAction('placeGalaxy', { x: x, y: y });
     };
-    LookAtTheStars.prototype.placeTwinklingStars = function (x, y) {
-        if (!this.checkAction('placeTwinklingStars')) {
+    LookAtTheStars.prototype.placeTwinklingStar = function (x, y) {
+        if (!this.checkAction('placeTwinklingStar')) {
             return;
         }
-        this.takeAction('placeTwinklingStars', { x: x, y: y });
+        this.takeAction('placeTwinklingStar', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeNova = function (x, y) {
         if (!this.checkAction('placeNova')) {

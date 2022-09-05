@@ -37,8 +37,8 @@
     public function placeShape() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
         $rotation = self::getArg("rotation", AT_posint, true);
 
         $this->game->placeShape($x, $y, $rotation);
@@ -49,8 +49,8 @@
     public function placeShootingStar() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
         $rotation = self::getArg("rotation", AT_posint, true);
         $size = self::getArg("size", AT_posint, true);
 
@@ -62,10 +62,10 @@
     public function placeLine() {
         self::setAjaxMode();     
 
-        $xFrom = self::getArg("xFrom", AT_posint, true);
-        $yFrom = self::getArg("yFrom", AT_posint, true);
-        $xTo = self::getArg("xTo", AT_posint, true);
-        $yTo = self::getArg("yTo", AT_posint, true);
+        $xFrom = self::getArg("xFrom", AT_int, true);
+        $yFrom = self::getArg("yFrom", AT_int, true);
+        $xTo = self::getArg("xTo", AT_int, true);
+        $yTo = self::getArg("yTo", AT_int, true);
 
         $this->game->placeLine($xFrom, $yFrom, $xTo, $yTo);
 
@@ -75,8 +75,8 @@
     public function placePlanet() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placePlanet($x, $y);
 
@@ -86,8 +86,8 @@
     public function placeStar() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeStar($x, $y);
 
@@ -97,8 +97,8 @@
     public function placeBlackHole() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeBlackHole($x, $y);
 
@@ -108,8 +108,8 @@
     public function placeCrescentMoon() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeCrescentMoon($x, $y);
 
@@ -119,21 +119,21 @@
     public function placeGalaxy() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeGalaxy($x, $y);
 
         self::ajaxResponse();
     }
 
-    public function placeTwinklingStars() {
+    public function placeTwinklingStar() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
-        $this->game->placeTwinklingStars($x, $y);
+        $this->game->placeTwinklingStar($x, $y);
 
         self::ajaxResponse();
     }
@@ -141,8 +141,8 @@
     public function placeNova() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeNova($x, $y);
 
@@ -152,8 +152,8 @@
     public function placeLuminousAura() {
         self::setAjaxMode();     
 
-        $x = self::getArg("x", AT_posint, true);
-        $y = self::getArg("y", AT_posint, true);
+        $x = self::getArg("x", AT_int, true);
+        $y = self::getArg("y", AT_int, true);
 
         $this->game->placeLuminousAura($x, $y);
 

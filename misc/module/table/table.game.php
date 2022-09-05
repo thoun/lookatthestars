@@ -380,6 +380,7 @@ class game_view {
 }
 
 define('AT_bool', 0);
+define('AT_int', 0);
 define('AT_posint', 0);
 define('AT_numberlist', 0);
 define('AT_base64', 0);

@@ -38,6 +38,7 @@ trait ActionTrait {
             $newLines[] = dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]);
         }
         $this->DbQuery("UPDATE player SET `player_round_lines` = '".json_encode($newLines)."' WHERE `player_id` = $playerId");
+        $player->roundLines = $newLines;
 
         self::notifyAllPlayers('placedLines', '', [
             'playerId' => $playerId,
@@ -250,6 +251,38 @@ trait ActionTrait {
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedCrescentMoon', '', [
+            'playerId' => $playerId,
+            'coordinates' => $coordinatesStr
+        ]);
+
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
+    }
+    
+    public function placeTwinklingStar(int $x, int $y) {
+        self::checkAction('placeTwinklingStar'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+        $player = $this->getPlayer($playerId);
+        $possibleCoordinates = $this->getFreeCoordinates($player);
+
+        $coordinatesStr = dechex($x).dechex($y);
+        if (!$this->array_some($possibleCoordinates, fn($possibleCoordinate) => $possibleCoordinate == $coordinatesStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+        
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            throw new \BgaUserException("No valid shape for bonus");
+        }
+        
+        $roundObjects = new Objects();
+        $roundObjects->twinklingStars = [
+            $coordinatesStr
+        ];
+        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedTwinklingStars', '', [
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);

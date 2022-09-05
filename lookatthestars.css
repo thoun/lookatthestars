@@ -166,6 +166,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 50px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 #cards .card {
@@ -258,7 +259,18 @@
 #cards #objectives #star2[data-index="8"] {
   background-position-x: 100%;
 }
+#cards #objectives .highlight-objective {
+  animation: highlight-objective-animation 1.5s alternate infinite ease-in-out;
+}
 
+@keyframes highlight-objective-animation {
+  0% {
+    box-shadow: 0 0 20px 10px #f0da8c;
+  }
+  100% {
+    box-shadow: 0 0 20px 10px #997835;
+  }
+}
 @font-face {
   font-family: "blzeeregular";
   src: url("img/blzee-webfont.woff2") format("woff2"), url("img/blzee-webfont.woff") format("woff");
