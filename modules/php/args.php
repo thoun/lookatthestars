@@ -147,5 +147,28 @@ trait ArgsTrait {
         ];
 
     }
+
+    function argPlaceNova(int $playerId) {
+        $player = $this->getPlayer($playerId);
+        $currentConstellations = $this->getConstellations($player->getLines(true));
+
+        $possibleCoordinates = [];
+
+        foreach($currentConstellations as $constellation) {
+            foreach($constellation->lines as $line) {
+                foreach($line as $lineCoordinate) {
+                    $coordinateStr = dechex($lineCoordinate[0]).dechex($lineCoordinate[1]);
+                    if (!in_array($coordinateStr, $possibleCoordinates)) {
+                        $possibleCoordinates[] = $coordinateStr;
+                    }
+                }
+            }
+        }
+
+        return [
+            'possibleCoordinates' => $possibleCoordinates,
+        ];
+
+    }
     
 }
