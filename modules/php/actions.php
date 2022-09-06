@@ -285,7 +285,39 @@ trait ActionTrait {
         $roundObjects->linesUsedForPower = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
-        self::notifyAllPlayers('placedTwinklingStars', '', [
+        self::notifyAllPlayers('placedTwinklingStar', '', [
+            'playerId' => $playerId,
+            'coordinates' => $coordinatesStr
+        ]);
+
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
+    }
+    
+    public function placeGalaxy(int $x, int $y) {
+        self::checkAction('placeGalaxy'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+        $player = $this->getPlayer($playerId);
+        $possibleCoordinates = $this->argPlaceGalaxy($playerId)['possibleCoordinates'];
+
+        $coordinatesStr = dechex($x).dechex($y);
+        if (!$this->array_some($possibleCoordinates, fn($possibleCoordinate) => $possibleCoordinate == $coordinatesStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+        
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            throw new \BgaUserException("No valid shape for bonus");
+        }
+        
+        $roundObjects = new Objects();
+        $roundObjects->galaxies = [
+            $coordinatesStr
+        ];
+        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedGalaxy', '', [
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);

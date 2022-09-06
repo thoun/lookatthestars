@@ -310,7 +310,7 @@ class PlayerTable {
         const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
         newObject.setAttribute('id', type+coordinates);
-        newObject.setAttribute('x', `${x - 20}`);
+        newObject.setAttribute('x', `${type == 'galaxy' ? x + 7 : x - 20}`);
         newObject.setAttribute('y', `${y - 20}`);
         newObject.setAttribute('width', `40`);
         newObject.setAttribute('height', `40`);
@@ -731,18 +731,29 @@ class PlayerTable {
         buttons.forEach(button => button.classList.toggle('current-size', button.dataset.shootingStarSize == ''+size));
     }
     
-    public setStarSelection(possibleCoordinates: string[], placeFunction: (x: number, y: number) => void) {
+    public setStarSelection(possibleCoordinates: string[], placeFunction: (x: number, y: number) => void, specialType: 'galaxy' | null = null) {
         possibleCoordinates.forEach(possibleCoordinate => {
             const xCoordinate = parseInt(possibleCoordinate[0], 16);
             const yCoordinate = parseInt(possibleCoordinate[1], 16);
             const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
             const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
-            let circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-            circle.setAttribute('id', 'possible-coordinates-'+possibleCoordinates);
-            circle.setAttribute('cx', `${x}`);
-            circle.setAttribute('cy', `${y}`);
-            circle.setAttribute('r', `10`);
+            let circle = null;
+            if (specialType === 'galaxy') {
+                circle = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+                circle.setAttribute('id', 'possible-coordinates-'+possibleCoordinate);
+                circle.setAttribute('cx', `${x + (SVG_LINE_WIDTH / 2)}`);
+                circle.setAttribute('cy', `${y}`);
+                circle.setAttribute('rx', `${SVG_LINE_WIDTH / 2}`);
+                circle.setAttribute('ry', `10`);
+            } else {
+                circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                circle.setAttribute('id', 'possible-coordinates-'+possibleCoordinate);
+                circle.setAttribute('cx', `${x}`);
+                circle.setAttribute('cy', `${y}`);
+                circle.setAttribute('r', `10`);
+            }
+
             circle.classList.add('coordinates-selector');
             $('lats-svg-'+this.playerId).after(circle);
 

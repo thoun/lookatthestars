@@ -85,5 +85,67 @@ trait ArgsTrait {
             'canCancelBonus' => $bonusPlayed,
         ];
     }
+
+    function argPlaceGalaxy(int $playerId) {
+        $player = $this->getPlayer($playerId);
+        $currentConstellations = $this->getConstellations($player->getLines(true));
+        $shapesFound = $this->getPowerCurrentShape($player);
+        $shapeFound = $shapesFound[0];
+        $constellations = array_values(array_filter($currentConstellations, fn($constellation) => $this->array_some($shapeFound, fn($shapeLine) => $this->lineInArray($shapeLine, $constellation->lines))));
+        $constellationsCoordinates = [];
+        foreach($constellations as $constellation) {
+            foreach($constellation->lines as $line) {
+                foreach($line as $lineCoordinate) {
+                    if (!$this->coordinatesInArray($lineCoordinate, $constellationsCoordinates))
+                    $constellationsCoordinates[] = $lineCoordinate;
+                }
+            }
+        }
+
+        $day = $this->getDay();
+
+        $possibleCoordinates = [];
+
+        foreach($constellationsCoordinates as $coordinate) {
+            for ($x = $coordinate[0]-1; $x <= $coordinate[0]+1; $x++) {
+                for ($y = $coordinate[1]-1; $y <= $coordinate[1]+1; $y++) {
+                    if ($this->isFreeCoordinates(
+                        [$x, $y],
+                        $player,
+                        $day
+                    )) {
+                        // with star to the left
+                        if ($this->isFreeCoordinates(
+                            [$x - 1, $y],
+                            $player,
+                            $day
+                        )) {
+                            $coordinateStr = dechex($x - 1).dechex($y);
+                            if (!in_array($coordinateStr, $possibleCoordinates)) {
+                                $possibleCoordinates[] = $coordinateStr;
+                            }
+                        }
+                        // with star to the right
+                        if ($this->isFreeCoordinates(
+                            [$x + 1, $y],
+                            $player,
+                            $day
+                        )) {
+                            $coordinateStr = dechex($x).dechex($y);
+                            if (!in_array($coordinateStr, $possibleCoordinates)) {
+                                $possibleCoordinates[] = $coordinateStr;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return [
+            'possibleCoordinates' => $possibleCoordinates,
+        ];
+
+    }
     
 }

@@ -126,7 +126,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeCrescentMoon(x, y));
                 break;
             case 'placeGalaxy':
-                this.onEnteringStarSelection(args.args, (x, y) => this.placeGalaxy(x, y));
+                this.onEnteringStarSelection(args.args, (x, y) => this.placeGalaxy(x, y), 'galaxy');
                 break;
             case 'placeTwinklingStar':
                 this.onEnteringStarSelection(args.args, (x, y) => this.placeTwinklingStar(x, y));
@@ -160,8 +160,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.onEnteringBonus();
     }
     
-    private onEnteringStarSelection(args: EnteringChooseCoordinatesArgs, placeFunction: (x: number, y: number) => void) {
-        this.getCurrentPlayerTable()?.setStarSelection(args.possibleCoordinates, placeFunction);
+    private onEnteringStarSelection(args: EnteringChooseCoordinatesArgs, placeFunction: (x: number, y: number) => void, specialType: 'galaxy' | null = null) {
+        this.getCurrentPlayerTable()?.setStarSelection(args.possibleCoordinates, placeFunction, specialType);
         this.onEnteringBonus();
     }
 
@@ -642,7 +642,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['placedBlackHole', 1],
             ['placedCrescentMoon', 1],
             ['placedGalaxy', 1],
-            ['placedTwinklingStars', 1],
+            ['placedTwinklingStar', 1],
             ['placedNova', 1],
             ['placedLuminousAura', 1],
             ['cancelPlacedLines', 1],
@@ -694,7 +694,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     notif_placedGalaxy(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'galaxy', ['round', 'round-bonus']);
     }
-    notif_placedTwinklingStars(notif: Notif<NotifPlacedCoordinatesArgs>) {
+    notif_placedTwinklingStar(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'twinkling-star', ['round', 'round-bonus']);
     }
     notif_placedNova(notif: Notif<NotifPlacedCoordinatesArgs>) {

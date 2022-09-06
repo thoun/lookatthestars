@@ -72,7 +72,7 @@ $this->STAR2 = [
   new Star2Type(POWER_PLANET, [[[0, 2], [1, 2]], [[1, 2], [2, 2]], [[2, 2], [3, 2]]]),
   new Star2Type(POWER_NEW_STARS, [[[1, 1], [2, 1]], [[1, 1], [1, 2]], [[1, 2], [2, 2]]]),
   new Star2Type(POWER_NEW_LINE, [[[0, 3], [1, 2]], [[1, 2], [2, 1]], [[2, 1], [3, 0]]]),
-  new Star2Type(POWER_GALAXY, [[[1, 1], [2, 2]], [[3, 1], [2, 2]], [[2, 2], [3, 2]]]),
+  new Star2Type(POWER_GALAXY, [[[1, 1], [2, 2]], [[1, 3], [2, 2]], [[2, 2], [3, 2]]]),
   new Star2Type(POWER_BLACK_HOLE, [[[2, 1], [3, 2]], [[2, 2], [3, 2]], [[2, 3], [3, 2]]]),
   new Star2Type(POWER_NOVA, [[[2, 0], [1, 1]], [[1, 1], [2, 2]], [[2, 2], [3, 1]]]),
   new Star2Type(POWER_TWINKLING_STAR, [[[1, 1], [2, 2]], [[2, 2], [3, 1]], [[2, 2], [3, 3]]]),

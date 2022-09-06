@@ -33,6 +33,11 @@ class LatsPlayer {
         );
 
         // objects
+        foreach ($this->objects->galaxies as $galaxy) {
+            $galaxyCoordinate = $this->coordinateStrToCoordinate($galaxy);
+            $forbiddenCoordinates[] = $galaxyCoordinate;
+            $forbiddenCoordinates[] = [$galaxyCoordinate[0]+1, $galaxyCoordinate[1]];
+        }
         foreach ($this->objects->crescentMoons as $crescentMoon) {
             $forbiddenCoordinates[] = $this->coordinateStrToCoordinate($crescentMoon);
         }
