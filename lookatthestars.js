@@ -972,6 +972,7 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.onEnteringPlaceShape = function (args) {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setShapeToPlace(args.currentCard, args.possiblePositions);
+        document.getElementById("card-".concat(args.currentCard.id)).classList.add('highlight-current-shape');
     };
     LookAtTheStars.prototype.onEnteringBonus = function () {
         document.getElementById('star2').classList.add('highlight-objective');
@@ -1015,8 +1016,9 @@ var LookAtTheStars = /** @class */ (function () {
         }
     };
     LookAtTheStars.prototype.onLeavingPlaceShape = function () {
-        var _a;
+        var _a, _b;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeShapeToPlace();
+        (_b = document.querySelector(".highlight-current-shape")) === null || _b === void 0 ? void 0 : _b.classList.remove('highlight-current-shape');
     };
     LookAtTheStars.prototype.onLeavingBonus = function () {
         document.getElementById('star2').classList.remove('highlight-objective');

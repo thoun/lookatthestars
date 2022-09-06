@@ -175,6 +175,9 @@
   height: 240px;
   border-radius: 8px;
 }
+#cards .card.highlight-current-shape {
+  animation: highlight-current-shape-animation 1.5s alternate infinite ease-in-out;
+}
 #cards #shapes {
   display: flex;
   flex-wrap: wrap;
@@ -269,6 +272,14 @@
   }
   100% {
     box-shadow: 0 0 20px 10px #997835;
+  }
+}
+@keyframes highlight-current-shape-animation {
+  0% {
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.9333333333);
+  }
+  100% {
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.6666666667);
   }
 }
 @font-face {

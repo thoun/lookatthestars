@@ -148,6 +148,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     
     private onEnteringPlaceShape(args: EnteringPlaceShapeArgs | EnteringPlaceShootingStarArgs) {
         this.getCurrentPlayerTable()?.setShapeToPlace(args.currentCard, args.possiblePositions as any);
+        document.getElementById(`card-${args.currentCard.id}`).classList.add('highlight-current-shape');
     }
 
     private onEnteringBonus() {
@@ -197,6 +198,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     
     private onLeavingPlaceShape() {
         this.getCurrentPlayerTable()?.removeShapeToPlace();
+        document.querySelector(`.highlight-current-shape`)?.classList.remove('highlight-current-shape');
     }
 
     private onLeavingBonus() {

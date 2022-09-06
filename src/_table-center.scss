@@ -12,6 +12,10 @@
     width: 240px;
     height: 240px;
     border-radius: 8px;
+
+    &.highlight-current-shape {
+      animation: highlight-current-shape-animation 1.5s alternate infinite ease-in-out;
+    }
   }
 
   #shapes {
@@ -71,5 +75,14 @@
   }
   100% { 
     box-shadow: 0 0 20px 10px #997835;
+  }
+}
+
+@keyframes highlight-current-shape-animation {
+  0% { 
+    box-shadow: 0 0 20px 10px #ffffffee;
+  }
+  100% { 
+    box-shadow: 0 0 20px 10px #ffffffaa;
   }
 }
