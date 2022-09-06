@@ -41,6 +41,9 @@ class LatsPlayer {
         foreach ($this->objects->crescentMoons as $crescentMoon) {
             $forbiddenCoordinates[] = $this->coordinateStrToCoordinate($crescentMoon);
         }
+        foreach ($this->objects->twinklingStars as $twinklingStar) {
+            $forbiddenCoordinates[] = $this->coordinateStrToCoordinate($twinklingStar);
+        }
         if (!$ignoreBlackHole) {
             foreach ($this->objects->blackHoles as $blackHole) {
                 $coordinates = $this->coordinateStrToCoordinate($blackHole);
