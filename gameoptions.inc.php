@@ -38,6 +38,11 @@ $game_options = [
                 'description' => totranslate('Random objectives'),
                 'tmdisplay' => totranslate('Random objectives'),
             ],
+            3 => [
+                'name' => totranslate('Random (experienced)'),
+                'description' => totranslate('Random objectives (include experienced objectives)'),
+                'tmdisplay' => totranslate('Random objectives (include experienced objectives)'),
+            ],
         ],
         'default' => 1,
     ],

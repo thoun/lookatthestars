@@ -32,8 +32,9 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 Make sure ftp-sync.json and node_modules are in .gitignore
 
 # TODO
-POWER_LUMINOUS_AURA
 POWER_GALAXY
-POWER_NOVA
 POWER_TWINKLING_STAR
-help
+POWER_NOVA (exp)
+POWER_LUMINOUS_AURA (exp)
+help ?
+rotated versions of current card?

@@ -134,7 +134,8 @@ trait UtilTrait {
         $default = $this->getGameStateValue(OBJECTIVES) == '1';
 
         $star1 = $default ? DEFAULT_STAR1 : bga_rand(0, 9);
-        $star2 = $default ? DEFAULT_STAR2 : bga_rand(0, 8);
+        $EASY_OBJECTIVES = [1, 2, 3, 4, 7];
+        $star2 = $default ? DEFAULT_STAR2 : ($this->getGameStateValue(OBJECTIVES) == '3' ? bga_rand(0, 8) : $EASY_OBJECTIVES[bga_rand(0, 4)]);
         
         $this->setGameStateInitialValue(STAR1, $star1);
         $this->setGameStateInitialValue(STAR2, $star2);

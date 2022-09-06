@@ -141,75 +141,21 @@ var TableCenter = /** @class */ (function () {
             }
             game.cards.createMoveOrUpdateCard(gamedatas.cards[i], currentPileDiv.id, true);
         }
-        /*const map = document.getElementById('map');
-        map.dataset.size = gamedatas.map;
-        const mapElements = document.getElementById('map-elements');
-
-        // intersections
-        Object.keys(gamedatas.MAP_POSITIONS).forEach(key => {
-            const position = Number(key);
-            const elements = gamedatas.MAP_POSITIONS[position];
-            const tooltipsIds = [];
-            if (elements.includes(0)) { tooltipsIds.push(0); }
-            if (elements.some(element => element >= 1 && element <= 12)) { tooltipsIds.push(1); }
-            if (elements.includes(20)) { tooltipsIds.push(20); }
-            if (elements.includes(30)) { tooltipsIds.push(30); }
-            if (elements.includes(32)) { tooltipsIds.push(32); }
-            if (elements.includes(40)) { tooltipsIds.push(40); }
-            if (elements.includes(41) || elements.includes(42)) { tooltipsIds.push(41); }
-            if (elements.includes(50)) { tooltipsIds.push(50); }
-            if (elements.includes(51)) { tooltipsIds.push(51); }
-            if (elements.some(element => element >= 97 && element <= 122)) { tooltipsIds.push(97); }
-
-            const departure = elements.find(element => element >= 1 && element <= 12);
-            const coordinates = this.getCoordinatesFromPosition(position);
-
-            let html = `<div id="intersection${position}" class="intersection ${elements.some(element => element == 0) ? 'green-light' : ''}`;
-            if (departure > 0) {
-                html += ` departure" data-departure=${departure}`;
-            }
-            html += `" data-tooltip="${JSON.stringify(tooltipsIds)}" style="left: ${coordinates[0]}px; top: ${coordinates[1]}px;"></div>`;
-            dojo.place(html, mapElements);
-            
-            if (departure > 0) {
-                document.getElementById(`intersection${position}`).addEventListener('click', () => this.game.placeDeparturePawn(position));
-            }
-        });
-
-        // routes
-        Object.keys(gamedatas.MAP_ROUTES).forEach(key => {
-            const position = Number(key);
-            const destinations = gamedatas.MAP_ROUTES[position];
-
-            destinations.forEach(destination => {
-                const coordinates = this.getCoordinatesFromPositions(position, destination);
-
-                let html = `<div id="route${position}-${destination}" class="route" style="left: ${coordinates[0]}px; top: ${coordinates[1]}px;" data-direction="${Math.abs(position-destination) <= 1 ? 0 : 1}"></div>`;
-                dojo.place(html, mapElements);
-                document.getElementById(`route${position}-${destination}`).addEventListener('click', () => this.game.placeRoute(position, destination));
-            });
-        });
-
-        // departure pawns
-        Object.values(gamedatas.players).filter(player => player.departurePosition).forEach(player => this.addDeparturePawn(Number(player.id), player.departurePosition));
-
-        // markers
-        Object.values(gamedatas.players).forEach(player => player.markers.forEach(marker => this.addMarker(Number(player.id), marker)));
-
-        const currentPlayer = gamedatas.players[this.game.getPlayerId()];
-
-        // common objectives
-        gamedatas.commonObjectives.forEach(commonObjective => this.placeCommonObjective(commonObjective, !!currentPlayer));
-
-        // personal objective
-        Object.keys(gamedatas.MAP_POSITIONS).filter(key => gamedatas.MAP_POSITIONS[key].some(element => element >= 97 && element <= 122)).forEach(position =>
-        //currentPlayer?.personalObjectivePositions.forEach(position =>
-            dojo.place(`<div class="objective-letter" data-position="${position}"></div>`, `intersection${position}`)
-        );
-
-        // tickets
-        this.setRound(gamedatas.validatedTickets, gamedatas.currentTicket, true);*/
+        this.game.setTooltip("star2", this.getStar2Tooltip(gamedatas.star2));
     }
+    TableCenter.prototype.getStar2Tooltip = function (type) {
+        switch (type) {
+            case 0: return _('Draw a <strong>luminous aura</strong> on a star in an existing constellation. It is not possible to draw multiple luminous auras in the same constellation. From now on, you can’t add lines to this constellation. A luminous aura is worth 2 victory points at the end of the game.');
+            case 1: return _('Draw a new <strong>planet</strong> on an unused star (that no line or object touches).');
+            case 2: return _('Draw <strong>2 new stars</strong> in a space that does not contain any stars, respecting the position of the star grid. These stars can then be used to draw lines.');
+            case 3: return _('Draw a <strong>line</strong> between 2 adjacent stars.');
+            case 4: return _('Draw a <strong>galaxy/<strong> that covers 2 unused stars that are adjacent horizontally. The galaxy must be adjacent to the constellation that earned the bonus. A galaxy earns 2 victory points at the end of the game');
+            case 5: return _('Draw a <strong>black hole</strong> on an unused star. From now on, you cannot draw on the adjacent stars. At the end of the game, score 1 point for each unused star adjacent to the black hole. <strong>You can only draw one black hole per game</strong>');
+            case 6: return _('Draw a <strong>nova</strong> on a star in an existing constellation. This constellation can now have 9 or 10 lines. As with a normal constellation, it will earn 1 point per line at the end of the game. As usual, if several constellations have the same number of lines, only one of them will score victory points.');
+            case 7: return _('Draw a <strong>twinkling star</strong> on an unused star. A twinkling star earns 3 victory points if it is adjacent to exactly 2 constellations at the end of the game.');
+            case 8: return _('Draw a <strong>crescent moon</strong> on an unused star. Each constellation which has at least 1 star in a vertical or horizontal alignment with the crescent moon scores 1 additional victory point at the end of the game. <strong>You can only draw one crescent moon per game.</strong>');
+        }
+    };
     return TableCenter;
 }());
 var __assign = (this && this.__assign) || function () {
