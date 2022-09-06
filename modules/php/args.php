@@ -170,5 +170,34 @@ trait ArgsTrait {
         ];
 
     }
+
+    function luminousAuraInConstellation(array $luminousAurasStr, Constellation $constellation) {
+        return $this->array_some($luminousAurasStr, fn($luminousAura) => $this->array_some($constellation->lines, fn($line) => $this->coordinatesInArray([hexdec($luminousAura[0]), hexdec($luminousAura[1])], $line)));
+    }
+
+    function argPlaceLuminousAura(int $playerId) {
+        $player = $this->getPlayer($playerId);
+        $currentConstellations = $this->getConstellations($player->getLines(true));
+
+        $possibleCoordinates = [];
+
+        foreach($currentConstellations as $constellation) {
+            if (!$this->luminousAuraInConstellation($player->objects->luminousAuras, $constellation)) {
+                foreach ($constellation->lines as $line) {
+                    foreach ($line as $lineCoordinate) {
+                        $coordinateStr = dechex($lineCoordinate[0]).dechex($lineCoordinate[1]);
+                        if (!in_array($coordinateStr, $possibleCoordinates)) {
+                            $possibleCoordinates[] = $coordinateStr;
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
+            'possibleCoordinates' => $possibleCoordinates,
+        ];
+
+    }
     
 }

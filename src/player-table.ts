@@ -235,7 +235,7 @@ class PlayerTable {
         objects.galaxies?.forEach(object => this.placeObject(object, 'galaxy', classes));
         objects.twinklingStars?.forEach(object => this.placeObject(object, 'twinkling-star', classes));
         objects.novas?.forEach(object => this.placeObject(object, 'nova', classes));
-        objects.luminousAuras?.forEach(object => this.placeObject(object, 'luminous-auta', classes));
+        objects.luminousAuras?.forEach(object => this.placeObject(object, 'luminous-aura', classes));
     }
 
     public setDay(day: number) {
@@ -301,7 +301,7 @@ class PlayerTable {
         $('lats-svg-'+this.playerId).append(newLine);
     }
 
-    placeObject(coordinates: string, type: 'planet' | 'star' | 'crescent-moon' | 'black-hole' | 'galaxy' | 'twinkling-star' | 'nova' | 'luminous-auta', additionalClass: string[] = []) {
+    placeObject(coordinates: string, type: 'planet' | 'star' | 'crescent-moon' | 'black-hole' | 'galaxy' | 'twinkling-star' | 'nova' | 'luminous-aura', additionalClass: string[] = []) {
         const newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
 
         const xCoordinate = parseInt(coordinates[0], 16);

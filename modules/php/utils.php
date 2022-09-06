@@ -261,7 +261,7 @@ trait UtilTrait {
         return $this->coordinatesInArray($coordinates, $player->getSheetForbiddenCoordinates(true, true));
     }
 
-    function isPossiblePositionForLine(array $line, LatsPlayer $player, int $day, bool $canTouchLines) {
+    function isPossiblePositionForLine(array $line, LatsPlayer $player, int $day, bool $canTouchLines, array $constellations) {
         // not outside the board
         $minY = 2 * $day;
         if ($this->array_some($line, fn($coordinates) => $coordinates[0] < 0 || $coordinates[0] > 9 || $coordinates[1] < $minY || $coordinates[1] > 10)) {
@@ -291,16 +291,26 @@ trait UtilTrait {
             return false;
         }
 
+        // no touching a constellation with a luminous aura
+        foreach ($constellations as $constellation) {
+            if ($this->luminousAuraInConstellation($player->objects->luminousAuras, $constellation) && 
+                $this->array_some($constellation->lines, fn($constellationLine) => $this->lineConnected($line, $constellationLine))
+            ) {
+                return false;
+            }
+        }
+
         return true;
     }
 
-    function isPossiblePositionForLines(array $shiftedLines, LatsPlayer $player, int $day, bool $canTouchLines) {
-        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $player, $day, $canTouchLines));
+    function isPossiblePositionForLines(array $shiftedLines, LatsPlayer $player, int $day, bool $canTouchLines, array $constellations) {
+        return $this->array_every($shiftedLines, fn($line) => $this->isPossiblePositionForLine($line, $player, $day, $canTouchLines, $constellations));
     }
 
     function getPossiblePositions(int $playerId, array $shapeLines, bool $canTouchLines) {
         $player = $this->getPlayer($playerId);
         $day = $this->getDay();
+        $constellations = $this->getConstellations($player->getLines(true));
 
         $result = [];
 
@@ -313,7 +323,8 @@ trait UtilTrait {
                         $shiftedLines,
                         $player,
                         $day,
-                        $canTouchLines
+                        $canTouchLines, 
+                        $constellations
                     )) {
                         $possibleRotationsForPosition[] = $rotation;
                     }
@@ -328,6 +339,7 @@ trait UtilTrait {
     function getPossiblePositionsForLine(int $playerId) {
         $player = $this->getPlayer($playerId);
         $day = $this->getDay();
+        $constellations = $this->getConstellations($player->getLines(true));
 
         $possibleLines = [];
 
@@ -337,7 +349,8 @@ trait UtilTrait {
                     [[$x, $y], [$x+1, $y]], // to the right
                     $player, 
                     $day,
-                    true
+                    true,
+                    $constellations
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y);
                 }
@@ -345,7 +358,8 @@ trait UtilTrait {
                     [[$x, $y], [$x, $y+1]], // to the top
                     $player,
                     $day,
-                    true
+                    true,
+                    $constellations
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x).dechex($y+1);
                 }
@@ -353,7 +367,8 @@ trait UtilTrait {
                     [[$x, $y], [$x+1, $y+1]], // to top right
                     $player,
                     $day,
-                    true
+                    true,
+                    $constellations
                 )) {
                     $possibleLines[] = dechex($x).dechex($y).dechex($x+1).dechex($y+1);
                 }
@@ -361,7 +376,8 @@ trait UtilTrait {
                     [[$x, $y+1], [$x+1, $y]], // the other diagonal
                     $player,
                     $day,
-                    true
+                    true,
+                    $constellations
                 )) {
                     $possibleLines[] = dechex($x).dechex($y+1).dechex($x+1).dechex($y);
                 }

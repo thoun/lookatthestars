@@ -356,6 +356,38 @@ trait ActionTrait {
 
         $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
+    
+    public function placeLuminousAura(int $x, int $y) {
+        self::checkAction('placeLuminousAura'); 
+        
+        $playerId = intval($this->getCurrentPlayerId());
+        $player = $this->getPlayer($playerId);
+        $possibleCoordinates = $this->argPlaceLuminousAura($playerId)['possibleCoordinates'];
+
+        $coordinatesStr = dechex($x).dechex($y);
+        if (!$this->array_some($possibleCoordinates, fn($possibleCoordinate) => $possibleCoordinate == $coordinatesStr)) {
+            throw new \BgaUserException("Invalid position");
+        }
+        
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            throw new \BgaUserException("No valid shape for bonus");
+        }
+        
+        $roundObjects = new Objects();
+        $roundObjects->luminousAuras = [
+            $coordinatesStr
+        ];
+        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('placedLuminousAura', '', [
+            'playerId' => $playerId,
+            'coordinates' => $coordinatesStr
+        ]);
+
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
+    }
 
     public function cancelPlaceShape() {
         $playerId = intval($this->getCurrentPlayerId());

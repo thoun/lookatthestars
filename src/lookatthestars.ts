@@ -701,7 +701,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'nova', ['round', 'round-bonus']);
     }
     notif_placedLuminousAura(notif: Notif<NotifPlacedCoordinatesArgs>) {
-        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-auta', ['round', 'round-bonus']);
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-aura', ['round', 'round-bonus']);
     }
 
     notif_cancelPlacedLines(notif: Notif<NotifPlacedLinesArgs>) {

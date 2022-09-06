@@ -369,7 +369,7 @@ var PlayerTable = /** @class */ (function () {
         (_f = objects.galaxies) === null || _f === void 0 ? void 0 : _f.forEach(function (object) { return _this.placeObject(object, 'galaxy', classes); });
         (_g = objects.twinklingStars) === null || _g === void 0 ? void 0 : _g.forEach(function (object) { return _this.placeObject(object, 'twinkling-star', classes); });
         (_h = objects.novas) === null || _h === void 0 ? void 0 : _h.forEach(function (object) { return _this.placeObject(object, 'nova', classes); });
-        (_j = objects.luminousAuras) === null || _j === void 0 ? void 0 : _j.forEach(function (object) { return _this.placeObject(object, 'luminous-auta', classes); });
+        (_j = objects.luminousAuras) === null || _j === void 0 ? void 0 : _j.forEach(function (object) { return _this.placeObject(object, 'luminous-aura', classes); });
     };
     PlayerTable.prototype.setDay = function (day) {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
@@ -1402,7 +1402,7 @@ var LookAtTheStars = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'nova', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_placedLuminousAura = function (notif) {
-        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-auta', ['round', 'round-bonus']);
+        this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'luminous-aura', ['round', 'round-bonus']);
     };
     LookAtTheStars.prototype.notif_cancelPlacedLines = function (notif) {
         var playerTable = this.getPlayerTable(notif.args.playerId);
