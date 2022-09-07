@@ -518,7 +518,9 @@ trait UtilTrait {
                     if ($this->array_every($shiftedLines, fn($shapeLine) => $this->lineInArray($shapeLine, $lines))
                         && ($allowLineReuse || !$this->array_some($shapeLines, fn($shapeLine) => $this->array_some($shapesFound, fn($shapeFound) => $this->array_some($shapeFound, fn($line) => $this->sameLine($shapeLine, $line)))))
                     ) {
-                        $shapesFound[] = $shiftedLines;
+                        if (!$this->array_some($shapesFound, fn($shapeFound) => $this->array_every($shiftedLines, fn($shiftedLine) => $this->lineInArray($shiftedLine, $shapeFound)))) { // ignore symetrical shape rotated on self
+                            $shapesFound[] = $shiftedLines;
+                        }
                     }
                 }
             }

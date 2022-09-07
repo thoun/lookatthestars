@@ -150,8 +150,7 @@ trait StateTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'points' => $playerScore->star1,
-            'scoring' => clienttranslate('[star5]'),
-            'i18n' => ['scoring'],
+            'scoring' => '[star5]',
             'score' => $playerScore->star1,
         ]);
     }
@@ -162,8 +161,7 @@ trait StateTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'points' => $playerScore->star2,
-            'scoring' => clienttranslate('[star7]'),
-            'i18n' => ['scoring'],
+            'scoring' => '[star7]',
             'score' => $playerScore->star2,
         ]);
     }

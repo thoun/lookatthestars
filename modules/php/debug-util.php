@@ -31,7 +31,7 @@ trait DebugUtilTrait {
         //$this->insertLinesStr(2343492, ['1112', '1213', '1222',     '6162', '6263', '6272']);
 
         // for star1 default shape
-        //$this->insertLinesStr(2343492, ['0111', '1011', '1112', '1121']);
+        //$this->insertLinesStr(2343492, ['0111', '1011', '1112', '1121',       '0515', '1415', '1516', '1525']);
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);
