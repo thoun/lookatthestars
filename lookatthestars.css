@@ -574,6 +574,103 @@ html[data-no-counter=true] .constellation-counter {
   display: none;
 }
 
+#lookatthestars-help-button {
+  position: fixed;
+  bottom: 12px;
+  left: 5px;
+  width: 50px;
+  height: 50px;
+  background: white;
+  font-weight: bold;
+  color: #101010;
+  border-radius: 25px;
+  box-shadow: 3px 5px 5px 0px rgb(0, 0, 0);
+  cursor: pointer;
+  z-index: 949;
+  font-size: 28pt;
+}
+
+/* we show help button if user has no mouse ( = no tooltips) */
+@media (hover: hover) {
+  #lookatthestars-help-button {
+    bottom: 5px;
+  }
+}
+#popin_lookatthestarsHelpDialog_contents {
+  max-width: 100vw;
+  overflow-x: auto;
+}
+
+#popin_lookatthestarsHelpDialog {
+  background: white;
+  background-repeat: repeat;
+  max-width: 100vw;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+#help-popin {
+  width: 520px;
+  max-width: 35rem;
+  max-height: calc(80vh - 80px);
+  overflow: auto;
+}
+#help-popin h1 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+#help-popin h2 {
+  font-size: 14px;
+  margin: 8px 0;
+}
+#help-popin .help-section {
+  padding: 5px;
+  margin: 3px 0;
+  display: flex;
+}
+#help-popin .help-section > div:not(:first-child) {
+  margin-left: 5px;
+  flex: 1;
+}
+#help-popin .constellation-section {
+  margin: 15px;
+}
+
+.help-star2 {
+  display: inline-block;
+  width: 240px;
+  height: 240px;
+  border-radius: 8px;
+  background: url("img/stars2.png");
+}
+.help-star2[data-index="0"] {
+  background-position-x: 0%;
+}
+.help-star2[data-index="1"] {
+  background-position-x: 12.5%;
+}
+.help-star2[data-index="2"] {
+  background-position-x: 25%;
+}
+.help-star2[data-index="3"] {
+  background-position-x: 37.5%;
+}
+.help-star2[data-index="4"] {
+  background-position-x: 50%;
+}
+.help-star2[data-index="5"] {
+  background-position-x: 62.5%;
+}
+.help-star2[data-index="6"] {
+  background-position-x: 75%;
+}
+.help-star2[data-index="7"] {
+  background-position-x: 87.5%;
+}
+.help-star2[data-index="8"] {
+  background-position-x: 100%;
+}
+
 html, .mode_3d #game_play_area_background {
   background: #101010;
 }

@@ -52,7 +52,7 @@ class TableCenter {
             case 1: return _('Draw a new <strong>planet</strong> on an unused star (that no line or object touches).');
             case 2: return _('Draw <strong>2 new stars</strong> in a space that does not contain any stars, respecting the position of the star grid. These stars can then be used to draw lines.');
             case 3: return _('Draw a <strong>line</strong> between 2 adjacent stars.');
-            case 4: return _('Draw a <strong>galaxy/<strong> that covers 2 unused stars that are adjacent horizontally. The galaxy must be adjacent to the constellation that earned the bonus. A galaxy earns 2 victory points at the end of the game');
+            case 4: return _('Draw a <strong>galaxy</strong> that covers 2 unused stars that are adjacent horizontally. The galaxy must be adjacent to the constellation that earned the bonus. A galaxy earns 2 victory points at the end of the game');
             case 5: return _('Draw a <strong>black hole</strong> on an unused star. From now on, you cannot draw on the adjacent stars. At the end of the game, score 1 point for each unused star adjacent to the black hole. <strong>You can only draw one black hole per game</strong>');
             case 6: return _('Draw a <strong>nova</strong> on a star in an existing constellation. This constellation can now have 9 or 10 lines. As with a normal constellation, it will earn 1 point per line at the end of the game. As usual, if several constellations have the same number of lines, only one of them will score victory points.');
             case 7: return _('Draw a <strong>twinkling star</strong> on an unused star. A twinkling star earns 3 victory points if it is adjacent to exactly 2 constellations at the end of the game.');

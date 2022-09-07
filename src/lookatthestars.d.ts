@@ -89,6 +89,7 @@ interface LookAtTheStarsGame extends Game {
     placeShape(): void;
     placeShootingStar(): void;
     placeLine(): void;
+    getSheetTooltipInfos(sheetType: number): { title: string, description: string };
 }
 
 interface EnteringPlaceCardArgs {

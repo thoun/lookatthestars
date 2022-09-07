@@ -83,6 +83,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
         this.setupNotifications();
         this.setupPreferences();
+        this.addHelp();
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
@@ -453,6 +454,104 @@ class LookAtTheStars implements LookAtTheStarsGame {
     private setPoints(playerId: number, points: number) {
         (this as any).scoreCtrl[playerId]?.toValue(points);
         this.getPlayerTable(playerId).setFinalScore(points);
+    }
+
+    private addHelp() {
+        dojo.place(`
+            <button id="lookatthestars-help-button">?</button>
+        `, 'left-side');
+        document.getElementById('lookatthestars-help-button').addEventListener('click', () => this.showHelp());
+    }
+
+    private getStar2Help(types: number[]) {
+        return types.map(type => `
+        <div class="help-section">
+            <div class="help-star2" data-index="${type}"></div>
+            <div>${this.tableCenter.getStar2Tooltip(type)}</div>
+        </div>
+        `).join('');
+    }
+
+    public getSheetTooltipInfos(sheetType: number): { title: string, description: string } {
+        let title = ``;
+        let description = ``;
+        switch (sheetType + 1) {
+            case 1:
+                title = _(`SOUTHERN AFRICA`);
+                description = _(` ✦ For the Tswana and Sotho, <strong>Dithutlwa</strong> (the giraffes) are represented by the stars of the Southern Cross.  ✦ For the San, Aldebaran and Betelgeuse are known as the <strong>male and female hartebeest</strong>.`);
+                break;
+            case 2:
+                title = _(`CHINA`);
+                description = _(` ✦ <strong>Tshang-Lung</strong>, the blue dragon, is associated with the East and spring. Its appearance in the sky marked the beginning of the spring rains. ✦ <strong>Tchou-Niao</strong>, the red bird, associated with the South and summer, is represented as a hybrid of birds, a quail, or a phoenix.`);
+                break;
+            case 3:
+                title = _(`ANCIENT EGYPT`);
+                description = _(` ✦ The constellations of the <strong>Ibis</strong> and the <strong>Scarab</strong> would correspond to Cancer and Sagittarius. ✦ The scarab is the symbol of the god Khepri who was believed to roll the disk of the sun across the sky. ✦ The sacred ibis is associated with Thoth, god of wisdom and writing.`);
+                break;
+            case 4:
+                title = _(`ANCIENT GREECE`);
+                description = _(` ✦ The elongated shape of the <strong>Hydra female</strong> constellation represents the giant snake that Hercules faced during one of his twelve labors. ✦ The <strong>Lyre</strong> allowed Orpheus to charm the creatures of the Underworld.`);
+                break;
+            case 5:
+                title = _(`INDIA`);
+                description = _(` ✦ <strong>Kalaparusha (or Prajapati)</strong> was transformed into a deer for being cruel to his daughter. The Belt of Orion represents the arrow that pierced him. ✦ The couple <strong>Soma and Vishnu</strong>, with the lyre and the club of knowledge, are associated with the duos sun/moon and day/night.`);
+                break;
+            case 6:
+                title = _(`INUITS`);
+                description = _(` ✦ In Alaska, the Pleiades represent a red fox. Its Inuit name is <strong>Kaguyagat</strong>. ✦ The Big Dipper is known as <strong>Tukturjuit</strong>, the caribou.`);
+                break;
+            case 7:
+                title = _(`NAVAJO`);
+                description = _(` ✦ <strong>Ma’ii Bizò‘</strong>, the Coyote Star, was placed by the god Coyote in the South, its twinkle visible to the Navajo at the winter solstice. ✦ <strong>Náhookòs Bikò‘</strong>, the North Star, symbolizes the central fire of the hogan (Navajo home). It never moves and so brings stability and balance to the other stars.`);
+                break;
+            case 8:
+                title = _(`POLYNESIANS`);
+                description = _(` ✦ The demigod Maui is said to have raised the islands of Hawaii by pulling them up from the ocean floor with his magic hook, <strong>Ka Makau Nui o Maui</strong>. ✦ <strong>Nāmāhoe</strong>, the twins, is composed of Nānā Mua, "who looks forward" (Castor), and Nānā Hope, "who looks back" (Pollux).`);
+                break;
+        }
+        return { title, description };
+    }
+
+    private getConstellationsHelp(types: number[]) {
+        return types.map(type => {
+            const infos = this.getSheetTooltipInfos(type);
+            return `
+            <div class="constellation-section">
+                <strong>${infos.title}</strong>
+                <span>${infos.description}</span>
+            </div>
+            `
+        }).join('');
+    }/*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
+    html = `<div>
+        <strong>${infos.title}</strong><br><br>
+        ${infos.description}
+    </div>`;*/
+
+    private showHelp() {
+        const helpDialog = new ebg.popindialog();
+        helpDialog.create('lookatthestarsHelpDialog');
+        helpDialog.setTitle(_("Help"));
+        
+        let html = `
+        <div id="help-popin">
+            <h1>${_("Bonus cards")}</h1>
+            <h2>${_("Recommended for beginners")}</h2>
+            ${this.getStar2Help([1, 3, 2, 4, 7])}
+            <h2>${_("For experienced players")}</h2>
+            ${this.getStar2Help([6, 0, 8, 5])}
+
+            <h1>${_("Constellations")}</h1>
+            ${_("Here is a brief overview of the constellations that the illustrations on the game boards are loosely based on.")}
+            
+            ${this.getConstellationsHelp([3, 2, 1, 0, 7, 6, 5, 4])}
+        </div>
+        `;
+        
+        // Show the dialog
+        helpDialog.setContent(html);
+
+        helpDialog.show();
     }
 
     public placeShape() {
