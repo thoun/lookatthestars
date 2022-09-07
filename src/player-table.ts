@@ -269,36 +269,23 @@ class PlayerTable {
         ));
     }
 
-    placeShootingStarHead(head: string, additionalClass: string[] = []) {
-        const lineid = `shooting-star-head-${this.playerId}-${head}`;
-        const headLinesLength = 13;
+    placeShootingStarHead(coordinates: string, additionalClass: string[] = []) {
+        const lineid = `shooting-star-head-${this.playerId}-${coordinates}`;
 
-        const x = SVG_LEFT_MARGIN + parseInt(head[0], 16) * SVG_LINE_WIDTH;
-        const y = SVG_BOTTOM_MARGIN - parseInt(head[1], 16) * SVG_LINE_HEIGHT;
+        const xCoordinate = parseInt(coordinates[0], 16);
+        const yCoordinate = parseInt(coordinates[1], 16);
+        const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
+        const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
-        let newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
-        newLine.setAttribute('id', lineid+'1');
-        newLine.setAttribute('d', `M${x-headLinesLength} ${y} L${x+headLinesLength} ${y} Z`);
-        newLine.classList.add('line', ...additionalClass);
-        $('lats-svg-'+this.playerId).append(newLine);
-
-        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
-        newLine.setAttribute('id', lineid+'1');
-        newLine.setAttribute('d', `M${x} ${y-headLinesLength} L${x} ${y+headLinesLength} Z`);
-        newLine.classList.add('line', ...additionalClass);
-        $('lats-svg-'+this.playerId).append(newLine);
-
-        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
-        newLine.setAttribute('id', lineid+'1');
-        newLine.setAttribute('d', `M${x-headLinesLength} ${y-headLinesLength} L${x+headLinesLength} ${y+headLinesLength} Z`);
-        newLine.classList.add('line', ...additionalClass);
-        $('lats-svg-'+this.playerId).append(newLine);
-
-        newLine = document.createElementNS('http://www.w3.org/2000/svg','path');
-        newLine.setAttribute('id', lineid+'1');
-        newLine.setAttribute('d', `M${x+headLinesLength} ${y-headLinesLength} L${x-headLinesLength} ${y+headLinesLength} Z`);
-        newLine.classList.add('line', ...additionalClass);
-        $('lats-svg-'+this.playerId).append(newLine);
+        const newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        newObject.setAttribute('id', lineid);
+        newObject.setAttribute('x', `${x - 20}`);
+        newObject.setAttribute('y', `${y - 20}`);
+        newObject.setAttribute('width', `40`);
+        newObject.setAttribute('height', `40`);
+        newObject.setAttribute('href', `${g_gamethemeurl}img/shooting-star-head.png`);
+        newObject.classList.add('line', ...additionalClass);
+        document.getElementById('lats-svg-'+this.playerId).after(newObject);
     }
 
     placeObject(coordinates: string, type: 'planet' | 'star' | 'crescent-moon' | 'black-hole' | 'galaxy' | 'twinkling-star' | 'nova' | 'luminous-aura', additionalClass: string[] = []) {

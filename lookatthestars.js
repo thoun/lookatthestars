@@ -399,33 +399,23 @@ var PlayerTable = /** @class */ (function () {
         if (additionalClass === void 0) { additionalClass = []; }
         lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
     };
-    PlayerTable.prototype.placeShootingStarHead = function (head, additionalClass) {
-        var _a, _b, _c, _d;
+    PlayerTable.prototype.placeShootingStarHead = function (coordinates, additionalClass) {
+        var _a;
         if (additionalClass === void 0) { additionalClass = []; }
-        var lineid = "shooting-star-head-".concat(this.playerId, "-").concat(head);
-        var headLinesLength = 13;
-        var x = SVG_LEFT_MARGIN + parseInt(head[0], 16) * SVG_LINE_WIDTH;
-        var y = SVG_BOTTOM_MARGIN - parseInt(head[1], 16) * SVG_LINE_HEIGHT;
-        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        newLine.setAttribute('id', lineid + '1');
-        newLine.setAttribute('d', "M".concat(x - headLinesLength, " ").concat(y, " L").concat(x + headLinesLength, " ").concat(y, " Z"));
-        (_a = newLine.classList).add.apply(_a, __spreadArray(['line'], additionalClass, false));
-        $('lats-svg-' + this.playerId).append(newLine);
-        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        newLine.setAttribute('id', lineid + '1');
-        newLine.setAttribute('d', "M".concat(x, " ").concat(y - headLinesLength, " L").concat(x, " ").concat(y + headLinesLength, " Z"));
-        (_b = newLine.classList).add.apply(_b, __spreadArray(['line'], additionalClass, false));
-        $('lats-svg-' + this.playerId).append(newLine);
-        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        newLine.setAttribute('id', lineid + '1');
-        newLine.setAttribute('d', "M".concat(x - headLinesLength, " ").concat(y - headLinesLength, " L").concat(x + headLinesLength, " ").concat(y + headLinesLength, " Z"));
-        (_c = newLine.classList).add.apply(_c, __spreadArray(['line'], additionalClass, false));
-        $('lats-svg-' + this.playerId).append(newLine);
-        newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        newLine.setAttribute('id', lineid + '1');
-        newLine.setAttribute('d', "M".concat(x + headLinesLength, " ").concat(y - headLinesLength, " L").concat(x - headLinesLength, " ").concat(y + headLinesLength, " Z"));
-        (_d = newLine.classList).add.apply(_d, __spreadArray(['line'], additionalClass, false));
-        $('lats-svg-' + this.playerId).append(newLine);
+        var lineid = "shooting-star-head-".concat(this.playerId, "-").concat(coordinates);
+        var xCoordinate = parseInt(coordinates[0], 16);
+        var yCoordinate = parseInt(coordinates[1], 16);
+        var x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
+        var y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
+        var newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        newObject.setAttribute('id', lineid);
+        newObject.setAttribute('x', "".concat(x - 20));
+        newObject.setAttribute('y', "".concat(y - 20));
+        newObject.setAttribute('width', "40");
+        newObject.setAttribute('height', "40");
+        newObject.setAttribute('href', "".concat(g_gamethemeurl, "img/shooting-star-head.png"));
+        (_a = newObject.classList).add.apply(_a, __spreadArray(['line'], additionalClass, false));
+        document.getElementById('lats-svg-' + this.playerId).after(newObject);
     };
     PlayerTable.prototype.placeObject = function (coordinates, type, additionalClass) {
         var _a;
