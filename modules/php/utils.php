@@ -542,9 +542,7 @@ trait UtilTrait {
 
         switch ($objective->power) {
             case POWER_GALAXY:
-                foreach ($player->objects->galaxies as $galaxy) {
-                    $playerScore->star2 += 2;
-                }
+                $playerScore->star2 += (2 * count($player->objects->galaxies));
                 break;
             case POWER_TWINKLING_STAR:
                 foreach ($player->objects->twinklingStars as $twinklingStarStr) {
