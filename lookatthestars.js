@@ -151,7 +151,8 @@ var TableCenter = /** @class */ (function () {
             }
             game.cards.createMoveOrUpdateCard(gamedatas.cards[i], currentPileDiv.id, true);
         }
-        this.game.setTooltip("star2", this.getStar2Tooltip(gamedatas.star2));
+        this.game.setTooltip("star1", _('When you reproduce on your board the shape indicated by this card, earn the number of victory points indicated on that card at the end of the game.'));
+        this.game.setTooltip("star2", _('When you reproduce on your board the shape indicated by this card, get an immediate bonus:') + '<br>' + this.getStar2Tooltip(gamedatas.star2));
         this.updateCounters();
     }
     TableCenter.prototype.updateCounters = function () {
