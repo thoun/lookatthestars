@@ -184,14 +184,32 @@
   justify-content: center;
   gap: 20px;
 }
-#cards #shapes .pile {
+#cards #shapes .pile-wrapper {
+  position: relative;
+}
+#cards #shapes .pile-wrapper .pile {
   width: 240px;
   min-height: 240px;
   display: flex;
   flex-direction: column;
 }
-#cards #shapes .pile .card:not(:first-child) {
+#cards #shapes .pile-wrapper .pile .card:not(:first-child) {
   margin-top: -230px;
+}
+#cards #shapes .pile-wrapper .pile:empty {
+  border: 1px dashed #666666;
+  box-sizing: border-box;
+  height: 240px;
+  border-radius: 8px;
+}
+#cards #shapes .pile-wrapper .pile-counter {
+  position: absolute;
+  bottom: -22px;
+  right: 0;
+  left: 0;
+  font-size: 80%;
+  text-align: center;
+  color: white;
 }
 #cards #objectives {
   display: flex;

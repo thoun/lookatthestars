@@ -125,9 +125,19 @@ var Cards = /** @class */ (function () {
 }());
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
+        var _this = this;
         this.game = game;
         this.gamedatas = gamedatas;
-        [1, 2].forEach(function (number) { return document.getElementById("star".concat(number)).dataset.index = '' + gamedatas["star".concat(number)]; });
+        this.pileCounters = [];
+        [1, 2, 3].forEach(function (number) {
+            dojo.place("\n            <div id=\"pile".concat(number, "-wrapper\" class=\"pile-wrapper\">\n             <div id=\"pile").concat(number, "\" class=\"pile\"></div>\n             <div id=\"pile").concat(number, "-counter\" class=\"pile-counter\"></div>\n            </div>    \n            "), "shapes");
+            _this.pileCounters[number] = new ebg.counter();
+            _this.pileCounters[number].create("pile".concat(number, "-counter"));
+            _this.pileCounters[number].setValue(gamedatas["remainingCardsInDiscard".concat(number)]);
+        });
+        [1, 2].forEach(function (number) {
+            dojo.place("\n            <div id=\"star".concat(number, "\" class=\"card\" data-index=\"").concat(gamedatas["star".concat(number)], "\"></div> \n            "), "objectives");
+        });
         var currentPile = 3;
         var currentPileDiv = document.getElementById("pile".concat(currentPile));
         for (var i = 0; i < gamedatas.cards.length; i++) {
@@ -142,7 +152,14 @@ var TableCenter = /** @class */ (function () {
             game.cards.createMoveOrUpdateCard(gamedatas.cards[i], currentPileDiv.id, true);
         }
         this.game.setTooltip("star2", this.getStar2Tooltip(gamedatas.star2));
+        this.updateCounters();
     }
+    TableCenter.prototype.updateCounters = function () {
+        var _this = this;
+        [1, 2, 3].forEach(function (number) {
+            return _this.pileCounters[number].setValue(document.getElementById("pile".concat(number)).childElementCount);
+        });
+    };
     TableCenter.prototype.getStar2Tooltip = function (type) {
         switch (type) {
             case 0: return _('Draw a <strong>luminous aura</strong> on a star in an existing constellation. It is not possible to draw multiple luminous auras in the same constellation. From now on, you can’t add lines to this constellation. A luminous aura is worth 2 victory points at the end of the game.');
@@ -1366,7 +1383,9 @@ var LookAtTheStars = /** @class */ (function () {
         });
     };
     LookAtTheStars.prototype.notif_discardShape = function (notif) {
+        var _this = this;
         this.slideToObjectAndDestroy("card-".concat(notif.args.card.id), 'topbar');
+        setTimeout(function () { return _this.tableCenter.updateCounters(); }, 600);
     };
     LookAtTheStars.prototype.notif_newShape = function (notif) {
         this.cards.createMoveOrUpdateCard(notif.args.card);

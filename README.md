@@ -32,5 +32,5 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 Make sure ftp-sync.json and node_modules are in .gitignore
 
 # TODO
-help ?
-rotated versions of current card?
+help
+stats

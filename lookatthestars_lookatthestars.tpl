@@ -3,15 +3,8 @@
 <div id="zoom-wrapper">
     <div id="full-table">
         <div id="cards">
-            <div id="shapes">
-                <div id="pile1" class="pile"></div>
-                <div id="pile2" class="pile"></div>
-                <div id="pile3" class="pile"></div>
-            </div>
-            <div id="objectives">
-                <div id="star1" class="card"></div>
-                <div id="star2" class="card"></div>
-            </div>
+            <div id="shapes"></div>
+            <div id="objectives"></div>
         </div>
         <div id="tables">
         </div>

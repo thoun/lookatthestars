@@ -65,8 +65,9 @@ trait StateTrait {
 
         $newCard = $this->getCurrentCard(true);
 
-        self::notifyAllPlayers('newShape', clienttranslate('A new shape is revealed'), [
+        self::notifyAllPlayers('newShape', clienttranslate('A new shape is revealed (${number} / 18)'), [
             'card' => $newCard,
+            'number' => 19 - $remainingShapes
         ]);
 
         $this->gamestate->nextState('next');

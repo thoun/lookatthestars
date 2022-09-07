@@ -28,7 +28,7 @@ trait DebugUtilTrait {
         // for bonus : nova
         //$this->insertLinesStr(2343492, ['0110', '0112', '1221']);
         // for bonus : luminous aura
-        $this->insertLinesStr(2343492, ['1112', '1213', '1222',     '6162', '6263', '6272']);
+        //$this->insertLinesStr(2343492, ['1112', '1213', '1222',     '6162', '6263', '6272']);
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);

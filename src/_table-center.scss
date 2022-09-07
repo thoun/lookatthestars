@@ -24,15 +24,36 @@
     justify-content: center;
     gap: 20px;
 
-    .pile {
-      width: 240px;
-      min-height: 240px;
+    .pile-wrapper {
+      position: relative;
 
-      display: flex;
-      flex-direction: column;
+      .pile {
+        width: 240px;
+        min-height: 240px;
 
-      .card:not(:first-child) {
-        margin-top: -230px;
+        display: flex;
+        flex-direction: column;
+
+        .card:not(:first-child) {
+          margin-top: -230px;
+        }
+
+        &:empty {
+          border: 1px dashed #666666;
+          box-sizing: border-box;
+          height: 240px;
+          border-radius: 8px;
+        }
+      }
+
+      .pile-counter {
+          position: absolute;
+          bottom: -22px;
+          right: 0;
+          left: 0;
+          font-size: 80%;
+          text-align: center;
+          color: white;
       }
     }
   }

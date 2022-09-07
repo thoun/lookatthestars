@@ -1,7 +1,26 @@
 class TableCenter {
+    public pileCounters: Counter[] = [];
+
     constructor(private game: LookAtTheStarsGame, private gamedatas: LookAtTheStarsGamedatas) {
 
-        [1, 2].forEach(number => document.getElementById(`star${number}`).dataset.index = ''+gamedatas[`star${number}`]);
+        [1, 2, 3].forEach(number => {
+            dojo.place(`
+            <div id="pile${number}-wrapper" class="pile-wrapper">
+             <div id="pile${number}" class="pile"></div>
+             <div id="pile${number}-counter" class="pile-counter"></div>
+            </div>    
+            `, `shapes`);
+
+            this.pileCounters[number] = new ebg.counter();
+            this.pileCounters[number].create(`pile${number}-counter`);
+            this.pileCounters[number].setValue(gamedatas[`remainingCardsInDiscard${number}`]);
+        });
+
+        [1, 2].forEach(number => {
+            dojo.place(`
+            <div id="star${number}" class="card" data-index="${gamedatas[`star${number}`]}"></div> 
+            `, `objectives`);
+        });
 
         let currentPile = 3;
         let currentPileDiv = document.getElementById(`pile${currentPile}`);
@@ -18,6 +37,13 @@ class TableCenter {
         }
 
         this.game.setTooltip(`star2`, this.getStar2Tooltip(gamedatas.star2));
+        this.updateCounters();
+    }
+
+    public updateCounters() {
+        [1, 2, 3].forEach(number => 
+            this.pileCounters[number].setValue(document.getElementById(`pile${number}`).childElementCount)
+        );
     }
 
     public getStar2Tooltip(type: number) {

@@ -664,6 +664,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     notif_discardShape(notif: Notif<NotifCardArgs>) {
         (this as any).slideToObjectAndDestroy(`card-${notif.args.card.id}`, 'topbar');
+        setTimeout(() => this.tableCenter.updateCounters(), 600);
     }
 
     notif_newShape(notif: Notif<NotifCardArgs>) {
