@@ -428,7 +428,7 @@ trait ActionTrait {
 
         // TODO notif?
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
     public function skipBonus() {
