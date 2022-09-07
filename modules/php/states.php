@@ -19,6 +19,8 @@ trait StateTrait {
     }
 
     function stNextShape() {
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+
         $players = $this->getPlayers();
         foreach ($players as $player) {
             $playerId = $player->id;
@@ -42,6 +44,22 @@ trait StateTrait {
             $player->objects->blackHoles = array_merge($player->objects->blackHoles, $player->roundObjects->blackHoles);
             $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
+
+            
+
+            $player = $this->getPlayer($playerId);
+
+            $this->incStat(count($player->roundLines), 'placedLines');
+            $this->incStat(count($player->roundLines), 'placedLines', $playerId);
+            if ($player->roundObjects->line !== null || count($player->roundObjects->linesUsedForPower) > 0) {
+                $this->incStat(1, 'usedBonus');
+                $this->incStat(1, 'usedBonus', $playerId);
+                $this->incStat(1, 'placed'.$objective->power, $playerId);
+            }
+
+            if (count($player->roundObjects->shootingStars) > 0) {
+                $this->incStat(1, 'shootingStar'.count($player->roundObjects->shootingStars[0]->lines), $playerId);
+            }
         }
 
         $discardedCard = $this->getCurrentCard(true);
@@ -49,6 +67,10 @@ trait StateTrait {
         self::notifyAllPlayers('discardShape', '', [
             'card' => $discardedCard,
         ]);
+
+        if ($discardedCard->type == 1) {
+            $this->incStat(1, 'shootingStars');
+        }
 
         $remainingShapes = intval($this->shapes->countCardInLocation('piles'));
 
@@ -72,40 +94,6 @@ trait StateTrait {
 
         $this->gamestate->nextState('next');
     }
-
-    /*function computeStats(int $playerId) {
-        $scoreSheets = $this->getScoreSheets($playerId, $this->getPlacedRoutes($playerId), $this->getCommonObjectives(), true);
-        $scoreSheet = $scoreSheets->validated;
-        
-        $this->setStat(count(array_filter($scoreSheet->commonObjectives->subTotals, fn($subTotal) => $subTotal == 10)), 'commonObjectivesFirst', $playerId);
-        $this->setStat(count(array_filter($scoreSheet->commonObjectives->subTotals, fn($subTotal) => $subTotal == 6)), 'commonObjectivesSecond', $playerId);
-        $this->setStat($scoreSheet->personalObjective->total > 0 ? 1 : 0, 'personalObjectives', $playerId);
-        $this->setStat($scoreSheet->oldLadies->total, 'finalScoreOldLadies', $playerId);
-        $this->setStat($scoreSheet->students->total, 'finalScoreStudents', $playerId);
-        $this->setStat($scoreSheet->tourists->total, 'finalScoreTourists', $playerId);
-        $this->setStat($scoreSheet->businessmen->total, 'finalScoreBusinessmen', $playerId);
-        if ($scoreSheet->oldLadies->checked > 0) {
-            $this->setStat((float)$scoreSheet->oldLadies->total / (float)$scoreSheet->oldLadies->checked, 'averagePointsByCheckedOldLadies', $playerId);
-        }
-        $checkedStudents = $scoreSheet->students->checkedStudents + $scoreSheet->students->checkedInternships;
-        if ($checkedStudents > 0) {
-            $this->setStat((float)$scoreSheet->students->total / (float)$checkedStudents, 'averagePointsByCheckedStudents', $playerId);
-        }
-        $checkedTourists = 0;
-        foreach ($scoreSheet->tourists->checkedTourists as $checkedTourist) {
-            $checkedTourists += $checkedTourist;
-        }
-        if ($checkedTourists > 0) {
-            $this->setStat((float)$scoreSheet->tourists->total / (float)$checkedTourists, 'averagePointsByCheckedTourists', $playerId);
-        }
-        $checkedBusinessmen = 0;
-        foreach ($scoreSheet->businessmen->checkedBusinessmen as $checkedBusinessman) {
-            $checkedBusinessmen += $checkedBusinessman;
-        }
-        if ($checkedBusinessmen > 0) {
-            $this->setStat((float)$scoreSheet->businessmen->total / (float)$checkedBusinessmen, 'averagePointsByCheckedBusinessmen', $playerId);
-        }
-    }*/
 
     private function scoreConstellations(int $playerId, PlayerScore &$playerScore) {
         $this->incPlayerScore($playerId, $playerScore->constellations);
@@ -166,8 +154,25 @@ trait StateTrait {
         ]);
     }
 
+    function computeStats(LatsPlayer $player, PlayerScore $playerScore, int $objectivePoints) {
+        $playerId = $player->id;
+
+        $constellations = $this->getConstellations($player->getLines(true));
+
+        $this->incStat(count($constellations), 'constellationsCount', $playerId);
+        $this->incStat(count($playerScore->checkedConstellations), 'validConstellationsCount', $playerId);
+        $this->incStat($playerScore->constellations, 'constellationsPoints', $playerId);  
+        $this->incStat($playerScore->planets, 'planetsPoints', $playerId);  
+        $this->incStat($playerScore->shootingStars, 'shootingStarsPoints', $playerId);  
+        $this->incStat(round($playerScore->star1 / $objectivePoints), 'star1count', $playerId); 
+        $this->incStat($playerScore->star1, 'star1points', $playerId);  
+        $this->incStat($playerScore->star2, 'star2points', $playerId);
+    }
+
     function stEndScore() {
         $players = $this->getPlayers();
+        $objective = $this->STAR1[intval($this->getGameStateValue(STAR1))];
+
         foreach ($players as $player) {
             $playerScore = $this->getPlayerScore($player);
 
@@ -179,7 +184,7 @@ trait StateTrait {
             
             $playerScore->calculateTotal();
 
-            //$this->computeStats($playerId);
+            $this->computeStats($player, $playerScore, $objective->points);
         }
 
         $this->gamestate->nextState('endGame');

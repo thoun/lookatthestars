@@ -99,11 +99,29 @@ class LookAtTheStars extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        $this->initStat('table', 'shootingStars', 0); 
+        $this->initStat('table', 'placedLines', 0); 
+        $this->initStat('player', 'placedLines', 0);  
+        $this->initStat('table', 'usedBonus', 0); 
+        $this->initStat('player', 'usedBonus', 0); 
+
+        $this->initStat('player', 'playedCards', 0); 
+        $this->initStat('player', 'skippedCards', 0);  
+        foreach([1, 2, 3] as $number) { $this->initStat('player', 'shootingStar'.$number, 0); }
+        $this->initStat('player', 'constellationsCount', 0);  
+        $this->initStat('player', 'validConstellationsCount', 0);  
+        $this->initStat('player', 'constellationsPoints', 0);  
+        $this->initStat('player', 'planetsPoints', 0);  
+        $this->initStat('player', 'shootingStarsPoints', 0);  
+        $this->initStat('player', 'star1count', 0);  
+        $this->initStat('player', 'star1points', 0);  
+        $this->initStat('player', 'star2points', 0);
 
         $this->setupObjectives();
         $this->setupCards();
+
+        $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
+        $this->initStat('player', 'placed'.$objective->power, 0);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();

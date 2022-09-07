@@ -446,8 +446,6 @@ trait ActionTrait {
 
         $playerId = intval($this->getCurrentPlayerId());
 
-        // TODO notif?
-
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
 }

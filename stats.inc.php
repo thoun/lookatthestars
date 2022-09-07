@@ -47,49 +47,143 @@
     
 */
 
-$stats_type = array(
+require_once('modules/php/constants.inc.php');
+
+$commonStats = [
+    "placedLines" => [
+        "id" => 20,
+        "name" => totranslate("Placed lines"),
+        "type" => "int" 
+    ],
+    "usedBonus" => [
+        "id" => 24,
+        "name" => totranslate("Used bonus"),
+        "type" => "int" 
+    ],
+];
+
+$stats_type = [
 
     // Statistics global to table
-    "table" => array(
-
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-
-/*
-        Examples:
-
-
-        "table_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
-                                "type" => "int" ),
-                                
-        "table_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/  
-    ),
+    "table" => $commonStats + [
+        "shootingStars" => [
+            "id" => 10,
+            "name" => totranslate("Shootings stars in cards"),
+            "type" => "int"
+        ], 
+    ],
     
     // Statistics existing for each player
-    "player" => array(
-
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-    
-/*
-        Examples:    
-        
-        
-        "player_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
-
-*/    
-    )
-
-);
+    "player" => $commonStats + [
+        "playedCards" => [
+            "id" => 30,
+            "name" => totranslate("Played cards"),
+            "type" => "int" 
+        ],
+        "skippedCards" => [
+            "id" => 31,
+            "name" => totranslate("Skipped cards"),
+            "type" => "int"
+        ],
+        "shootingStar1" => [
+            "id" => 32,
+            "name" => totranslate("Shooting star placed (1 line)"),
+            "type" => "int"
+        ],
+        "shootingStar2" => [
+            "id" => 33,
+            "name" => totranslate("Shooting star placed (2 lines)"),
+            "type" => "int"
+        ],
+        "shootingStar3" => [
+            "id" => 34,
+            "name" => totranslate("Shooting star placed (3 lines)"),
+            "type" => "int"
+        ],
+        "constellationsCount" => [
+            "id" => 35,
+            "name" => totranslate("Constellations count (3 lines or more)"),
+            "type" => "int"
+        ],
+        "validConstellationsCount" => [
+            "id" => 36,
+            "name" => totranslate("Valid constellations count (validated on score board)"),
+            "type" => "int"
+        ],
+        "constellationsPoints" => [
+            "id" => 37,
+            "name" => totranslate("Constellations points"),
+            "type" => "int"
+        ],
+        "planetsPoints" => [
+            "id" => 38,
+            "name" => totranslate("Planets points"),
+            "type" => "int"
+        ],
+        "shootingStarsPoints" => [
+            "id" => 39,
+            "name" => totranslate("Shooting stars points"),
+            "type" => "int"
+        ],
+        "star1count" => [
+            "id" => 40,
+            "name" => totranslate("5-star objective scored"),
+            "type" => "int"
+        ],
+        "star1points" => [
+            "id" => 41,
+            "name" => totranslate("5-star objective points"),
+            "type" => "int"
+        ],
+        "star2points" => [
+            "id" => 43,
+            "name" => totranslate("7-star objective points"),
+            "type" => "int"
+        ],
+        "placed".POWER_PLANET => [
+            "id" => 44,
+            "name" => totranslate("Placed planets"),
+            "type" => "int"
+        ],
+        "placed".POWER_NEW_LINE => [
+            "id" => 45,
+            "name" => totranslate("Placed bonus lines"),
+            "type" => "int"
+        ],
+        "placed".POWER_NEW_STARS => [
+            "id" => 46,
+            "name" => totranslate("Placed pair of stars"),
+            "type" => "int"
+        ],
+        "placed".POWER_GALAXY => [
+            "id" => 47,
+            "name" => totranslate("Placed galaxies"),
+            "type" => "int"
+        ],
+        "placed".POWER_TWINKLING_STAR => [
+            "id" => 48,
+            "name" => totranslate("Placed twinkling stars"),
+            "type" => "int"
+        ],
+        "placed".POWER_NOVA => [
+            "id" => 49,
+            "name" => totranslate("Placed novas"),
+            "type" => "int"
+        ],
+        "placed".POWER_LUMINOUS_AURA => [
+            "id" => 50,
+            "name" => totranslate("Placed luminous auras"),
+            "type" => "int"
+        ],
+        "placed".POWER_CRESCENT_MOON => [
+            "id" => 51,
+            "name" => totranslate("Placed crescent moons"),
+            "type" => "int"
+        ],
+        "placed".POWER_BLACK_HOLE => [
+            "id" => 52,
+            "name" => totranslate("Placed black holes"),
+            "type" => "int"
+        ],
+    ]
+];
