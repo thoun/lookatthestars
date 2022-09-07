@@ -51,7 +51,7 @@ $invalidColor: #FF000099;
         
         .line {
           stroke: #FFFFFFDD;
-          stroke-width: 8;
+          stroke-width: 3;
           stroke-opacity: 1;
           stroke-linecap: round;
 
@@ -158,10 +158,10 @@ $invalidColor: #FF000099;
       &::before {
         content: '';
         position: absolute;
-        left: -23px;
+        left: -35px;
         top: 0;
         bottom: 0;
-        width: 12px;
+        width: 25px;
         border-right: 3px solid white;
         background: url('img/sun.svg');
         background-size: contain;

@@ -247,9 +247,9 @@ class PlayerTable {
         <svg viewBox="0 0 546 612" preserveAspectRatio="none"> 
             <defs>
                 <filter x="-2%" y="-2%" width="104%" height="104%" filterUnits="objectBoundingBox" id="PencilTexture">
-                <feTurbulence type="fractalNoise" baseFrequency="3.4" numOctaves="2" result="noise">
+                <feTurbulence type="fractalNoise" baseFrequency="4.2" numOctaves="8" result="noise">
                 </feTurbulence>
-                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="4" in="SourceGraphic" result="newSource">
+                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="2" in="SourceGraphic" result="newSource">
                 </feDisplacementMap>
                 </filter>
             </defs>

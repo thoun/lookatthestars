@@ -364,7 +364,7 @@
 }
 .player-table .main .svg-wrapper svg .line {
   stroke: rgba(255, 255, 255, 0.8666666667);
-  stroke-width: 8;
+  stroke-width: 3;
   stroke-opacity: 1;
   stroke-linecap: round;
 }
@@ -457,10 +457,10 @@
 .player-table .main .day::before {
   content: "";
   position: absolute;
-  left: -23px;
+  left: -35px;
   top: 0;
   bottom: 0;
-  width: 12px;
+  width: 25px;
   border-right: 3px solid white;
   background: url("img/sun.svg");
   background-size: contain;
