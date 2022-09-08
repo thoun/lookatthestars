@@ -204,10 +204,9 @@
 }
 #cards #shapes .pile-wrapper .pile-counter {
   position: absolute;
-  bottom: -22px;
+  bottom: -25px;
   right: 0;
   left: 0;
-  font-size: 80%;
   text-align: center;
   color: white;
 }

@@ -116,7 +116,7 @@ class PlayerTable {
     }
     
     public onKeyPress(event: KeyboardEvent): void {
-        if (['TEXTAREA', 'INPUT'].includes((event.target as HTMLElement).nodeName)) {
+        if (['TEXTAREA', 'INPUT'].includes((event.target as HTMLElement).nodeName) || !(this.game as any).isCurrentPlayerActive()) {
             return;
         }
         //console.log(event.key, event.keyCode);
@@ -181,6 +181,19 @@ class PlayerTable {
                             }
                             break;
                     }
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+            }
+        } else if (this.game.getPrivateGameStateName() === 'confirmTurn') {
+            switch (event.key) { // event.keyCode
+                case 'Enter': // 13
+                    this.game.confirmTurn();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Escape': // 27
+                    this.game.cancelPlaceShape();
                     event.stopImmediatePropagation();
                     event.preventDefault();
                     break;

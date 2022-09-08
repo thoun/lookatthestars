@@ -293,6 +293,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
     private getCurrentPlayerTable(): PlayerTable | null {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
     }
+
+    public getPrivateGameStateName(): string {
+        return this.gamedatas.gamestate.private_state?.name;
+    }
     
     public setTooltip(id: string, html: string) {
         (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);

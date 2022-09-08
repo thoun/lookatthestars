@@ -269,7 +269,7 @@ var PlayerTable = /** @class */ (function () {
         });
     };
     PlayerTable.prototype.onKeyPress = function (event) {
-        if (['TEXTAREA', 'INPUT'].includes(event.target.nodeName)) {
+        if (['TEXTAREA', 'INPUT'].includes(event.target.nodeName) || !this.game.isCurrentPlayerActive()) {
             return;
         }
         //console.log(event.key, event.keyCode);
@@ -334,6 +334,20 @@ var PlayerTable = /** @class */ (function () {
                             }
                             break;
                     }
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+            }
+        }
+        else if (this.game.getPrivateGameStateName() === 'confirmTurn') {
+            switch (event.key) { // event.keyCode
+                case 'Enter': // 13
+                    this.game.confirmTurn();
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    break;
+                case 'Escape': // 27
+                    this.game.cancelPlaceShape();
                     event.stopImmediatePropagation();
                     event.preventDefault();
                     break;
@@ -1039,6 +1053,10 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.getCurrentPlayerTable = function () {
         var _this = this;
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === _this.getPlayerId(); });
+    };
+    LookAtTheStars.prototype.getPrivateGameStateName = function () {
+        var _a;
+        return (_a = this.gamedatas.gamestate.private_state) === null || _a === void 0 ? void 0 : _a.name;
     };
     LookAtTheStars.prototype.setTooltip = function (id, html) {
         this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
