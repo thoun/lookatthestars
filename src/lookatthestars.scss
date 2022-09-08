@@ -5,7 +5,8 @@
 @import 'help';
 
 html, .mode_3d #game_play_area_background {
-  background: #101010;
+  background: url('img/background.jpg');
+  background-repeat: repeat;
 }
 
 #zoom-wrapper {

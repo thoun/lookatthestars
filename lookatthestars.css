@@ -208,7 +208,7 @@
   right: 0;
   left: 0;
   text-align: center;
-  color: white;
+  color: #333333;
 }
 #cards #objectives {
   display: flex;
@@ -293,10 +293,10 @@
 }
 @keyframes highlight-current-shape-animation {
   0% {
-    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.9333333333);
+    box-shadow: 0 0 20px 10px #ffffff;
   }
   100% {
-    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.6666666667);
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.8);
   }
 }
 @font-face {
@@ -322,7 +322,7 @@
   border-radius: 273px 273px 0 0;
   margin: 40px;
   margin-bottom: 0;
-  box-shadow: 0 0 3px 3px black;
+  box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.4);
 }
 .player-table[data-type="0"] {
   background: url("img/sheet-1.png");
@@ -680,7 +680,8 @@ html[data-no-counter=true] .constellation-counter {
 }
 
 html, .mode_3d #game_play_area_background {
-  background: #101010;
+  background: url("img/background.jpg");
+  background-repeat: repeat;
 }
 
 #zoom-wrapper {

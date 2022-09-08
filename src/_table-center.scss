@@ -52,7 +52,7 @@
           right: 0;
           left: 0;
           text-align: center;
-          color: white;
+          color: #333333;
       }
     }
   }
@@ -100,9 +100,9 @@
 
 @keyframes highlight-current-shape-animation {
   0% { 
-    box-shadow: 0 0 20px 10px #ffffffee;
+    box-shadow: 0 0 20px 10px #ffffff;
   }
   100% { 
-    box-shadow: 0 0 20px 10px #ffffffaa;
+    box-shadow: 0 0 20px 10px #ffffffcc;
   }
 }
