@@ -1438,7 +1438,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_placedLines = function (notif) {
         var playerTable = this.getPlayerTable(notif.args.playerId);
-        playerTable.placeLines(notif.args.lines, ['round']);
+        playerTable.placeLines(notif.args.lines, notif.args.bonus ? ['round', 'round-bonus'] : ['round']);
         playerTable.setConstellationsCounters(notif.args.currentConstellations);
     };
     LookAtTheStars.prototype.notif_placedShootingStar = function (notif) {

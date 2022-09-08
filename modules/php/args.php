@@ -79,7 +79,8 @@ trait ArgsTrait {
     }
 
     function argConfirmTurn(int $playerId) {
-        $bonusPlayed = $this->getUniqueValueFromDB("SELECT player_round_objects FROM player WHERE player_id = $playerId") != null;
+        $player = $this->getPlayer($playerId);
+        $bonusPlayed = count($player->roundObjects->linesUsedForPower) > 0;
 
         return [
             'canCancelBonus' => $bonusPlayed,

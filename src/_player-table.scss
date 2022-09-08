@@ -90,18 +90,19 @@ $invalidColor: #FF000099;
       &.card {
         width: 200px;
         height: 200px;
+        box-shadow: none;
       }
       &.line {
         width: 140px;
         height: 140px;
       }   
 
-      &[data-validity="valid"] {
+      /*&[data-validity="valid"] {
         box-shadow: 0 0 5px 2px $validColor;
       }
       &[data-validity="invalid"] {
         box-shadow: 0 0 5px 2px $invalidColor;
-      }
+      }*/
 
       .arrow {
         width: 50px;

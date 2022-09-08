@@ -128,6 +128,7 @@ interface NotifPlacedLinesArgs {
     playerId: number;
     lines: string[];
     currentConstellations: Constellation[];
+    bonus?: boolean;
 }
 interface NotifPlacedShootingStarArgs extends NotifPlacedLinesArgs {
     head: string;

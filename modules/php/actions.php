@@ -130,6 +130,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'lines' => [$fromStr.$toStr],
             'currentConstellations' => $this->getConstellations($player->getLines(true)),
+            'bonus' => true,
         ]);
 
         $this->gamestate->nextPrivateState($playerId, 'confirm');
