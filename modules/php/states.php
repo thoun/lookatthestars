@@ -45,10 +45,6 @@ trait StateTrait {
             $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
 
-            
-
-            $player = $this->getPlayer($playerId);
-
             $this->incStat(count($player->roundLines), 'placedLines');
             $this->incStat(count($player->roundLines), 'placedLines', $playerId);
             if ($player->roundObjects->line !== null || count($player->roundObjects->linesUsedForPower) > 0) {

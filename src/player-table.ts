@@ -26,12 +26,13 @@ class PlayerTable {
         this.playerId = Number(player.id);
 
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table " style="box-shadow: 0 0 3px 3px #${player.color};" data-type="${player.sheetType}">
+        <div id="player-table-${this.playerId}" class="player-table" data-type="${player.sheetType}">
             <div id="player-table-${this.playerId}-main" class="main">
                 <div id="player-table-${this.playerId}-svg" class="svg-wrapper">${this.makeSVG()}</div>
                 <div id="player-table-${this.playerId}-day" class="day" data-level="${this.game.day}">
                 </div>
             </div>
+            <div class="name-background" style="background: #${player.color};"></div>
             <div class="name" style="color: #${player.color};">
                 <span>${player.name}</span>
             </div>
@@ -81,12 +82,12 @@ class PlayerTable {
             },800);
         }*/
 
-        const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
+        /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>
             <strong>${infos.title}</strong><br><br>
             ${infos.description}
         </div>`;
-        this.game.setTooltip(`player-table-${this.playerId}-main`, html);
+        this.game.setTooltip(`player-table-${this.playerId}-main`, html);*/
     }
 
     public setConstellationsCounters(constellations: Constellation[]) {

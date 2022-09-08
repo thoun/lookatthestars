@@ -210,7 +210,7 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table \" style=\"box-shadow: 0 0 3px 3px #").concat(player.color, ";\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(this.game.day, "\">\n                </div>\n            </div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(this.game.day, "\">\n                </div>\n            </div>\n            <div class=\"name-background\" style=\"background: #").concat(player.color, ";\"></div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
         for (var i = 3; i <= 8; i++) {
             html += "<div id=\"player-table-".concat(this.playerId, "-constellation").concat(i, "\" class=\"constellation score\" data-number=\"").concat(i, "\"></div>");
         }
@@ -241,9 +241,12 @@ var PlayerTable = /** @class */ (function () {
                     svg.setAttribute('filter',"url(#PencilTexture)");
             },800);
         }*/
-        var infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
-        html = "<div>\n            <strong>".concat(infos.title, "</strong><br><br>\n            ").concat(infos.description, "\n        </div>");
-        this.game.setTooltip("player-table-".concat(this.playerId, "-main"), html);
+        /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
+        html = `<div>
+            <strong>${infos.title}</strong><br><br>
+            ${infos.description}
+        </div>`;
+        this.game.setTooltip(`player-table-${this.playerId}-main`, html);*/
     }
     PlayerTable.prototype.setConstellationsCounters = function (constellations) {
         var _this = this;

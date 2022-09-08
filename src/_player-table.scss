@@ -28,6 +28,7 @@ $invalidColor: #FF000099;
   border-radius: #{$tableWidth / 2} #{$tableWidth / 2} 0 0;
   margin: 40px;
   margin-bottom: 0;
+  box-shadow: 0 0 3px 3px black;
 
   @for $i from 0 through 7 {
     &[data-type="#{$i}"] {
@@ -189,6 +190,15 @@ $invalidColor: #FF000099;
       font-size: 24pt;
       pointer-events: none;
     }
+  }
+
+  .name-background {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 25px;
+    mix-blend-mode: screen;
   }
 
   .name {
