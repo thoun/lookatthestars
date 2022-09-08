@@ -409,9 +409,9 @@ var PlayerTable = /** @class */ (function () {
         var x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
         var y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
         newObject.setAttribute('id', type + coordinates);
-        newObject.setAttribute('x', "".concat(type == 'galaxy' ? x + 7 : x - 20));
+        newObject.setAttribute('x', "".concat(type == 'galaxy' ? x - 3 : x - 20));
         newObject.setAttribute('y', "".concat(y - 20));
-        newObject.setAttribute('width', "40");
+        newObject.setAttribute('width', "".concat(type == 'galaxy' ? 60 : 40));
         newObject.setAttribute('height', "40");
         newObject.setAttribute('href', "".concat(g_gamethemeurl, "img/object-").concat(type, ".png"));
         (_a = newObject.classList).add.apply(_a, __spreadArray(['object'], additionalClass, false));

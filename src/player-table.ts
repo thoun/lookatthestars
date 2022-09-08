@@ -276,9 +276,9 @@ class PlayerTable {
         const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
         newObject.setAttribute('id', type+coordinates);
-        newObject.setAttribute('x', `${type == 'galaxy' ? x + 7 : x - 20}`);
+        newObject.setAttribute('x', `${type == 'galaxy' ? x - 3 : x - 20}`);
         newObject.setAttribute('y', `${y - 20}`);
-        newObject.setAttribute('width', `40`);
+        newObject.setAttribute('width', `${type == 'galaxy' ? 60 : 40}`);
         newObject.setAttribute('height', `40`);
         newObject.setAttribute('href', `${g_gamethemeurl}img/object-${type}.png`);
         newObject.classList.add('object', ...additionalClass);
