@@ -16,19 +16,20 @@ class Constellation {
         foreach ($this->lines as $line) {
             if ($line[0][1] < $lowestY) {
                 $lowestY = $line[0][1];
-                $xCoordinatesForLowestY = [$line[0][0]];
-            } else if ($line[0][1] == $lowestY) {
-                $xCoordinatesForLowestY[] = [$line[0][0]];
             }
-
             if ($line[1][1] < $lowestY) {
                 $lowestY = $line[1][1];
-                $xCoordinatesForLowestY = [$line[1][0]];
-            } else if ($line[1][1] == $lowestY) {
-                $xCoordinatesForLowestY[] = [$line[1][0]];
             }
         }
 
+        foreach ($this->lines as $line) {
+            if ($line[0][1] == $lowestY) {
+                $xCoordinatesForLowestY[] = $line[0][0];
+            }
+            if ($line[1][1] == $lowestY) {
+                $xCoordinatesForLowestY[] = $line[1][0];
+            }
+        }
         $lowestX = min($xCoordinatesForLowestY);
 
         $this->key = dechex($lowestX).dechex($lowestY);
