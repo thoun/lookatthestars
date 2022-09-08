@@ -4,8 +4,8 @@ $invalidColor: #FF000099;
 
 @font-face {
   font-family: 'blzeeregular';
-  src: url('img/blzee-webfont.woff2') format('woff2'),
-       url('img/blzee-webfont.woff') format('woff');
+  src: url('img/mistral-webfont.woff2') format('woff2'),
+       url('img/mistral-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -163,7 +163,7 @@ $invalidColor: #FF000099;
         top: 0;
         bottom: 0;
         width: 25px;
-        border-right: 3px solid white;
+        border-right: 3px solid #333333;
         background: url('img/sun.svg');
         background-size: contain;
         background-position: center;
@@ -237,14 +237,14 @@ $invalidColor: #FF000099;
 
       @for $number from 3 through 5 {
         &[data-number="#{$number}"] {
-          top: 634px;
+          top: 626px;
           left: #{31 + ($number - 3) * 17}px;
         }
       }
 
       @for $number from 6 through 8 {
         &[data-number="#{$number}"] {
-          top: 663px;
+          top: 655px;
           left: #{31 + ($number - 6) * 17}px;
         }
       }

@@ -13,9 +13,9 @@
     height: 240px;
     border-radius: 8px;
 
-    &.highlight-current-shape {
+    /*&.highlight-current-shape {
       animation: highlight-current-shape-animation 1.5s alternate infinite ease-in-out;
-    }
+    }*/
   }
 
   #shapes {
@@ -53,6 +53,8 @@
           left: 0;
           text-align: center;
           color: #333333;
+          font-size: 120%;
+          text-shadow: 0 0 2px #fff, 0 0 4px #fff;
       }
     }
   }
@@ -81,6 +83,10 @@
             background-position-x: #{$index * 100% / 8};
         }
       }
+    }
+
+    .card {
+      box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.5);
     }
 
     .highlight-objective {
