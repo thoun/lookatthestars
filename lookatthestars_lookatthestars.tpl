@@ -3,8 +3,8 @@
 <div id="zoom-wrapper">
     <div id="full-table">
         <div id="cards">
-            <div id="shapes"></div>
             <div id="objectives"></div>
+            <div id="shapes"></div>
         </div>
         <div id="tables">
         </div>

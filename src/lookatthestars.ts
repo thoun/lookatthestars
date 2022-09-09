@@ -95,6 +95,10 @@ class LookAtTheStars implements LookAtTheStarsGame {
             this.onEnteringShowScore();
         }
 
+        (this as any).onScreenWidthChange = () => {
+            this.updateTableHeight();
+        };
+
         log( "Ending game setup" );
     }
 
@@ -318,7 +322,11 @@ class LookAtTheStars implements LookAtTheStarsGame {
             div.style.margin = `0 ${ZOOM_LEVELS_MARGIN[newIndex]}% ${(1-zoom)*-100}% 0`;
         }
 
-        document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
+        this.updateTableHeight();
+    }
+
+    public updateTableHeight() {
+        document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
     }
 
     public zoomIn() {

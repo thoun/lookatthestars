@@ -165,6 +165,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  flex-direction: row-reverse;
   gap: 50px;
   margin-top: 20px;
   margin-bottom: 20px;

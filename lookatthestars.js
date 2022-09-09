@@ -869,6 +869,9 @@ var LookAtTheStars = /** @class */ (function () {
         if (Number(gamedatas.gamestate.id) >= 90) { // score or end
             this.onEnteringShowScore();
         }
+        this.onScreenWidthChange = function () {
+            _this.updateTableHeight();
+        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -1077,7 +1080,10 @@ var LookAtTheStars = /** @class */ (function () {
             div.style.transform = "scale(".concat(zoom, ")");
             div.style.margin = "0 ".concat(ZOOM_LEVELS_MARGIN[newIndex], "% ").concat((1 - zoom) * -100, "% 0");
         }
-        document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
+        this.updateTableHeight();
+    };
+    LookAtTheStars.prototype.updateTableHeight = function () {
+        document.getElementById('zoom-wrapper').style.height = "".concat(document.getElementById('full-table').getBoundingClientRect().height, "px");
     };
     LookAtTheStars.prototype.zoomIn = function () {
         if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
