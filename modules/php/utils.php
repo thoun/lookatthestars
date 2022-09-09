@@ -314,8 +314,8 @@ trait UtilTrait {
 
         $result = [];
 
-        for ($x = -1; $x <= 7; $x++) {
-            for ($y = -1; $y <= 8; $y++) {
+        for ($x = -2; $x <= 8; $x++) {
+            for ($y = -2; $y <= 9; $y++) {
                 $possibleRotationsForPosition = [];
                 for ($rotation = 0; $rotation <= 3; $rotation++) {
                     $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
@@ -329,8 +329,7 @@ trait UtilTrait {
                         $possibleRotationsForPosition[] = $rotation;
                     }
                 }
-                $key = dechex($x + 1).dechex($y + 1);
-                $result[$key] = $possibleRotationsForPosition;
+                $result[json_encode([$x, $y])] = $possibleRotationsForPosition;
             }
         }
         return $result;

@@ -204,7 +204,7 @@ class PlayerTable {
     private placeInitialObjects(objects: Objects, classes: string[] = []) {
         objects.shootingStars?.forEach(shootingStar => {
             this.placeLines(shootingStar.lines, classes);
-            this.placeShootingStarHead(shootingStar.head, classes);
+            this.placeShootingStarHeadStr(shootingStar.head, classes);
         });
 
         objects.planets?.forEach(object => this.placeObject(object, 'planet', classes));
@@ -248,11 +248,15 @@ class PlayerTable {
         ));
     }
 
-    placeShootingStarHead(coordinates: string, additionalClass: string[] = []) {
-        const lineid = `shooting-star-head-${this.playerId}-${coordinates}`;
+    placeShootingStarHeadStr(coordinates: string, additionalClass: string[] = []) {
+        this.placeShootingStarHead([parseInt(coordinates[0], 16), parseInt(coordinates[1], 16), ], additionalClass);
+    }
 
-        const xCoordinate = parseInt(coordinates[0], 16);
-        const yCoordinate = parseInt(coordinates[1], 16);
+    private placeShootingStarHead(coordinates: number[], additionalClass: string[] = []) {
+        const lineid = `shooting-star-head-${this.playerId}-${JSON.stringify(coordinates)}`;
+
+        const xCoordinate = coordinates[0];
+        const yCoordinate = coordinates[1];
         const x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
         const y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
 
@@ -369,7 +373,8 @@ class PlayerTable {
         } else if (this.currentCard.type == 2) {
             possiblePositions = this.possiblePositions;
         }
-        return possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
+        const positionKey = JSON.stringify([this.shapeX, this.shapeY]);
+        return possiblePositions[positionKey].includes(this.shapeRotation);
     }
 
     private getValidClass(): string {
@@ -445,55 +450,46 @@ class PlayerTable {
         this.moveLine();
     }
 
-    private getRotatedAndShiftedLines(lines: string[]): string[] {
-        let rotatedLines = lines.map(line => line);
+    private getRotatedAndShiftedLines(lines: string[]): number[][][] {
+        let rotatedLines: number[][][] = lines.map(line => [
+            [ Number.parseInt(line[0], 16), Number.parseInt(line[1], 16), ],
+            [ Number.parseInt(line[2], 16), Number.parseInt(line[3], 16), ],
+        ]);
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
-            rotatedLines = rotatedLines.map(line => 
-                (Number.parseInt(line[1], 16)).toString(16) + 
-                (3 - Number.parseInt(line[0], 16)).toString(16) +
-                (Number.parseInt(line[3], 16)).toString(16) + 
-                (3 - Number.parseInt(line[2], 16)).toString(16) 
-            );
+            rotatedLines = rotatedLines.map(line => [
+                [ line[0][1], 3 - line[0][0], ],
+                [ line[1][1], 3 - line[1][0], ],
+            ]);
         }
         if (this.shapeRotation == 2 || this.shapeRotation == 3) {
             // rotate 180°
-            rotatedLines = rotatedLines.map(line => 
-                (3 - Number.parseInt(line[0], 16)).toString(16) + 
-                (3 - Number.parseInt(line[1], 16)).toString(16) +
-                (3 - Number.parseInt(line[2], 16)).toString(16) + 
-                (3 - Number.parseInt(line[3], 16)).toString(16) 
-            );
+            rotatedLines = rotatedLines.map(line => [
+                [ 3 - line[0][0], 3 - line[0][1], ],
+                [ 3 - line[1][0], 3 - line[1][1], ],
+            ]);
         }
 
-        let rotatedAndShiftedLines = rotatedLines.map(line => 
-            (Number.parseInt(line[0], 16) + this.shapeX).toString(16) + 
-            (Number.parseInt(line[1], 16) + this.shapeY).toString(16) +
-            (Number.parseInt(line[2], 16) + this.shapeX).toString(16) + 
-            (Number.parseInt(line[3], 16) + this.shapeY).toString(16) 
-        );
+        let rotatedAndShiftedLines = rotatedLines.map(line => [
+            [line[0][0] + this.shapeX, line[0][1] + this.shapeY, ],
+            [line[1][0] + this.shapeX, line[1][1] + this.shapeY, ],
+        ]);
 
         return rotatedAndShiftedLines;
     };
 
-    private getRotatedAndShiftedCoordinates(coordinates: string): string {
-        let rotatedCoordinates = ''+coordinates;
+    private getRotatedAndShiftedCoordinates(coordinates: string): number[] {
+        let rotatedCoordinates = [ Number.parseInt(coordinates[0], 16), Number.parseInt(coordinates[1], 16), ];
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
-            rotatedCoordinates = 
-                (Number.parseInt(rotatedCoordinates[1], 16)).toString(16) + 
-                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16);
+            rotatedCoordinates = [ rotatedCoordinates[1], 3 - rotatedCoordinates[0], ];
         }
         if (this.shapeRotation == 2 || this.shapeRotation == 3) {
             // rotate 180°
-            rotatedCoordinates = 
-                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16) + 
-                (3 - Number.parseInt(rotatedCoordinates[1], 16)).toString(16);
+            rotatedCoordinates = [ 3 - rotatedCoordinates[0], 3 - rotatedCoordinates[1], ]; 
         }
 
-        let rotatedAndShiftedCoordinates = 
-            (Number.parseInt(rotatedCoordinates[0], 16) + this.shapeX).toString(16) + 
-            (Number.parseInt(rotatedCoordinates[1], 16) + this.shapeY).toString(16);
+        let rotatedAndShiftedCoordinates = [rotatedCoordinates[0] + this.shapeX, rotatedCoordinates[1]+ this.shapeY ];
 
         return rotatedAndShiftedCoordinates;
     };
@@ -510,7 +506,14 @@ class PlayerTable {
             lines = this.currentCard.lines;
         }
         let rotatedAndShiftedLines = this.getRotatedAndShiftedLines(lines);
-        this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
+        rotatedAndShiftedLines.forEach(line => this.placeLine(
+            JSON.stringify(line),
+            line[0][0],
+            line[0][1],
+            line[1][0],
+            line[1][1],
+            ['temp-line', validClass]
+        ));
 
         if (this.currentCard.type == 1) {     
             const head = (this.game as any).gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].head;       
@@ -552,7 +555,7 @@ class PlayerTable {
     }
 
     private moveShapeLeft() {
-        if (this.shapeX <= -1) {
+        if (this.shapeX <= -2) {
             return;
         }
         this.shapeX--;
@@ -560,10 +563,26 @@ class PlayerTable {
     }
 
     private moveShapeRight() {
-        if (this.shapeX >= 7) {
+        if (this.shapeX >= 8) {
             return;
         }
         this.shapeX++;
+        this.moveShape();
+    }
+
+    private moveShapeBottom() {
+        if (this.shapeY <= -2 + (this.game.day * 2)) {
+            return;
+        }
+        this.shapeY--;
+        this.moveShape();
+    }
+
+    private moveShapeTop() {
+        if (this.shapeY >= 9) {
+            return;
+        }
+        this.shapeY++;
         this.moveShape();
     }
 
@@ -607,22 +626,6 @@ class PlayerTable {
         }
         this.shapeX++;
         this.moveLine();
-    }
-
-    private moveShapeBottom() {
-        if (this.shapeY <= -1 + (this.game.day * 2)) {
-            return;
-        }
-        this.shapeY--;
-        this.moveShape();
-    }
-
-    private moveShapeTop() {
-        if (this.shapeY >= 8) {
-            return;
-        }
-        this.shapeY++;
-        this.moveShape();
     }
     
     public removeShapeToPlace() {

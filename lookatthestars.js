@@ -360,7 +360,7 @@ var PlayerTable = /** @class */ (function () {
         if (classes === void 0) { classes = []; }
         (_a = objects.shootingStars) === null || _a === void 0 ? void 0 : _a.forEach(function (shootingStar) {
             _this.placeLines(shootingStar.lines, classes);
-            _this.placeShootingStarHead(shootingStar.head, classes);
+            _this.placeShootingStarHeadStr(shootingStar.head, classes);
         });
         (_b = objects.planets) === null || _b === void 0 ? void 0 : _b.forEach(function (object) { return _this.placeObject(object, 'planet', classes); });
         (_c = objects.stars) === null || _c === void 0 ? void 0 : _c.forEach(function (object) { return _this.placeObject(object, 'star', classes); });
@@ -382,12 +382,16 @@ var PlayerTable = /** @class */ (function () {
         if (additionalClass === void 0) { additionalClass = []; }
         lines.forEach(function (line) { return _this.placeLine(line, parseInt(line[0], 16), parseInt(line[1], 16), parseInt(line[2], 16), parseInt(line[3], 16), additionalClass); });
     };
+    PlayerTable.prototype.placeShootingStarHeadStr = function (coordinates, additionalClass) {
+        if (additionalClass === void 0) { additionalClass = []; }
+        this.placeShootingStarHead([parseInt(coordinates[0], 16), parseInt(coordinates[1], 16),], additionalClass);
+    };
     PlayerTable.prototype.placeShootingStarHead = function (coordinates, additionalClass) {
         var _a;
         if (additionalClass === void 0) { additionalClass = []; }
-        var lineid = "shooting-star-head-".concat(this.playerId, "-").concat(coordinates);
-        var xCoordinate = parseInt(coordinates[0], 16);
-        var yCoordinate = parseInt(coordinates[1], 16);
+        var lineid = "shooting-star-head-".concat(this.playerId, "-").concat(JSON.stringify(coordinates));
+        var xCoordinate = coordinates[0];
+        var yCoordinate = coordinates[1];
         var x = SVG_LEFT_MARGIN + xCoordinate * SVG_LINE_WIDTH;
         var y = SVG_BOTTOM_MARGIN - yCoordinate * SVG_LINE_HEIGHT;
         var newObject = document.createElementNS('http://www.w3.org/2000/svg', 'image');
@@ -491,7 +495,8 @@ var PlayerTable = /** @class */ (function () {
         else if (this.currentCard.type == 2) {
             possiblePositions = this.possiblePositions;
         }
-        return possiblePositions[(this.shapeX + 1).toString(16) + (this.shapeY + 1).toString(16)].includes(this.shapeRotation);
+        var positionKey = JSON.stringify([this.shapeX, this.shapeY]);
+        return possiblePositions[positionKey].includes(this.shapeRotation);
     };
     PlayerTable.prototype.getValidClass = function () {
         return this.getValid() ? 'valid' : 'invalid';
@@ -549,54 +554,47 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.getRotatedAndShiftedLines = function (lines) {
         var _this = this;
-        var rotatedLines = lines.map(function (line) { return line; });
+        var rotatedLines = lines.map(function (line) { return [
+            [Number.parseInt(line[0], 16), Number.parseInt(line[1], 16),],
+            [Number.parseInt(line[2], 16), Number.parseInt(line[3], 16),],
+        ]; });
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
-            rotatedLines = rotatedLines.map(function (line) {
-                return (Number.parseInt(line[1], 16)).toString(16) +
-                    (3 - Number.parseInt(line[0], 16)).toString(16) +
-                    (Number.parseInt(line[3], 16)).toString(16) +
-                    (3 - Number.parseInt(line[2], 16)).toString(16);
-            });
+            rotatedLines = rotatedLines.map(function (line) { return [
+                [line[0][1], 3 - line[0][0],],
+                [line[1][1], 3 - line[1][0],],
+            ]; });
         }
         if (this.shapeRotation == 2 || this.shapeRotation == 3) {
             // rotate 180°
-            rotatedLines = rotatedLines.map(function (line) {
-                return (3 - Number.parseInt(line[0], 16)).toString(16) +
-                    (3 - Number.parseInt(line[1], 16)).toString(16) +
-                    (3 - Number.parseInt(line[2], 16)).toString(16) +
-                    (3 - Number.parseInt(line[3], 16)).toString(16);
-            });
+            rotatedLines = rotatedLines.map(function (line) { return [
+                [3 - line[0][0], 3 - line[0][1],],
+                [3 - line[1][0], 3 - line[1][1],],
+            ]; });
         }
-        var rotatedAndShiftedLines = rotatedLines.map(function (line) {
-            return (Number.parseInt(line[0], 16) + _this.shapeX).toString(16) +
-                (Number.parseInt(line[1], 16) + _this.shapeY).toString(16) +
-                (Number.parseInt(line[2], 16) + _this.shapeX).toString(16) +
-                (Number.parseInt(line[3], 16) + _this.shapeY).toString(16);
-        });
+        var rotatedAndShiftedLines = rotatedLines.map(function (line) { return [
+            [line[0][0] + _this.shapeX, line[0][1] + _this.shapeY,],
+            [line[1][0] + _this.shapeX, line[1][1] + _this.shapeY,],
+        ]; });
         return rotatedAndShiftedLines;
     };
     ;
     PlayerTable.prototype.getRotatedAndShiftedCoordinates = function (coordinates) {
-        var rotatedCoordinates = '' + coordinates;
+        var rotatedCoordinates = [Number.parseInt(coordinates[0], 16), Number.parseInt(coordinates[1], 16),];
         if (this.shapeRotation == 1 || this.shapeRotation == 3) {
             // rotate 90°
-            rotatedCoordinates =
-                (Number.parseInt(rotatedCoordinates[1], 16)).toString(16) +
-                    (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16);
+            rotatedCoordinates = [rotatedCoordinates[1], 3 - rotatedCoordinates[0],];
         }
         if (this.shapeRotation == 2 || this.shapeRotation == 3) {
             // rotate 180°
-            rotatedCoordinates =
-                (3 - Number.parseInt(rotatedCoordinates[0], 16)).toString(16) +
-                    (3 - Number.parseInt(rotatedCoordinates[1], 16)).toString(16);
+            rotatedCoordinates = [3 - rotatedCoordinates[0], 3 - rotatedCoordinates[1],];
         }
-        var rotatedAndShiftedCoordinates = (Number.parseInt(rotatedCoordinates[0], 16) + this.shapeX).toString(16) +
-            (Number.parseInt(rotatedCoordinates[1], 16) + this.shapeY).toString(16);
+        var rotatedAndShiftedCoordinates = [rotatedCoordinates[0] + this.shapeX, rotatedCoordinates[1] + this.shapeY];
         return rotatedAndShiftedCoordinates;
     };
     ;
     PlayerTable.prototype.moveShape = function () {
+        var _this = this;
         var _a;
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('temp-line'));
         oldLines.forEach(function (oldLine) { var _a; return (_a = oldLine.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(oldLine); });
@@ -609,7 +607,7 @@ var PlayerTable = /** @class */ (function () {
             lines = this.currentCard.lines;
         }
         var rotatedAndShiftedLines = this.getRotatedAndShiftedLines(lines);
-        this.placeLines(rotatedAndShiftedLines, ['temp-line', validClass]);
+        rotatedAndShiftedLines.forEach(function (line) { return _this.placeLine(JSON.stringify(line), line[0][0], line[0][1], line[1][0], line[1][1], ['temp-line', validClass]); });
         if (this.currentCard.type == 1) {
             var head = this.game.gamedatas.SHOOTING_STAR_SIZES[this.shootingStarSize].head;
             var rotatedAndShiftedHead = this.getRotatedAndShiftedCoordinates(head);
@@ -642,17 +640,31 @@ var PlayerTable = /** @class */ (function () {
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeLeft = function () {
-        if (this.shapeX <= -1) {
+        if (this.shapeX <= -2) {
             return;
         }
         this.shapeX--;
         this.moveShape();
     };
     PlayerTable.prototype.moveShapeRight = function () {
-        if (this.shapeX >= 7) {
+        if (this.shapeX >= 8) {
             return;
         }
         this.shapeX++;
+        this.moveShape();
+    };
+    PlayerTable.prototype.moveShapeBottom = function () {
+        if (this.shapeY <= -2 + (this.game.day * 2)) {
+            return;
+        }
+        this.shapeY--;
+        this.moveShape();
+    };
+    PlayerTable.prototype.moveShapeTop = function () {
+        if (this.shapeY >= 9) {
+            return;
+        }
+        this.shapeY++;
         this.moveShape();
     };
     PlayerTable.prototype.rotateLine = function () {
@@ -690,20 +702,6 @@ var PlayerTable = /** @class */ (function () {
         }
         this.shapeX++;
         this.moveLine();
-    };
-    PlayerTable.prototype.moveShapeBottom = function () {
-        if (this.shapeY <= -1 + (this.game.day * 2)) {
-            return;
-        }
-        this.shapeY--;
-        this.moveShape();
-    };
-    PlayerTable.prototype.moveShapeTop = function () {
-        if (this.shapeY >= 8) {
-            return;
-        }
-        this.shapeY++;
-        this.moveShape();
     };
     PlayerTable.prototype.removeShapeToPlace = function () {
         var _a;
@@ -1449,7 +1447,7 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_placedShootingStar = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
-        this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
+        this.getPlayerTable(notif.args.playerId).placeShootingStarHeadStr(notif.args.head, ['round']);
     };
     LookAtTheStars.prototype.notif_placedPlanet = function (notif) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);

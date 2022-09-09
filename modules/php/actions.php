@@ -27,7 +27,8 @@ trait ActionTrait {
             $card->lines, 
             true
         );
-        if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
+        $positionKey = json_encode([$x, $y]);
+        if (!in_array($rotation, $possiblePositions[$positionKey])) {
             throw new \BgaUserException("Invalid position");
         }
 
@@ -72,7 +73,8 @@ trait ActionTrait {
             $shootingStar->lines, 
             false
         );
-        if (!in_array($rotation, $possiblePositions[dechex($x + 1).dechex($y + 1)])) {
+        $positionKey = json_encode([$x, $y]);
+        if (!in_array($rotation, $possiblePositions[$positionKey])) {
             throw new \BgaUserException("Invalid position");
         }
 

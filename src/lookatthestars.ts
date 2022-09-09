@@ -789,7 +789,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     notif_placedShootingStar(notif: Notif<NotifPlacedShootingStarArgs>) {
         this.getPlayerTable(notif.args.playerId).placeLines(notif.args.lines, ['round']);
-        this.getPlayerTable(notif.args.playerId).placeShootingStarHead(notif.args.head, ['round']);
+        this.getPlayerTable(notif.args.playerId).placeShootingStarHeadStr(notif.args.head, ['round']);
     }
     notif_placedPlanet(notif: Notif<NotifPlacedCoordinatesArgs>) {
         this.getPlayerTable(notif.args.playerId).placeObject(notif.args.coordinates, 'planet', ['round', 'round-bonus']);
