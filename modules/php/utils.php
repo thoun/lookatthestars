@@ -441,7 +441,7 @@ trait UtilTrait {
                 $constellation->addLine($line);
 
                 $otherConstellationConnectedToLineIndex = $this->array_find_key($constellations, fn($iConstellation) => 
-                    $iConstellation->key != $constellation->key && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
+                    $iConstellation != $constellation && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
                 );
 
                 while ($otherConstellationConnectedToLineIndex !== null) {
@@ -450,7 +450,7 @@ trait UtilTrait {
                     array_splice($constellations, $otherConstellationConnectedToLineIndex, 1);
 
                     $otherConstellationConnectedToLineIndex = $this->array_find_key($constellations, fn($iConstellation) => 
-                        $iConstellation->key != $constellation->key && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
+                        $iConstellation != $constellation && $this->array_some($iConstellation->lines, fn($iLine) => $this->lineConnected($line, $iLine))
                     );
                 }
             } else {
