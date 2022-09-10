@@ -250,6 +250,13 @@ class LookAtTheStars implements LookAtTheStarsGame {
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                     break;
                 case 'placePlanet':
+                case 'placeStar':
+                case 'placeBlackHole':
+                case 'placeCrescentMoon':
+                case 'placeGalaxy':
+                case 'placeTwinklingStar':
+                case 'placeNova':
+                case 'placeLuminousAura':
                     (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
                     (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
                     break;

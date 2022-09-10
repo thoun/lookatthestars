@@ -125,6 +125,7 @@ $playerActionsGameStates = [
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placePlanet", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_PLANET,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -148,6 +149,7 @@ $playerActionsGameStates = [
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placeBlackHole", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_BLACK_HOLE,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -159,6 +161,7 @@ $playerActionsGameStates = [
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placeCrescentMoon", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_CRESCENT_MOON,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -170,6 +173,7 @@ $playerActionsGameStates = [
         "args" => "argPlaceLuminousAura",
         "possibleactions" => [ "placeLuminousAura", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_LUMINOUS_AURA,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -181,6 +185,7 @@ $playerActionsGameStates = [
         "args" => "argPlaceGalaxy",
         "possibleactions" => [ "placeGalaxy", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_GALAXY,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -192,6 +197,7 @@ $playerActionsGameStates = [
         "args" => "argPlaceNova",
         "possibleactions" => [ "placeNova", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_NOVA,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -203,6 +209,7 @@ $playerActionsGameStates = [
         "args" => "argPlacePlanet",
         "possibleactions" => [ "placeTwinklingStar", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_TWINKLING_STAR,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],
@@ -214,6 +221,7 @@ $playerActionsGameStates = [
         "args" => "argPlaceLine",
         "possibleactions" => [ "placeLine", "skipBonus", "cancelPlaceShape" ],
         "transitions" => [
+            'next' => ST_PRIVATE_PLACE_LINE,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ]
     ],

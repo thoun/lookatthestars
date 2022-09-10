@@ -74,13 +74,13 @@ trait ArgsTrait {
 
         return [
             'possibleCoordinates' => $possibleCoordinates,
-            'number' => count($player->roundObjects->stars) + 1,
+            'number' => (count($player->roundObjects->stars) % 2) + 1,
         ];
     }
 
     function argConfirmTurn(int $playerId) {
         $player = $this->getPlayer($playerId);
-        $bonusPlayed = count($player->roundObjects->linesUsedForPower) > 0;
+        $bonusPlayed = count($player->roundObjects->shapesUsedForPower) > 0;
 
         return [
             'canCancelBonus' => $bonusPlayed,

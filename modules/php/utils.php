@@ -640,7 +640,7 @@ trait UtilTrait {
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
 
         // for unique usage powers
-        if (count($player->objects->linesUsedForPower) > 0 && in_array($objective->power, [
+        if ((count($player->objects->shapesUsedForPower) > 0 || count($player->roundObjects->shapesUsedForPower) > 0) && in_array($objective->power, [
             POWER_BLACK_HOLE,
             POWER_CRESCENT_MOON,
         ])) {
@@ -648,7 +648,18 @@ trait UtilTrait {
         }
 
         $allLines = $player->getLines(true);
-        $shapesFound = $this->findShape($allLines, $objective->lines, $player->objects->linesUsedForPower);
+
+        $ignoreLines = [];
+        $shapesToIgnore = array_merge(
+            $player->objects->shapesUsedForPower,
+            $player->objects->shapesSkippedForPower,
+            $player->roundObjects->shapesUsedForPower,
+            $player->roundObjects->shapesSkippedForPower,
+        );
+        foreach($shapesToIgnore as $shapeToIgnore) {
+            $ignoreLines = array_merge($ignoreLines, $shapeToIgnore);
+        }
+        $shapesFound = $this->findShape($allLines, $objective->lines, $ignoreLines);
 
         return $shapesFound;
     }

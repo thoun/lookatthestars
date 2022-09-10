@@ -122,9 +122,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
 
-        $roundObjects = new Objects();
-        $roundObjects->line = $fromStr.$toStr;
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->lines[] = $fromStr.$toStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         $player->roundObjects = $roundObjects;
@@ -135,7 +135,12 @@ trait ActionTrait {
             'bonus' => true,
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);;
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placePlanet(int $x, int $y) {
@@ -155,11 +160,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->planets = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->planets[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedPlanet', '', [
@@ -167,7 +170,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeStar(int $x, int $y) {
@@ -189,7 +197,9 @@ trait ActionTrait {
         
         $roundObjects = $player->roundObjects;
         $roundObjects->stars[] = $coordinatesStr;
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        if (count($roundObjects->stars) % 2 != 1) {
+            $roundObjects->shapesUsedForPower[] = $shapesFound[0];
+        }
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedStar', '', [
@@ -197,7 +207,16 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, count($roundObjects->stars) < 2 ? 'next' : 'confirm');
+        if (count($roundObjects->stars) % 2 == 1) {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        } else {
+            $shapesFound = $this->getPowerCurrentShape($player);
+            if (count($shapesFound) == 0) {
+                $this->gamestate->nextPrivateState($playerId, 'confirm');
+            } else {
+                $this->gamestate->nextPrivateState($playerId, 'next');
+            }
+        }
     }
     
     public function placeBlackHole(int $x, int $y) {
@@ -217,11 +236,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->blackHoles = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->blackHoles[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedBlackHole', '', [
@@ -229,7 +246,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeCrescentMoon(int $x, int $y) {
@@ -249,11 +271,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->crescentMoons = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $roundObjects = $player->roundObjects;
+        $roundObjects->crescentMoons[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedCrescentMoon', '', [
@@ -261,7 +281,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeTwinklingStar(int $x, int $y) {
@@ -281,11 +306,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->twinklingStars = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->twinklingStars[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedTwinklingStar', '', [
@@ -293,7 +316,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeGalaxy(int $x, int $y) {
@@ -313,11 +341,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->galaxies = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $roundObjects = $player->roundObjects;;
+        $roundObjects->galaxies[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedGalaxy', '', [
@@ -325,7 +351,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeNova(int $x, int $y) {
@@ -345,11 +376,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->novas = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->novas[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedNova', '', [
@@ -357,7 +386,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
     
     public function placeLuminousAura(int $x, int $y) {
@@ -377,11 +411,9 @@ trait ActionTrait {
             throw new \BgaUserException("No valid shape for bonus");
         }
         
-        $roundObjects = new Objects();
-        $roundObjects->luminousAuras = [
-            $coordinatesStr
-        ];
-        $roundObjects->linesUsedForPower = $shapesFound[0];
+        $roundObjects = $player->roundObjects;
+        $roundObjects->luminousAuras[] = $coordinatesStr;
+        $roundObjects->shapesUsedForPower[] = $shapesFound[0];
         $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($roundObjects)."' WHERE `player_id` = $playerId");
 
         self::notifyAllPlayers('placedLuminousAura', '', [
@@ -389,7 +421,12 @@ trait ActionTrait {
             'coordinates' => $coordinatesStr
         ]);
 
-        $this->gamestate->nextPrivateState($playerId, 'confirm');
+        $shapesFound = $this->getPowerCurrentShape($player);
+        if (count($shapesFound) == 0) {
+            $this->gamestate->nextPrivateState($playerId, 'confirm');
+        } else {
+            $this->gamestate->nextPrivateState($playerId, 'next');
+        }
     }
 
     public function cancelPlaceShape() {
@@ -429,8 +466,6 @@ trait ActionTrait {
 
         $playerId = intval($this->getCurrentPlayerId());
 
-        // TODO notif?
-
         $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
@@ -439,7 +474,9 @@ trait ActionTrait {
 
         $playerId = intval($this->getCurrentPlayerId());
 
-        // TODO notif?
+        $player = $this->getPlayer($playerId);
+        $player->roundObjects->shapesSkippedForPower = array_merge($player->roundObjects->shapesSkippedForPower, $this->getPowerCurrentShape($player));
+        $this->DbQuery("UPDATE player SET `player_round_objects` = '".json_encode($player->roundObjects)."' WHERE `player_id` = $playerId");
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }

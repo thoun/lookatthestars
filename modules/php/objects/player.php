@@ -84,12 +84,9 @@ class LatsPlayer {
         if ($includeRound) {
             $lines = array_merge(
                 $lines,
-                $this->linesStrToLines($this->roundLines)
+                $this->linesStrToLines($this->roundLines),
+                $this->linesStrToLines($this->roundObjects->lines),
             );
-
-            if ($this->roundObjects->line != null) {
-                $lines[] = $this->lineStrToLine($this->roundObjects->line);
-            }
 
         }
         return $lines;

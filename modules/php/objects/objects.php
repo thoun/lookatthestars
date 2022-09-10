@@ -3,7 +3,7 @@
 class Objects {
     public array $shootingStars = [];
 
-    public /*string|null*/ $line = null;
+    public array $lines = [];
     public array $planets = [];
     public array $stars = [];
     public array $galaxies = [];
@@ -13,7 +13,8 @@ class Objects {
     public array $crescentMoons = [];
     public array $blackHoles = [];
 
-    public array $linesUsedForPower = [];
+    public array $shapesUsedForPower = [];
+    public array $shapesSkippedForPower = [];
 }
 
 ?>

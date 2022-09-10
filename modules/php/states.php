@@ -26,10 +26,7 @@ trait StateTrait {
             $playerId = $player->id;
 
             // apply turn lines
-            $allLines = array_merge($player->lines, $player->roundLines);
-            if ($player->roundObjects->line !== null) {
-                $allLines[] = $player->roundObjects->line;
-            }
+            $allLines = array_merge($player->lines, $player->roundLines, $player->roundObjects->lines);
             $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_lines` = '".json_encode($allLines)."' WHERE `player_id` = $playerId");
 
             // apply turn objects
@@ -42,13 +39,14 @@ trait StateTrait {
             $player->objects->luminousAuras = array_merge($player->objects->luminousAuras, $player->roundObjects->luminousAuras);
             $player->objects->crescentMoons = array_merge($player->objects->crescentMoons, $player->roundObjects->crescentMoons);
             $player->objects->blackHoles = array_merge($player->objects->blackHoles, $player->roundObjects->blackHoles);
-            $player->objects->linesUsedForPower = array_merge($player->objects->linesUsedForPower, $player->roundObjects->linesUsedForPower);
+            $player->objects->shapesUsedForPower = array_merge($player->objects->shapesUsedForPower, $player->roundObjects->shapesUsedForPower);
+            $player->objects->shapesSkippedForPower = array_merge($player->objects->shapesSkippedForPower, $player->roundObjects->shapesSkippedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
 
             $this->incStat(1, count($player->roundLines) > 0 ? 'playedCards' : 'skippedCards', $playerId);
             $this->incStat(count($player->roundLines), 'placedLines');
             $this->incStat(count($player->roundLines), 'placedLines', $playerId);
-            if ($player->roundObjects->line !== null || count($player->roundObjects->linesUsedForPower) > 0) {
+            if (count($player->roundObjects->shapesUsedForPower) > 0) {
                 $this->incStat(1, 'usedBonus');
                 $this->incStat(1, 'usedBonus', $playerId);
                 $this->incStat(1, 'placed'.$objective->power, $playerId);

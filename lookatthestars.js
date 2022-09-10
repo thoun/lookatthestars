@@ -1015,6 +1015,13 @@ var LookAtTheStars = /** @class */ (function () {
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
                     break;
                 case 'placePlanet':
+                case 'placeStar':
+                case 'placeBlackHole':
+                case 'placeCrescentMoon':
+                case 'placeGalaxy':
+                case 'placeTwinklingStar':
+                case 'placeNova':
+                case 'placeLuminousAura':
                     this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
                     this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
                     break;
