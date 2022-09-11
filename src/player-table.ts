@@ -74,13 +74,13 @@ class PlayerTable {
         }
 
         //refresh hack
-        /*// TODO ? if (!isSafari()) {
+        if (!isSafari()) {
             const svg = document.getElementById(`lats-svg-${this.playerId}`);
             svg.setAttribute('filter',"");
             setTimeout(()=>{
                     svg.setAttribute('filter',"url(#PencilTexture)");
             },800);
-        }*/
+        }
 
         /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>

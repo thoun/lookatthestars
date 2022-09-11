@@ -234,13 +234,13 @@ var PlayerTable = /** @class */ (function () {
             this.setFinalScore(player.playerScore.total);
         }
         //refresh hack
-        /*// TODO ? if (!isSafari()) {
-            const svg = document.getElementById(`lats-svg-${this.playerId}`);
-            svg.setAttribute('filter',"");
-            setTimeout(()=>{
-                    svg.setAttribute('filter',"url(#PencilTexture)");
-            },800);
-        }*/
+        if (!isSafari()) {
+            var svg_1 = document.getElementById("lats-svg-".concat(this.playerId));
+            svg_1.setAttribute('filter', "");
+            setTimeout(function () {
+                svg_1.setAttribute('filter', "url(#PencilTexture)");
+            }, 800);
+        }
         /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>
             <strong>${infos.title}</strong><br><br>
