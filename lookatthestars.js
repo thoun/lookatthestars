@@ -136,7 +136,7 @@ var TableCenter = /** @class */ (function () {
             _this.pileCounters[number].setValue(gamedatas["remainingCardsInDiscard".concat(number)]);
         });
         [1, 2].forEach(function (number) {
-            dojo.place("\n            <div id=\"star".concat(number, "\" class=\"card\" data-index=\"").concat(gamedatas["star".concat(number)], "\"></div> \n            "), "objectives");
+            dojo.place("\n            <div id=\"star".concat(number, "\" class=\"card\" data-index=\"").concat(gamedatas["star".concat(number)], "\">\n                <div class=\"icon-indicator\">\n                    <div class=\"icon star").concat(number == 2 ? 7 : 5, "\"></div>\n                </div>\n            </div> \n            "), "objectives");
         });
         var currentPile = 3;
         var currentPileDiv = document.getElementById("pile".concat(currentPile));

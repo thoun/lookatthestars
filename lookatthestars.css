@@ -284,6 +284,20 @@
 }
 #cards #objectives .card {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+#cards #objectives .card .icon-indicator {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #cards #objectives .highlight-objective {
   animation: highlight-objective-animation 1.5s alternate infinite ease-in-out;

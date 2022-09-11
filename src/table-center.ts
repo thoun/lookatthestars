@@ -18,7 +18,11 @@ class TableCenter {
 
         [1, 2].forEach(number => {
             dojo.place(`
-            <div id="star${number}" class="card" data-index="${gamedatas[`star${number}`]}"></div> 
+            <div id="star${number}" class="card" data-index="${gamedatas[`star${number}`]}">
+                <div class="icon-indicator">
+                    <div class="icon star${number == 2 ? 7 : 5}"></div>
+                </div>
+            </div> 
             `, `objectives`);
         });
 
