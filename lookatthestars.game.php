@@ -46,7 +46,8 @@ class LookAtTheStars extends Table {
             STAR1 => STAR1,
             STAR2 => STAR2,
 
-            OBJECTIVES => 100,
+            OBJECTIVES_OPTION => 100,
+            SCORING_OPTION => 102,
         ]); 
 
         $this->shapes = self::getNew("module.common.deck");
@@ -157,6 +158,8 @@ class LookAtTheStars extends Table {
             $maskedCards[] = ($i == count($cards) - 1) ? $cards[$i] : Card::onlyId($cards[$i]);
         }
 
+        $result['liveScoring'] = intval($this->getGameStateValue(SCORING_OPTION)) == 2;
+
         foreach ($result['players'] as $playerId => &$playerDb) {
             $playerDb['playerNo'] = intval($playerDb['playerNo']);
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
@@ -166,7 +169,7 @@ class LookAtTheStars extends Table {
             $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new Objects();
 
             $player = $this->getPlayer($playerId);
-            $playerDb['playerScore'] = $isEndScore ? $this->getPlayerScore($player) : null;
+            $playerDb['playerScore'] = $isEndScore || $result['liveScoring'] ? $this->getPlayerScore($player) : null;
             $playerDb['currentConstellations'] = $this->getConstellations($player->getLines(true));
         }
 

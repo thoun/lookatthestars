@@ -180,8 +180,6 @@ trait StateTrait {
             $this->scoreStar1($player->id, $playerScore);
             $this->scoreStar2($player->id, $playerScore);
             
-            $playerScore->calculateTotal();
-
             $this->computeStats($player, $playerScore, $objective->points);
             $tableTotalScore += $playerScore->total;
         }

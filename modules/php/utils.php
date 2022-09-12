@@ -131,11 +131,11 @@ trait UtilTrait {
     }
 
     function setupObjectives() {
-        $default = $this->getGameStateValue(OBJECTIVES) == '1';
+        $default = $this->getGameStateValue(OBJECTIVES_OPTION) == '1';
 
         $star1 = $default ? DEFAULT_STAR1 : bga_rand(0, 9);
         $EASY_OBJECTIVES = [1, 2, 3, 4, 7];
-        $star2 = $default ? DEFAULT_STAR2 : ($this->getGameStateValue(OBJECTIVES) == '3' ? bga_rand(0, 8) : $EASY_OBJECTIVES[bga_rand(0, 4)]);
+        $star2 = $default ? DEFAULT_STAR2 : ($this->getGameStateValue(OBJECTIVES_OPTION) == '3' ? bga_rand(0, 8) : $EASY_OBJECTIVES[bga_rand(0, 4)]);
         
         $this->setGameStateInitialValue(STAR1, $star1);
         $this->setGameStateInitialValue(STAR2, $star2);
@@ -543,10 +543,12 @@ trait UtilTrait {
 
         switch ($objective->power) {
             case POWER_GALAXY:
-                $playerScore->star2 += (2 * count($player->objects->galaxies));
+                $galaxies = array_merge($player->objects->galaxies, $player->roundObjects->galaxies);
+                $playerScore->star2 += (2 * count($galaxies));
                 break;
             case POWER_TWINKLING_STAR:
-                foreach ($player->objects->twinklingStars as $twinklingStarStr) {
+                $twinklingStars = array_merge($player->objects->twinklingStars, $player->roundObjects->twinklingStars);
+                foreach ($twinklingStars as $twinklingStarStr) {
                     $twinklingStar = $this->coordinateStrToCoordinate($twinklingStarStr);
                     $twinklingStarConstellations = $this->getConstellationsAroundCoordinates($validConstellations, $twinklingStar);
                     if (count($twinklingStarConstellations) == 2) {
@@ -555,7 +557,8 @@ trait UtilTrait {
                 }
                 break;
             case POWER_NOVA:
-                foreach ($player->objects->novas as $novaStr) {
+                $novas = array_merge($player->objects->novas, $player->roundObjects->novas);
+                foreach ($novas as $novaStr) {
                     $nova = $this->coordinateStrToCoordinate($novaStr);
 
                     for ($size = 9; $size <= 10; $size++) {
@@ -568,13 +571,13 @@ trait UtilTrait {
                 }
                 break;
             case POWER_LUMINOUS_AURA: 
-                foreach ($player->objects->luminousAuras as $luminousAura) {
-                    $playerScore->star2 += 2;
-                }
+                $luminousAuras = array_merge($player->objects->luminousAuras, $player->roundObjects->luminousAuras);
+                $playerScore->star2 += (2 * count($luminousAuras));
                 break;
             case POWER_CRESCENT_MOON:
+                $crescentMoons = array_merge($player->objects->crescentMoons, $player->roundObjects->crescentMoons);
                 $crescentMoonConstellations = [];
-                foreach ($player->objects->crescentMoons as $crescentMoonStr) {
+                foreach ($crescentMoons as $crescentMoonStr) {
                     $crescentMoon = $this->coordinateStrToCoordinate($crescentMoonStr);
                     $axesCoordinates = [];
                     for ($x = 0; $x <= 9; $x++) {
@@ -598,7 +601,8 @@ trait UtilTrait {
 
                 break;
             case POWER_BLACK_HOLE:
-                foreach ($player->objects->blackHoles as $blackHoleStr) {
+                $blackHoles = array_merge($player->objects->blackHoles, $player->roundObjects->blackHoles);
+                foreach ($blackHoles as $blackHoleStr) {
                     $blackHole = $this->coordinateStrToCoordinate($blackHoleStr);
                     for ($x = $blackHole[0]-1; $x <= $blackHole[0]+1; $x++) {
                         for ($y = $blackHole[1]-1; $y <= $blackHole[1]+1; $y++) {
@@ -620,14 +624,14 @@ trait UtilTrait {
     private function getPlayerScore(LatsPlayer $player) {
         $playerScore = new PlayerScore();
 
-        $lines = $player->getLines();
+        $lines = $player->getLines(true);
 
         $allConstellations = $this->getConstellations($lines);
         $validConstellations = $this->getValidConstellations($allConstellations);
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
-        $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets());
-        $this->calculateShootingStarsScore($playerScore, $player->getShootingStars());
+        $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets(true));
+        $this->calculateShootingStarsScore($playerScore, $player->getShootingStars(true));
         $this->calculateStar1Score($playerScore, $lines);
         $this->calculateStar2Score($playerScore, $player, $validConstellations, $allConstellations);
         
@@ -662,5 +666,19 @@ trait UtilTrait {
         $shapesFound = $this->findShape($allLines, $objective->lines, $ignoreLines);
 
         return $shapesFound;
+    }
+
+    function updateLiveScore(int $playerId) {
+        if (intval($this->getGameStateValue(SCORING_OPTION)) != 2) {
+            return;
+        }
+        
+        $player = $this->getPlayer($playerId);
+        $playerScore = $this->getPlayerScore($player);
+
+        self::notifyAllPlayers('liveScore', '', [
+            'playerId' => $playerId,
+            'playerScore' => $playerScore,
+        ]);
     }
 }

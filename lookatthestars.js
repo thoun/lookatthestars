@@ -729,9 +729,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setConstellationsScore = function (checkedConstellations, score) {
         for (var i = 3; i <= 8; i++) {
-            if (checkedConstellations.includes(i)) {
-                document.getElementById("player-table-".concat(this.playerId, "-constellation").concat(i)).innerHTML = '.';
-            }
+            document.getElementById("player-table-".concat(this.playerId, "-constellation").concat(i)).innerHTML = checkedConstellations.includes(i) ? '.' : '';
         }
         document.getElementById("player-table-".concat(this.playerId, "-constellations")).innerHTML = '' + score;
     };
@@ -1411,6 +1409,7 @@ var LookAtTheStars = /** @class */ (function () {
     LookAtTheStars.prototype.setupNotifications = function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
+        var liveScoring = this.gamedatas.liveScoring;
         var notifs = [
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
@@ -1427,12 +1426,13 @@ var LookAtTheStars = /** @class */ (function () {
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
+            ['liveScore', 1],
             ['score', 1],
-            ['scoreConstellations', SCORE_MS],
-            ['scorePlanets', SCORE_MS],
-            ['scoreShootingStars', SCORE_MS],
-            ['scoreStar1', SCORE_MS],
-            ['scoreStar2', SCORE_MS],
+            ['scoreConstellations', liveScoring ? 1 : SCORE_MS],
+            ['scorePlanets', liveScoring ? 1 : SCORE_MS],
+            ['scoreShootingStars', liveScoring ? 1 : SCORE_MS],
+            ['scoreStar1', liveScoring ? 1 : SCORE_MS],
+            ['scoreStar2', liveScoring ? 1 : SCORE_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1512,6 +1512,16 @@ var LookAtTheStars = /** @class */ (function () {
     };
     LookAtTheStars.prototype.notif_scoreStar2 = function (notif) {
         this.getPlayerTable(notif.args.playerId).setStar2Score(notif.args.score);
+    };
+    LookAtTheStars.prototype.notif_liveScore = function (notif) {
+        var playerTable = this.getPlayerTable(notif.args.playerId);
+        var playerScore = notif.args.playerScore;
+        playerTable.setConstellationsScore(playerScore.checkedConstellations, playerScore.constellations);
+        playerTable.setPlanetScore(playerScore.planets);
+        playerTable.setShootingStarsScore(playerScore.shootingStars);
+        playerTable.setStar1Score(playerScore.star1);
+        playerTable.setStar2Score(playerScore.star1);
+        playerTable.setFinalScore(playerScore.total);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

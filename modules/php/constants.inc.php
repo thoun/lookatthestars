@@ -38,7 +38,8 @@ define('STAR2', 11);
 /*
  * Game options
  */
-define('OBJECTIVES', 'OBJECTIVES');
+define('OBJECTIVES_OPTION', 'OBJECTIVES_OPTION');
+define('SCORING_OPTION', 'SCORING_OPTION');
 
 /*
  * Powers

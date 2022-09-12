@@ -73,6 +73,7 @@ interface LookAtTheStarsGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
+    liveScoring: boolean;
     cards: Card[];
     star1: number;
     star2: number;
@@ -145,6 +146,11 @@ interface NotifDayArgs {
 interface NotifScoreArgs {
     playerId: number;
     score: number;
+}
+
+interface NotifLiveScoreArgs {
+    playerId: number;
+    playerScore: PlayerScore;
 }
 
 interface NotifScoreConstellationsArgs extends NotifScoreArgs {

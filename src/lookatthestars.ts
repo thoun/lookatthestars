@@ -750,6 +750,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
     setupNotifications() {
         //log( 'notifications subscriptions setup' );
 
+        const liveScoring = this.gamedatas.liveScoring;
+
         const notifs = [
             ['discardShape', ANIMATION_MS],
             ['newShape', ANIMATION_MS],
@@ -766,12 +768,13 @@ class LookAtTheStars implements LookAtTheStarsGame {
             ['cancelPlacedLines', 1],
             ['cancelBonus', 1],
             ['day', 1],
+            ['liveScore', 1],
             ['score', 1],
-            ['scoreConstellations', SCORE_MS],
-            ['scorePlanets', SCORE_MS],
-            ['scoreShootingStars', SCORE_MS],
-            ['scoreStar1', SCORE_MS],
-            ['scoreStar2', SCORE_MS],
+            ['scoreConstellations', liveScoring ? 1 : SCORE_MS],
+            ['scorePlanets', liveScoring ? 1 : SCORE_MS],
+            ['scoreShootingStars', liveScoring ? 1 : SCORE_MS],
+            ['scoreStar1', liveScoring ? 1 : SCORE_MS],
+            ['scoreStar2', liveScoring ? 1 : SCORE_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -862,7 +865,18 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     notif_scoreStar2(notif: Notif<NotifScoreArgs>) {
         this.getPlayerTable(notif.args.playerId).setStar2Score(notif.args.score);
-    }    
+    } 
+    
+    notif_liveScore(notif: Notif<NotifLiveScoreArgs>) {
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        const playerScore = notif.args.playerScore;
+        playerTable.setConstellationsScore(playerScore.checkedConstellations, playerScore.constellations);
+        playerTable.setPlanetScore(playerScore.planets);
+        playerTable.setShootingStarsScore(playerScore.shootingStars);
+        playerTable.setStar1Score(playerScore.star1);
+        playerTable.setStar2Score(playerScore.star1);
+        playerTable.setFinalScore(playerScore.total);
+    }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

@@ -46,6 +46,7 @@ trait ActionTrait {
             'lines' => $newLines,
             'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) > 0) {
@@ -98,6 +99,7 @@ trait ActionTrait {
             'lines' => $newLines,
             'head' => $headStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
@@ -134,6 +136,7 @@ trait ActionTrait {
             'currentConstellations' => $this->getConstellations($player->getLines(true)),
             'bonus' => true,
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);;
         if (count($shapesFound) == 0) {
@@ -169,6 +172,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -206,6 +210,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         if (count($roundObjects->stars) % 2 == 1) {
             $this->gamestate->nextPrivateState($playerId, 'next');
@@ -245,6 +250,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -280,6 +286,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -315,6 +322,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -350,6 +358,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -385,6 +394,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -420,6 +430,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'coordinates' => $coordinatesStr
         ]);
+        $this->updateLiveScore($playerId);
 
         $shapesFound = $this->getPowerCurrentShape($player);
         if (count($shapesFound) == 0) {
@@ -439,6 +450,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
+        $this->updateLiveScore($playerId);
 
         $this->gamestate->setPlayersMultiactive([$playerId], 'next', false);
         $this->gamestate->initializePrivateState($playerId);
@@ -456,6 +468,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'currentConstellations' => $this->getConstellations($player->getLines(true)),
         ]);
+        $this->updateLiveScore($playerId);
 
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
         $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);

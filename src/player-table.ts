@@ -658,9 +658,7 @@ class PlayerTable {
 
     public setConstellationsScore(checkedConstellations: number[], score: number) {
         for (let i = 3; i <= 8; i++) {
-            if (checkedConstellations.includes(i)) {
-                document.getElementById(`player-table-${this.playerId}-constellation${i}`).innerHTML = '.';
-            }
+            document.getElementById(`player-table-${this.playerId}-constellation${i}`).innerHTML = checkedConstellations.includes(i) ? '.' : '';
         }
 
         document.getElementById(`player-table-${this.playerId}-constellations`).innerHTML = ''+score;
