@@ -82,6 +82,11 @@ trait DebugUtilTrait {
         $this->DbQuery("UPDATE player SET `player_lines` = '".json_encode($linesStr)."' WHERE `player_id` = $playerId");
     }
 
+    public function debugSetLastRound() {
+        $currentCard = $this->getCurrentCard(true);
+        $this->DbQuery("UPDATE shape SET `card_location` = 'discard' WHERE `card_id` <> $currentCard->id");
+    }
+
     public function debugReplacePlayersIds() {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;

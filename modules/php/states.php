@@ -166,8 +166,11 @@ trait StateTrait {
 
     function stEndScore() {
         $players = $this->getPlayers();
-        $objective = $this->STAR1[intval($this->getGameStateValue(STAR1))];
+        $star1 = intval($this->getGameStateValue(STAR1));
+        $star2 = intval($this->getGameStateValue(STAR2));
+        $objective = $this->STAR1[$star1];
 
+        $tableTotalScore = 0;
         foreach ($players as $player) {
             $playerScore = $this->getPlayerScore($player);
 
@@ -180,7 +183,12 @@ trait StateTrait {
             $playerScore->calculateTotal();
 
             $this->computeStats($player, $playerScore, $objective->points);
+            $tableTotalScore += $playerScore->total;
         }
+        
+        $this->setStat($star1 + 1, 'star1');
+        $this->setStat($star2 + 1, 'star2');
+        $this->setStat((float)$tableTotalScore / count($players), 'avgScore');
 
         $this->gamestate->nextState('endGame');
     }

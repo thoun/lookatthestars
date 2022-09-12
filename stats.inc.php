@@ -71,6 +71,21 @@ $stats_type = [
             "name" => totranslate("Shootings stars in cards"),
             "type" => "int"
         ], 
+        "star1" => [
+            "id" => 11,
+            "name" => totranslate("5-star objective"),
+            "type" => "int"
+        ], 
+        "star2" => [
+            "id" => 12,
+            "name" => totranslate("7-star objective"),
+            "type" => "int"
+        ], 
+        "avgScore" => [
+            "id" => 13,
+            "name" => totranslate("Average player score"),
+            "type" => "float"
+        ], 
     ],
     
     // Statistics existing for each player
