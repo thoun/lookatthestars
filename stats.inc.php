@@ -73,12 +73,12 @@ $stats_type = [
         ], 
         "star1" => [
             "id" => 11,
-            "name" => totranslate("5-star objective"),
+            "name" => totranslate("Point Bonus card"),
             "type" => "int"
         ], 
         "star2" => [
             "id" => 12,
-            "name" => totranslate("7-star objective"),
+            "name" => totranslate("Power Bonus card"),
             "type" => "int"
         ], 
         "avgScore" => [
@@ -142,17 +142,17 @@ $stats_type = [
         ],
         "star1count" => [
             "id" => 40,
-            "name" => totranslate("5-star objective scored"),
+            "name" => totranslate("Point Bonus card scored"),
             "type" => "int"
         ],
         "star1points" => [
             "id" => 41,
-            "name" => totranslate("5-star objective points"),
+            "name" => totranslate("Point Bonus card points"),
             "type" => "int"
         ],
         "star2points" => [
             "id" => 43,
-            "name" => totranslate("7-star objective points"),
+            "name" => totranslate("Power Bonus card points"),
             "type" => "int"
         ],
         "placed".POWER_PLANET => [

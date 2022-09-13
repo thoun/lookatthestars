@@ -26,22 +26,22 @@
 
 $game_options = [    
     100 => [
-        'name' => totranslate('Objectives'),
+        'name' => totranslate('Bonus cards'),
         'values' => [
             1 => [
                 'name' => totranslate('Default'),
-                'description' => totranslate('Recommended objectives for begginers'),
-                'tmdisplay' => totranslate('Beginner objectives'),
+                'description' => totranslate('Recommended Bonus cards for begginers'),
+                'tmdisplay' => totranslate('Beginner Bonus cards'),
             ],
             2 => [
                 'name' => totranslate('Random'),
-                'description' => totranslate('Random objectives'),
-                'tmdisplay' => totranslate('Random objectives'),
+                'description' => totranslate('Random Bonus cards'),
+                'tmdisplay' => totranslate('Random Bonus cards'),
             ],
             3 => [
                 'name' => totranslate('Random (experienced)'),
-                'description' => totranslate('Random objectives (include experienced objectives)'),
-                'tmdisplay' => totranslate('Random objectives (include experienced objectives)'),
+                'description' => totranslate('Random Bonus cards (include experienced Bonus cards)'),
+                'tmdisplay' => totranslate('Random Bonus cards (include experienced Bonus cards)'),
             ],
         ],
         'default' => 1,
