@@ -73,15 +73,6 @@ class PlayerTable {
             this.setFinalScore(player.playerScore.total);
         }
 
-        //refresh hack
-        if (!isSafari()) {
-            const svg = document.getElementById(`lats-svg-${this.playerId}`);
-            svg.setAttribute('filter',"");
-            setTimeout(()=>{
-                    svg.setAttribute('filter',"url(#PencilTexture)");
-            },800);
-        }
-
         /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>
             <strong>${infos.title}</strong><br><br>
@@ -224,15 +215,7 @@ class PlayerTable {
     private makeSVG() {
       return `
         <svg viewBox="0 0 546 612" preserveAspectRatio="none"> 
-            <defs>
-                <filter x="-2%" y="-2%" width="104%" height="104%" filterUnits="objectBoundingBox" id="PencilTexture">
-                <feTurbulence type="fractalNoise" baseFrequency="4.2" numOctaves="8" result="noise">
-                </feTurbulence>
-                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="2" in="SourceGraphic" result="newSource">
-                </feDisplacementMap>
-                </filter>
-            </defs>
-            <g id="lats-svg-${this.playerId}" ${isSafari() ? '' : 'filter="url(#PencilTexture)"'}>
+            <g id="lats-svg-${this.playerId}">
                 <line x1="0" y1="0" x2="0" y2="0"  stroke="red" stroke-width="1" stroke-opacity="1"></line>
             </g>
         </svg>`;

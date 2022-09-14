@@ -233,14 +233,6 @@ var PlayerTable = /** @class */ (function () {
             this.setStar2Score(player.playerScore.star2);
             this.setFinalScore(player.playerScore.total);
         }
-        //refresh hack
-        if (!isSafari()) {
-            var svg_1 = document.getElementById("lats-svg-".concat(this.playerId));
-            svg_1.setAttribute('filter', "");
-            setTimeout(function () {
-                svg_1.setAttribute('filter', "url(#PencilTexture)");
-            }, 800);
-        }
         /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>
             <strong>${infos.title}</strong><br><br>
@@ -375,7 +367,7 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-day")).dataset.level = '' + day;
     };
     PlayerTable.prototype.makeSVG = function () {
-        return "\n        <svg viewBox=\"0 0 546 612\" preserveAspectRatio=\"none\"> \n            <defs>\n                <filter x=\"-2%\" y=\"-2%\" width=\"104%\" height=\"104%\" filterUnits=\"objectBoundingBox\" id=\"PencilTexture\">\n                <feTurbulence type=\"fractalNoise\" baseFrequency=\"4.2\" numOctaves=\"8\" result=\"noise\">\n                </feTurbulence>\n                <feDisplacementMap xChannelSelector=\"R\" yChannelSelector=\"G\" scale=\"2\" in=\"SourceGraphic\" result=\"newSource\">\n                </feDisplacementMap>\n                </filter>\n            </defs>\n            <g id=\"lats-svg-".concat(this.playerId, "\" ").concat(isSafari() ? '' : 'filter="url(#PencilTexture)"', ">\n                <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"0\"  stroke=\"red\" stroke-width=\"1\" stroke-opacity=\"1\"></line>\n            </g>\n        </svg>");
+        return "\n        <svg viewBox=\"0 0 546 612\" preserveAspectRatio=\"none\"> \n            <g id=\"lats-svg-".concat(this.playerId, "\">\n                <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"0\"  stroke=\"red\" stroke-width=\"1\" stroke-opacity=\"1\"></line>\n            </g>\n        </svg>");
     };
     PlayerTable.prototype.placeLines = function (lines, additionalClass) {
         var _this = this;

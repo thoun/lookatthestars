@@ -325,15 +325,6 @@
   font-weight: normal;
   font-style: normal;
 }
-/*#player-tables {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  .player-table {
-    margin: 20px;
-  }
-}*/
 .player-table {
   width: 546px;
   height: 800px;
