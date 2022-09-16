@@ -509,8 +509,8 @@ trait UtilTrait {
         $shapesFound = [];
         $lines = array_values(array_filter($allLines, fn($line) => !$this->lineInArray($line, $ignoreLines)));
 
-        for ($x = -1; $x <= 7; $x++) {
-            for ($y = -1; $y <= 8; $y++) {
+        for ($x = -2; $x <= 8; $x++) {
+            for ($y = -2; $y <= 9; $y++) {
                 for ($rotation = 0; $rotation <= 3; $rotation++) {
                     $shiftedLines = $this->shiftLines($shapeLines, $x, $y, $rotation);
 
