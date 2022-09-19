@@ -180,6 +180,10 @@ $invalidColor: #FF000099;
       font-family: 'blzeeregular';
       font-size: 24pt;
       pointer-events: none;
+
+      &.warning {
+        color: orange;
+      }
     }
   }
 

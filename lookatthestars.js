@@ -256,6 +256,9 @@ var PlayerTable = /** @class */ (function () {
             newCounter.setAttribute('id', counterId);
             newCounter.setAttribute('style', "right: ".concat(c1.x, "px; top: ").concat(c1.y, "px;"));
             newCounter.classList.add('constellation-counter');
+            if (constellation.lines.length > 8) {
+                newCounter.classList.add('warning');
+            }
             newCounter.innerText = '' + constellation.lines.length;
             $("player-table-".concat(_this.playerId, "-main")).append(newCounter);
         });

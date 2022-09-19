@@ -100,6 +100,9 @@ class PlayerTable {
             newCounter.setAttribute('id', counterId);
             newCounter.setAttribute('style', `right: ${c1.x}px; top: ${c1.y}px;`);
             newCounter.classList.add('constellation-counter');
+            if (constellation.lines.length > 8) {
+                newCounter.classList.add('warning');
+            }
             newCounter.innerText = '' + constellation.lines.length;
 
             $(`player-table-${this.playerId}-main`).append(newCounter);

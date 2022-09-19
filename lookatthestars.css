@@ -495,6 +495,9 @@
   font-size: 24pt;
   pointer-events: none;
 }
+.player-table .main .constellation-counter.warning {
+  color: orange;
+}
 .player-table .name-background {
   position: absolute;
   bottom: 0;
