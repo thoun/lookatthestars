@@ -11,6 +11,7 @@ const SCORE_MS = 1500;
 const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
 const LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
+const LOCAL_STORAGE_JUMP_KEY = 'LookAtTheStars-jump-to-folded';
 
 function formatTextIcons(rawText: string) {
     if (!rawText) {
@@ -39,6 +40,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         if (zoomStr) {
             this.zoom = Number(zoomStr);
         }
+        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
     }
     
     /*
@@ -462,7 +464,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private jumpToggle(): void {
-        document.getElementById(`jump-controls`).classList.toggle('folded');
+        const jumpControls = document.getElementById('jump-controls');
+        jumpControls.classList.toggle('folded');
+        localStorage.setItem(LOCAL_STORAGE_JUMP_KEY, jumpControls.classList.contains('folded').toString());
     }
     
     private jumpToPlayer(playerId: number): void {

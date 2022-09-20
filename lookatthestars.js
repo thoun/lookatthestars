@@ -799,6 +799,7 @@ var SCORE_MS = 1500;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
 var LOCAL_STORAGE_ZOOM_KEY = 'LookAtTheStars-zoom';
+var LOCAL_STORAGE_JUMP_KEY = 'LookAtTheStars-jump-to-folded';
 function formatTextIcons(rawText) {
     if (!rawText) {
         return '';
@@ -819,6 +820,7 @@ var LookAtTheStars = /** @class */ (function () {
         if (zoomStr) {
             this.zoom = Number(zoomStr);
         }
+        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
     }
     /*
         setup:
@@ -1187,7 +1189,9 @@ var LookAtTheStars = /** @class */ (function () {
         jumpDiv.style.marginTop = "-".concat(Math.round(jumpDiv.getBoundingClientRect().height / 2), "px");
     };
     LookAtTheStars.prototype.jumpToggle = function () {
-        document.getElementById("jump-controls").classList.toggle('folded');
+        var jumpControls = document.getElementById('jump-controls');
+        jumpControls.classList.toggle('folded');
+        localStorage.setItem(LOCAL_STORAGE_JUMP_KEY, jumpControls.classList.contains('folded').toString());
     };
     LookAtTheStars.prototype.jumpToPlayer = function (playerId) {
         var elementId = playerId === 0 ? "cards" : "player-table-".concat(playerId);
