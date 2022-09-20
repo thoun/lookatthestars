@@ -212,6 +212,22 @@ $invalidColor: #FF000099;
     }
   }
 
+  .description {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    user-select: none;
+    background: white;
+    color: black;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+  }
+
   .score {
     font-family: 'blzeeregular';
     font-size: 28pt;
@@ -267,6 +283,36 @@ $invalidColor: #FF000099;
       width: 90px;
       height: 90px;
       font-size: 48pt;
+    }
+  }
+
+  .tooltip {
+    position: absolute;
+    top: 630px;
+    width: 64px;
+    height: 129px;
+
+    &.constellations {
+      left: 21px;
+    }
+    &.planets {
+      left: 103px;
+    }
+    &.shooting-stars {
+      left: 183px;
+    }
+    &.star1 {
+      left: 265px;
+    }
+    &.star2 {
+      left: 345px;
+    }
+
+    &.total {
+      left: 434px;
+      top: 652px;
+      width: 90px;
+      height: 90px;
     }
   }
 }

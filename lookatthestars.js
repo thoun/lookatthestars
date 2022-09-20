@@ -210,11 +210,11 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(this.game.day, "\">\n                </div>\n            </div>\n            <div class=\"name-background\" style=\"background: #").concat(player.color, ";\"></div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n\n            <div class=\"checkedConstellations\">");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" data-type=\"").concat(player.sheetType, "\">\n            <div id=\"player-table-").concat(this.playerId, "-main\" class=\"main\">\n                <div id=\"player-table-").concat(this.playerId, "-svg\" class=\"svg-wrapper\">").concat(this.makeSVG(), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-day\" class=\"day\" data-level=\"").concat(this.game.day, "\">\n                </div>\n            </div>\n            <div class=\"name-background\" style=\"background: #").concat(player.color, ";\"></div>\n            <div class=\"name\" style=\"color: #").concat(player.color, ";\">\n                <span>").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-description\" class=\"description\">?</div>\n\n            <div class=\"checkedConstellations\">");
         for (var i = 3; i <= 8; i++) {
             html += "<div id=\"player-table-".concat(this.playerId, "-constellation").concat(i, "\" class=\"constellation score\" data-number=\"").concat(i, "\"></div>");
         }
-        html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n        </div>\n        ");
+        html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n            \n            <div id=\"player-table-").concat(this.playerId, "-constellations-tooltip\" class=\"constellations tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets-tooltip\" class=\"planets tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars-tooltip\" class=\"shooting-stars tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1-tooltip\" class=\"star1 tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2-tooltip\" class=\"star2 tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total-tooltip\" class=\"total tooltip\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         this.placeLines(player.lines);
         this.placeInitialObjects(player.objects);
@@ -233,12 +233,17 @@ var PlayerTable = /** @class */ (function () {
             this.setStar2Score(player.playerScore.star2);
             this.setFinalScore(player.playerScore.total);
         }
-        /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
-        html = `<div>
-            <strong>${infos.title}</strong><br><br>
-            ${infos.description}
-        </div>`;
-        this.game.setTooltip(`player-table-${this.playerId}-main`, html);*/
+        var infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
+        html = "<div>\n            <strong>".concat(infos.title, "</strong><br><br>\n            ").concat(infos.description, "\n        </div>");
+        this.game.setTooltip("player-table-".concat(this.playerId, "-description"), html);
+        this.game.setTooltip("player-table-".concat(this.playerId, "-constellations-tooltip"), "<strong>".concat(_('Constellations points'), "</strong><br><br>\n        ").concat(_('A constellation is a set of lines that are connected (either by sharing the same star or intersecting). A constellation must contain a minimum of 3 lines and a maximum of 8. A single line, 2 connected lines, or a set of 9 or more lines are not constellations. Shooting stars are not constellations.'), "<br><br>\n        ").concat(_('For each constellation, the player earns a number of victory points equal to the number of lines in that constellation. However, if several constellations contain the same number of lines, only 1 of them earns victory points. The player marks on their board the constellations they have drawn and adds up the points. In this way, it is possible to earn up to 33 points if all 6 possible constellations are drawn (of 3, 4, 5, 6, 7, and 8 lines).')));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-planets-tooltip"), "<strong>".concat(_('Planets points'), "</strong><br><br>\n        ").concat(_('Each planet awards a number of points equal to the number of constellations adjacent to it, even if these constellations have an identical number of lines.')));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-shooting-stars-tooltip"), "<strong>".concat(_('Shooting stars points'), "</strong><br><br>\n        ").concat(_('Each shooting star awards 1 point for each line in it.')));
+        var star1title = formatTextIcons(_('${bonus} points').replace('${bonus}', '[star5]'));
+        var star2title = formatTextIcons(_('${bonus} points').replace('${bonus}', '[star7]'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-star1-tooltip"), "<strong>".concat(star1title, "</strong><br><br>\n        ").concat(_('Some bonus cards earn you victory points (see card description)')));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-star2-tooltip"), "<strong>".concat(star2title, "</strong><br><br>\n        ").concat(_('Some bonus cards earn you victory points (see card description)')));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-total-tooltip"), "<strong>".concat(_('Total points'), "</strong><br><br>\n        ").concat(_('Constellations points'), " + ").concat(_('Planets points'), " + ").concat(_('Shooting stars points'), " + ").concat(star1title, " + ").concat(star2title));
     }
     PlayerTable.prototype.setConstellationsCounters = function (constellations) {
         var _this = this;
@@ -1515,7 +1520,7 @@ var LookAtTheStars = /** @class */ (function () {
         playerTable.setPlanetScore(playerScore.planets);
         playerTable.setShootingStarsScore(playerScore.shootingStars);
         playerTable.setStar1Score(playerScore.star1);
-        playerTable.setStar2Score(playerScore.star1);
+        playerTable.setStar2Score(playerScore.star2);
         playerTable.setFinalScore(playerScore.total);
     };
     /* This enable to inject translatable styled things to logs or action bar */

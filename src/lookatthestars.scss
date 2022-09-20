@@ -175,3 +175,10 @@ html, .mode_3d #game_play_area_background {
       left: calc(50% - 12px);
     }
 }
+
+.dijitTooltipContents {
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -520,6 +520,21 @@
   background: white;
   box-shadow: 0 0 10px 10px white;
 }
+.player-table .description {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 32px;
+  height: 32px;
+  user-select: none;
+  background: white;
+  color: black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+}
 .player-table .score {
   font-family: "blzeeregular";
   font-size: 28pt;
@@ -583,6 +598,33 @@
   width: 90px;
   height: 90px;
   font-size: 48pt;
+}
+.player-table .tooltip {
+  position: absolute;
+  top: 630px;
+  width: 64px;
+  height: 129px;
+}
+.player-table .tooltip.constellations {
+  left: 21px;
+}
+.player-table .tooltip.planets {
+  left: 103px;
+}
+.player-table .tooltip.shooting-stars {
+  left: 183px;
+}
+.player-table .tooltip.star1 {
+  left: 265px;
+}
+.player-table .tooltip.star2 {
+  left: 345px;
+}
+.player-table .tooltip.total {
+  left: 434px;
+  top: 652px;
+  width: 90px;
+  height: 90px;
 }
 
 @keyframes unvalidated-animation {
@@ -840,4 +882,9 @@ html, .mode_3d #game_play_area_background {
   position: absolute;
   bottom: -12px;
   left: calc(50% - 12px);
+}
+
+.dijitTooltipContents .icon {
+  width: 24px;
+  height: 24px;
 }

@@ -36,6 +36,7 @@ class PlayerTable {
             <div class="name" style="color: #${player.color};">
                 <span>${player.name}</span>
             </div>
+            <div id="player-table-${this.playerId}-description" class="description">?</div>
 
             <div class="checkedConstellations">`;
             for (let i = 3; i <= 8; i++) {
@@ -48,6 +49,13 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-star1" class="star1 score"></div>
             <div id="player-table-${this.playerId}-star2" class="star2 score"></div>
             <div id="player-table-${this.playerId}-total" class="total score"></div>
+            
+            <div id="player-table-${this.playerId}-constellations-tooltip" class="constellations tooltip"></div>
+            <div id="player-table-${this.playerId}-planets-tooltip" class="planets tooltip"></div>
+            <div id="player-table-${this.playerId}-shooting-stars-tooltip" class="shooting-stars tooltip"></div>
+            <div id="player-table-${this.playerId}-star1-tooltip" class="star1 tooltip"></div>
+            <div id="player-table-${this.playerId}-star2-tooltip" class="star2 tooltip"></div>
+            <div id="player-table-${this.playerId}-total-tooltip" class="total tooltip"></div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -73,12 +81,29 @@ class PlayerTable {
             this.setFinalScore(player.playerScore.total);
         }
 
-        /*const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
+        const infos = this.game.getSheetTooltipInfos(Number(player.sheetType));
         html = `<div>
             <strong>${infos.title}</strong><br><br>
             ${infos.description}
         </div>`;
-        this.game.setTooltip(`player-table-${this.playerId}-main`, html);*/
+        this.game.setTooltip(`player-table-${this.playerId}-description`, html);
+
+        
+        this.game.setTooltip(`player-table-${this.playerId}-constellations-tooltip`, `<strong>${_('Constellations points')}</strong><br><br>
+        ${_('A constellation is a set of lines that are connected (either by sharing the same star or intersecting). A constellation must contain a minimum of 3 lines and a maximum of 8. A single line, 2 connected lines, or a set of 9 or more lines are not constellations. Shooting stars are not constellations.')}<br><br>
+        ${_('For each constellation, the player earns a number of victory points equal to the number of lines in that constellation. However, if several constellations contain the same number of lines, only 1 of them earns victory points. The player marks on their board the constellations they have drawn and adds up the points. In this way, it is possible to earn up to 33 points if all 6 possible constellations are drawn (of 3, 4, 5, 6, 7, and 8 lines).')}`);
+        this.game.setTooltip(`player-table-${this.playerId}-planets-tooltip`, `<strong>${_('Planets points')}</strong><br><br>
+        ${_('Each planet awards a number of points equal to the number of constellations adjacent to it, even if these constellations have an identical number of lines.')}`);
+        this.game.setTooltip(`player-table-${this.playerId}-shooting-stars-tooltip`, `<strong>${_('Shooting stars points')}</strong><br><br>
+        ${_('Each shooting star awards 1 point for each line in it.')}`);
+        const star1title = formatTextIcons(_('${bonus} points').replace('${bonus}', '[star5]'));
+        const star2title = formatTextIcons(_('${bonus} points').replace('${bonus}', '[star7]'));
+        this.game.setTooltip(`player-table-${this.playerId}-star1-tooltip`, `<strong>${star1title}</strong><br><br>
+        ${_('Some bonus cards earn you victory points (see card description)')}`);
+        this.game.setTooltip(`player-table-${this.playerId}-star2-tooltip`, `<strong>${star2title}</strong><br><br>
+        ${_('Some bonus cards earn you victory points (see card description)')}`);
+        this.game.setTooltip(`player-table-${this.playerId}-total-tooltip`, `<strong>${_('Total points')}</strong><br><br>
+        ${_('Constellations points')} + ${_('Planets points')} + ${_('Shooting stars points')} + ${star1title} + ${star2title}`);
     }
 
     public setConstellationsCounters(constellations: Constellation[]) {

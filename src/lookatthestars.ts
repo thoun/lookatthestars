@@ -874,7 +874,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         playerTable.setPlanetScore(playerScore.planets);
         playerTable.setShootingStarsScore(playerScore.shootingStars);
         playerTable.setStar1Score(playerScore.star1);
-        playerTable.setStar2Score(playerScore.star1);
+        playerTable.setStar2Score(playerScore.star2);
         playerTable.setFinalScore(playerScore.total);
     }
 
