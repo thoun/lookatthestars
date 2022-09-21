@@ -131,13 +131,39 @@ trait UtilTrait {
     }
 
     function setupObjectives() {
-        $default = $this->getGameStateValue(OBJECTIVES_OPTION) == '1';
+        $star1option = intval($this->getGameStateValue(POINT_BONUS_CARD_OPTION));
+        $star2option = intval($this->getGameStateValue(POWER_BONUS_CARD_OPTION));
 
-        $star1 = $default ? DEFAULT_STAR1 : bga_rand(0, 9);
-        $EASY_OBJECTIVES = [1, 2, 3, 4, 7];
-        $star2 = $default ? DEFAULT_STAR2 : ($this->getGameStateValue(OBJECTIVES_OPTION) == '3' ? bga_rand(0, 8) : $EASY_OBJECTIVES[bga_rand(0, 4)]);
-        
+        $star1 = DEFAULT_STAR1;
+        if ($star1option > 2) {
+            $star1 = $star1option - 3;
+        } else if ($star1option == 2) {
+            $star1 = bga_rand(0, 9);
+        }
+
         $this->setGameStateInitialValue(STAR1, $star1);
+
+        $star2 = DEFAULT_STAR2;
+        if ($star2option > 3) {
+            $POWERS_MAPPING = [
+                1,
+                3,
+                2,
+                4,
+                7,
+                6,
+                0,
+                8,
+                5,
+            ];
+            $star2 = $POWERS_MAPPING[$star2option - 4];
+        } else if ($star2option == 3) {
+            $star2 = bga_rand(0, 8);
+        } else if ($star2option == 2) {
+            $EASY_OBJECTIVES = [1, 2, 3, 4, 7];
+            $star2 = $EASY_OBJECTIVES[bga_rand(0, 4)];
+        }
+        
         $this->setGameStateInitialValue(STAR2, $star2);
     }
 

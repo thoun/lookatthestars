@@ -46,7 +46,8 @@ class LookAtTheStars extends Table {
             STAR1 => STAR1,
             STAR2 => STAR2,
 
-            OBJECTIVES_OPTION => 100,
+            POINT_BONUS_CARD_OPTION => 100,
+            POWER_BONUS_CARD_OPTION => 101,
             SCORING_OPTION => 102,
         ]); 
 

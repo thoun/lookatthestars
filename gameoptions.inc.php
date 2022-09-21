@@ -24,26 +24,70 @@
  *
  */
 
+$begginerRecommendedOption = [
+    'name' => totranslate('Default'),
+    'description' => totranslate('Recommended Bonus card for beginners'),
+];
+
+$randomOption = [
+    'name' => totranslate('Random'),
+    'description' => totranslate('Random Bonus cards'),
+];
+
+$randomOptionExperienced = [
+    'name' => totranslate('Random (experienced)'),
+    'description' => totranslate('Random Bonus cards (include experienced Bonus cards)'),
+];
+
+$pointBonusCardValues = [
+    1 => $begginerRecommendedOption + [ 'tmdisplay' => totranslate('Beginner Point Bonus card') ],
+    2 => $randomOption + [ 'tmdisplay' => totranslate('Random Point Bonus card') ],
+];
+
+for ($i = 0; $i <= 9; $i++) {
+    $pointBonusCardValues[$i + 3] = [
+        'name' => totranslate('Point Bonus card') . ' ' . ($i + 1),
+        'description' => totranslate('Point Bonus card') . ' ' . ($i + 1),
+        'tmdisplay' => totranslate('Point Bonus card') . ' ' . ($i + 1),
+    ];
+}
+
+$powerBonusCardValues = [
+    1 => $begginerRecommendedOption + [ 'tmdisplay' => totranslate('Beginner Power Bonus card') ],
+    2 => $randomOption + [ 'tmdisplay' => totranslate('Random Power Bonus card') ],
+    3 => $randomOptionExperienced + [ 'tmdisplay' => totranslate('Random Power Bonus card (include experienced Bonus cards)') ],
+];
+
+$POWERS = [
+    totranslate('Planet'),
+    totranslate('Line'),
+    totranslate('New stars'),
+    totranslate('Galaxy'),
+    totranslate('Twinkling star'),
+    totranslate('Nova (experienced)'),
+    totranslate('Luminous aura (experienced)'),
+    totranslate('Crescent moon (experienced)'),
+    totranslate('Black hole (experienced)'),
+];
+
+foreach ($POWERS as $i => $POWER) {
+    $powerBonusCardValues[$i + 4] = [
+        'name' => $POWER,
+        'description' => $POWER,
+        'tmdisplay' => $POWER,
+    ];
+}
+
 $game_options = [    
     100 => [
-        'name' => totranslate('Bonus cards'),
-        'values' => [
-            1 => [
-                'name' => totranslate('Default'),
-                'description' => totranslate('Recommended Bonus cards for begginers'),
-                'tmdisplay' => totranslate('Beginner Bonus cards'),
-            ],
-            2 => [
-                'name' => totranslate('Random'),
-                'description' => totranslate('Random Bonus cards'),
-                'tmdisplay' => totranslate('Random Bonus cards'),
-            ],
-            3 => [
-                'name' => totranslate('Random (experienced)'),
-                'description' => totranslate('Random Bonus cards (include experienced Bonus cards)'),
-                'tmdisplay' => totranslate('Random Bonus cards (include experienced Bonus cards)'),
-            ],
-        ],
+        'name' => totranslate('Point Bonus card'),
+        'values' => $pointBonusCardValues,
+        'default' => 1,
+    ], 
+
+    101 => [
+        'name' => totranslate('Power Bonus card'),
+        'values' => $powerBonusCardValues,
         'default' => 1,
     ], 
 
