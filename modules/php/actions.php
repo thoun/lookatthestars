@@ -500,5 +500,6 @@ trait ActionTrait {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
+        self::giveExtraTime($playerId);
     }
 }
