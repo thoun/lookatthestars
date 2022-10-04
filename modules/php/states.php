@@ -43,7 +43,7 @@ trait StateTrait {
             $player->objects->shapesSkippedForPower = array_merge($player->objects->shapesSkippedForPower, $player->roundObjects->shapesSkippedForPower);
             $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($player->objects)."' WHERE `player_id` = $playerId");
 
-            $this->incStat(1, count($player->roundLines) > 0 ? 'playedCards' : 'skippedCards', $playerId);
+            $this->incStat(1, count($player->roundLines) > 0 || count($player->roundObjects->shootingStars) > 0 ? 'playedCards' : 'skippedCards', $playerId);
             $this->incStat(count($player->roundLines), 'placedLines');
             $this->incStat(count($player->roundLines), 'placedLines', $playerId);
             if (count($player->roundObjects->shapesUsedForPower) > 0) {

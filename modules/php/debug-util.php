@@ -87,6 +87,10 @@ trait DebugUtilTrait {
         $this->DbQuery("UPDATE shape SET `card_location` = 'discard' WHERE `card_id` <> $currentCard->id");
     }
 
+    public function debugSetOnlyShootingStars() {
+        $this->DbQuery("UPDATE shape SET `card_location` = 'discard' WHERE `card_type` <> 1");
+    }
+
     public function debugReplacePlayersIds() {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;
