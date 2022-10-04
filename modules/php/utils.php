@@ -583,16 +583,14 @@ trait UtilTrait {
                 }
                 break;
             case POWER_NOVA:
-                $novas = array_merge($player->objects->novas, $player->roundObjects->novas);
-                foreach ($novas as $novaStr) {
-                    $nova = $this->coordinateStrToCoordinate($novaStr);
+                $novasStr = array_merge($player->objects->novas, $player->roundObjects->novas);
+                $novas = array_map(fn($novaStr) => $this->coordinateStrToCoordinate($novaStr), $novasStr);
 
-                    for ($size = 9; $size <= 10; $size++) {
-                        if ($this->array_some($allConstellations, fn($constellation) => $constellation->getSize() == $size && 
-                            $this->array_some($constellation->lines, fn($line) => $this->coordinatesInArray($nova, $line))
-                        )) {
-                            $playerScore->star2 += $size;
-                        }
+                for ($size = 9; $size <= 10; $size++) {
+                    if ($this->array_some($allConstellations, fn($constellation) => $constellation->getSize() == $size && 
+                        $this->array_some($constellation->lines, fn($line) => $this->array_some($novas, fn($nova) => $this->coordinatesInArray($nova, $line)))
+                    )) {
+                        $playerScore->star2 += $size;
                     }
                 }
                 break;
