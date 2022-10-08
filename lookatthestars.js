@@ -1236,7 +1236,7 @@ var LookAtTheStars = /** @class */ (function () {
                 description = _(" \u2726 <strong>Kalaparusha (or Prajapati)</strong> was transformed into a deer for being cruel to his daughter. The Belt of Orion represents the arrow that pierced him. \u2726 The couple <strong>Soma and Vishnu</strong>, with the lyre and the club of knowledge, are associated with the duos sun/moon and day/night.");
                 break;
             case 6:
-                title = _("INUITS");
+                title = _("INUIT");
                 description = _(" \u2726 In Alaska, the Pleiades represent a red fox. Its Inuit name is <strong>Kaguyagat</strong>. \u2726 The Big Dipper is known as <strong>Tukturjuit</strong>, the caribou.");
                 break;
             case 7:
