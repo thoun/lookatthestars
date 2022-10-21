@@ -450,8 +450,16 @@ trait UtilTrait {
         return $result;
     }
 
-    function getValidConstellations(array $constellations) {
-        return array_values(array_filter($constellations, fn($constellation) => $constellation->getSize() >= 3 && $constellation->getSize() <= 8));
+    function getValidConstellations(array $constellations, $novasStr) {
+        $novas = array_map(fn($novaStr) => $this->coordinateStrToCoordinate($novaStr), $novasStr);
+
+
+        return array_values(array_filter($constellations, fn($constellation) => 
+            $constellation->getSize() >= 3 && 
+            ($constellation->getSize() <= 8 || 
+            ($constellation->getSize() <= 10 && $this->array_some($constellation->lines, fn($line) => $this->array_some($novas, fn($nova) => $this->coordinatesInArray($nova, $line)))) 
+            )
+        ));
     }
 
     function getConstellations(array $lines) {
@@ -651,7 +659,7 @@ trait UtilTrait {
         $lines = $player->getLines(true);
 
         $allConstellations = $this->getConstellations($lines);
-        $validConstellations = $this->getValidConstellations($allConstellations);
+        $validConstellations = $this->getValidConstellations($allConstellations, array_merge($player->objects->novas, $player->roundObjects->novas));
 
         $this->calculateConstellationsScore($playerScore, $validConstellations);
         $this->calculatePlanetsScore($playerScore, $validConstellations, $player->getPlanets(true));

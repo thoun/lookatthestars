@@ -11,6 +11,26 @@ trait DebugUtilTrait {
             return;
         } 
 
+        /*$this->setGameStateValue(STAR2, 1);
+        $objects = new Objects();
+        $objects->planets = ['35', '74'];
+        $this->DbQuery("UPDATE player SET `player_sheet_type` = 1, `player_objects` = '".json_encode($objects)."' WHERE `player_id` = 2343492");
+        $this->DbQuery("UPDATE player SET `player_sheet_type` = 0 WHERE `player_id` = 2343493");
+
+        $this->insertLinesStr(2343492, [
+            '0112', '0212', '1213', '1323', '2334', // 5
+            '3242', '4243', '3343', '4344', '4453', '4445', '4546', // 7
+            '5263', '6373', '6354', // 3
+            '8081', '8283', '8372', '8393', '9392', '9384', '8475', // 8
+            '5565', '6566', // 3 en cours
+            '4858', // 2 en cours
+            '4a59', // 2
+
+        ]);
+
+        $this->DbQuery("UPDATE shape SET `card_location` = 'piles', `card_location_arg` = 1000 WHERE `card_type_arg` = 13");
+        $this->DbQuery("UPDATE shape SET `card_location` = 'piles',  `card_location_arg` = 100 WHERE `card_type` = 1");*/
+
         // for bonus : line
         //$this->insertLinesStr(2343492, ['0011', '1122', '2233',    '2031', '3142', '4253']);
         // for bonus : planet
@@ -18,7 +38,7 @@ trait DebugUtilTrait {
         // for bonus : stars
         //$this->insertLinesStr(2343492, ['0001', '0010', '0111',       '2021', '2030', '2131']);
         // for bonus : black hole
-        $this->insertLinesStr(2343492, ['0112', '0212', '0312']);
+        //$this->insertLinesStr(2343492, ['0112', '0212', '0312']);
         // for bonus : moon
         //$this->insertLinesStr(2343492, ['0110', '1020', '2031']);
         // for bonus : twinkling star
