@@ -171,17 +171,28 @@ trait StateTrait {
         $objective = $this->STAR1[$star1];
 
         $tableTotalScore = 0;
+        $playersScores = [];
         foreach ($players as $player) {
             $playerScore = $this->getPlayerScore($player);
-
-            $this->scoreConstellations($player->id, $playerScore);
-            $this->scorePlanets($player->id, $playerScore);
-            $this->scoreShootingStars($player->id, $playerScore);
-            $this->scoreStar1($player->id, $playerScore);
-            $this->scoreStar2($player->id, $playerScore);
-            
+            $playersScores[$player->id] = $playerScore;
             $this->computeStats($player, $playerScore, $objective->points);
             $tableTotalScore += $playerScore->total;
+        }
+
+        foreach ($playersScores as $playerId => $playerScore) {
+            $this->scoreConstellations($playerId, $playerScore);
+        }
+        foreach ($playersScores as $playerId => $playerScore) {
+            $this->scorePlanets($playerId, $playerScore);
+        }
+        foreach ($playersScores as $playerId => $playerScore) {
+            $this->scoreShootingStars($playerId, $playerScore);
+        }
+        foreach ($playersScores as $playerId => $playerScore) {
+            $this->scoreStar1($playerId, $playerScore);
+        }
+        foreach ($playersScores as $playerId => $playerScore) {
+            $this->scoreStar2($playerId, $playerScore);
         }
         
         $this->setStat($star1 + 1, 'star1');
