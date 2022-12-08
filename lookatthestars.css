@@ -426,11 +426,10 @@
   background-size: contain;
   background-position: center;
   position: absolute;
-  opacity: 0.7;
   cursor: pointer;
 }
 .player-table .main .border .arrow:hover {
-  opacity: 1;
+  filter: brightness(1.5);
 }
 .player-table .main .border .arrow.top {
   top: -40px;
