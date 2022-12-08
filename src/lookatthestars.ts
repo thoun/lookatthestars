@@ -386,6 +386,9 @@ class LookAtTheStars implements LookAtTheStarsGame {
             case 201:
                 document.getElementsByTagName('html')[0].dataset.noCounter = (prefValue == 2).toString();
                 break;
+            case 202:
+                document.getElementsByTagName('html')[0].dataset.defaultBackground = (prefValue == 2).toString();
+                break;
             case 299: 
                 this.toggleKeysNotice(prefValue == 1);
                 break;

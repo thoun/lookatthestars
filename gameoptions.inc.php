@@ -127,6 +127,16 @@ $game_preferences = [
         'default' => 1,
     ],
 
+    202 => [
+        'name' => totranslate('Background'),
+        'needReload' => false,
+        'values' => [
+            1 => [ 'name' => 'Look at the Stars'],
+            2 => [ 'name' => 'BGA'],
+        ],
+        'default' => 1
+    ],
+
     299 => [
         'name' => '',
         'needReload' => false,

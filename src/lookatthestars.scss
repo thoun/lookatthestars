@@ -12,7 +12,7 @@
   }
 }
 
-html, .mode_3d #game_play_area_background {
+html:not([data-default-background="true"]), html:not([data-default-background="true"]) .mode_3d #game_play_area_background {
   background: url('img/background.jpg');
   background-repeat: repeat;
 }
