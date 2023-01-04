@@ -32,9 +32,9 @@ trait DebugUtilTrait {
         $this->DbQuery("UPDATE shape SET `card_location` = 'piles',  `card_location_arg` = 100 WHERE `card_type` = 1");*/
 
         // for bonus : line
-        //$this->insertLinesStr(2343492, ['0011', '1122', '2233',    '2031', '3142', '4253']);
+        //$this->insertLinesStr(2343492, ['0011', '1122', '2233',   /* '2031', '3142', '4253'*/]);
         // for bonus : planet
-        //$this->insertLinesStr(2343492, ['0001', '0102', '0203',     '2021', '2122', '2223']);
+        $this->insertLinesStr(2343492, ['0001', '0102', '0203',     /*'2021', '2122', '2223'*/]);
         // for bonus : stars
         //$this->insertLinesStr(2343492, ['0001', '0010', '0111',       '2021', '2030', '2131']);
         // for bonus : black hole
@@ -60,6 +60,10 @@ trait DebugUtilTrait {
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);
+    }
+
+    function debug1() {
+        $this->insertLinesStr(2343492, ['2021', '2122', '2223']);
     }
 
     function getRandomLine() {

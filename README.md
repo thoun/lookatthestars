@@ -30,3 +30,32 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 
 ## Hint
 Make sure ftp-sync.json and node_modules are in .gitignore
+
+JSON.stringify(
+g_gamelogs.map(log => log.data)
+).replaceAll('93453146', '2343492').replaceAll('91603394', '2343493')
+
+gameui.replay = JSON.parse(<paste replay or cleanReplay here>);
+
+
+    // gameui.debugReplay()
+    private cleanReplay() {
+        const replay = (this as any).replay;
+        const clean = [];
+        replay.forEach(line => line.filter(line => typeof this[`notif_${line.type}`] === 'function').map(line => ({ type: line.type, args: line.args })).forEach(sub => clean.push(sub)));
+        console.log(clean);
+        return JSON.stringify(clean);
+    }
+
+    // gameui.playReplay()
+    private playReplay() {
+        const cleanReplay = (this as any).replay;
+        cleanReplay.filter((line, index) => index < 1000).forEach((line, index) => {
+            setTimeout(() => {            
+                console.log(`notif_${line.type}`, line.args);
+                try {
+                    this[`notif_${line.type}`](line);
+                } catch {}
+            }, index * 1000);
+        })
+    }

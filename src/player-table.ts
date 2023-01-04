@@ -698,7 +698,7 @@ class PlayerTable {
     public nextShape(): void {
         // validate round lines
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
-        oldLines.forEach(oldLine => oldLine.classList.remove('round'));
+        oldLines.forEach(oldLine => oldLine.classList.remove('round', 'round-bonus'));
     }
 
     public setShootingStarSize(size: number) {

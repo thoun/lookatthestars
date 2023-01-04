@@ -751,7 +751,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.nextShape = function () {
         // validate round lines
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
-        oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round'); });
+        oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round', 'round-bonus'); });
     };
     PlayerTable.prototype.setShootingStarSize = function (size) {
         this.shootingStarSize = size;
