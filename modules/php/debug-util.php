@@ -34,7 +34,7 @@ trait DebugUtilTrait {
         // for bonus : line
         //$this->insertLinesStr(2343492, ['0011', '1122', '2233',   /* '2031', '3142', '4253'*/]);
         // for bonus : planet
-        $this->insertLinesStr(2343492, ['0001', '0102', '0203',     /*'2021', '2122', '2223'*/]);
+        //$this->insertLinesStr(2343492, ['0001', '0102', '0203',     /*'2021', '2122', '2223'*/]);
         // for bonus : stars
         //$this->insertLinesStr(2343492, ['0001', '0010', '0111',       '2021', '2030', '2131']);
         // for bonus : black hole
@@ -44,7 +44,7 @@ trait DebugUtilTrait {
         // for bonus : twinkling star
         //$this->insertLinesStr(2343492, ['0011', '1102', '1122']);
         // for bonus : galaxy
-        //$this->insertLinesStr(2343492, ['2233', '3324']);
+        $this->insertLinesStr(2343492, ['2233', '3324',     '5566', '6657']);
         // for bonus : nova
         //$this->insertLinesStr(2343492, ['0110', '0112', '1221']);
         // for bonus : luminous aura
@@ -53,17 +53,17 @@ trait DebugUtilTrait {
         // for star1 default shape
         //$this->insertLinesStr(2343492, ['0111', '1011', '1112', '1121',       '0515', '1415', '1516', '1525']);
 
-        /*$this->insertLinesStr(2343492, ['1112', '1122', '1121', '2232', '2233', '3343', // 7
-            '7081', '7071', '8081', '9081', '7182', '8293', '9392', '9383', // 8
-         '5262', '5253', '5263', '6263', '6374', '7475', // 6
-         '5464', '6465', '6455', '5546']); // 4*/
+        /*$this->insertLinesStr(2343492, ['3545', '3546', '4637', '4656', '5657', // 5
+            '5849', '4849', '493A', // 4
+         '0213', '1304', '1314', '1415', '1323', '2333', // 6
+        ]); // 4*/
+
+        /*$objects = new Objects();
+        $objects->galaxies = ['17', '69'];
+        $this->DbQuery("UPDATE player SET `player_round_objects` = NULL, `player_objects` = '".json_encode($objects)."' WHERE `player_id` = 2343492");*/
 
         //$this->insertRandomLines(2343492, 16);
         //$this->insertRandomLines(2343493, 20);
-    }
-
-    function debug1() {
-        $this->insertLinesStr(2343492, ['2021', '2122', '2223']);
     }
 
     function getRandomLine() {

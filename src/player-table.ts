@@ -696,9 +696,11 @@ class PlayerTable {
     }
 
     public nextShape(): void {
-        // validate round lines
+        // validate round lines and bonuses
         const oldLines = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round')) as HTMLElement[];
-        oldLines.forEach(oldLine => oldLine.classList.remove('round', 'round-bonus'));
+        oldLines.forEach(oldLine => oldLine.classList.remove('round'));
+        const oldBonuses = Array.from(document.getElementById(`player-table-${this.playerId}-svg`).getElementsByClassName('round-bonus')) as HTMLElement[];
+        oldBonuses.forEach(oldBonus => oldBonus.classList.remove('round-bonus'));
     }
 
     public setShootingStarSize(size: number) {

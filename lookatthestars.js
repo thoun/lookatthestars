@@ -749,9 +749,11 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-total")).innerHTML = '' + score;
     };
     PlayerTable.prototype.nextShape = function () {
-        // validate round lines
+        // validate round lines and bonuses
         var oldLines = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round'));
-        oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round', 'round-bonus'); });
+        oldLines.forEach(function (oldLine) { return oldLine.classList.remove('round'); });
+        var oldBonuses = Array.from(document.getElementById("player-table-".concat(this.playerId, "-svg")).getElementsByClassName('round-bonus'));
+        oldBonuses.forEach(function (oldBonus) { return oldBonus.classList.remove('round-bonus'); });
     };
     PlayerTable.prototype.setShootingStarSize = function (size) {
         this.shootingStarSize = size;
