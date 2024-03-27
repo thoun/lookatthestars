@@ -15,19 +15,18 @@
   * In this PHP file, you are going to defines the rules of the game.
   *
   */
+namespace Bga\Games\LookAtTheStars;
 
 use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
+use Card;
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once('constants.inc.php');
 
-require_once('modules/php/constants.inc.php');
-require_once('modules/php/utils.php');
-require_once('modules/php/actions.php');
-require_once('modules/php/states.php');
-require_once('modules/php/args.php');
-require_once('modules/php/debug-util.php');
+require_once('Objects/card.php');
+require_once('Objects/sheet.php');
 
-class LookAtTheStars extends Table {
+class Game extends Table {
     use UtilTrait;
     use ActionTrait;
     use StateTrait;
@@ -49,6 +48,8 @@ class LookAtTheStars extends Table {
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
+
+        include 'material.inc.php';
         
         self::initGameStateLabels([
             STAR1 => STAR1,
@@ -146,7 +147,7 @@ class LookAtTheStars extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $result = [];
         //$isEndScore = true;
         $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
@@ -169,8 +170,8 @@ class LookAtTheStars extends Table {
             $playerDb['sheetType'] = intval($playerDb['sheetType']);
             $playerDb['lines'] = $playerDb['lines'] ? json_decode($playerDb['lines'], true) : [];
             $playerDb['roundLines'] = $playerDb['roundLines'] ? json_decode($playerDb['roundLines'], true) : [];
-            $playerDb['objects'] = json_decode($playerDb['objects']) ?? new Objects();
-            $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new Objects();
+            $playerDb['objects'] = json_decode($playerDb['objects']) ?? new \Objects();
+            $playerDb['roundObjects'] = $playerDb['roundObjects'] ? json_decode($playerDb['roundObjects']) : new \Objects();
 
             $player = $this->getPlayer($playerId);
             $playerDb['playerScore'] = $isEndScore || $result['liveScoring'] ? $this->getPlayerScore($player) : null;
@@ -180,7 +181,7 @@ class LookAtTheStars extends Table {
         $result['cards'] = $maskedCards;
         $result['star1'] = intval($this->getGameStateValue(STAR1));
         $result['star2'] = intval($this->getGameStateValue(STAR2));
-        $result['SHOOTING_STAR_SIZES'] = ShootingStarType::linesAndHeadAsString($this->SHOOTING_STAR_SIZES);
+        $result['SHOOTING_STAR_SIZES'] = \ShootingStarType::linesAndHeadAsString($this->SHOOTING_STAR_SIZES);
   
         return $result;
     }
@@ -218,7 +219,7 @@ class LookAtTheStars extends Table {
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn($state, $active_player) {
+    function zombieTurn($state, $active_player): void {
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
@@ -238,7 +239,7 @@ class LookAtTheStars extends Table {
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new \feException( "Zombie mode not supported at this game state: ".$statename );
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:

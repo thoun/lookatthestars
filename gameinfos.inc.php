@@ -13,7 +13,7 @@
 $gameinfos = [
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "Look at the Stars",            
+'game_name' => "Look at the Stars",
 
 // Game publisher (use empty string if there is no publisher)
 'publisher' => 'Bombyx',

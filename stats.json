@@ -1,0 +1,156 @@
+{
+    "table": {
+        "placedLines": {
+            "id": 20,
+            "name": "Placed lines",
+            "type": "int"
+        },
+        "usedBonus": {
+            "id": 24,
+            "name": "Used bonus",
+            "type": "int"
+        },
+        "shootingStars": {
+            "id": 10,
+            "name": "Shootings stars in cards",
+            "type": "int"
+        },
+        "star1": {
+            "id": 11,
+            "name": "Point Bonus card",
+            "type": "int"
+        },
+        "star2": {
+            "id": 12,
+            "name": "Power Bonus card",
+            "type": "int"
+        },
+        "avgScore": {
+            "id": 13,
+            "name": "Average player score",
+            "type": "float"
+        }
+    },
+    "player": {
+        "placedLines": {
+            "id": 20,
+            "name": "Placed lines",
+            "type": "int"
+        },
+        "usedBonus": {
+            "id": 24,
+            "name": "Used bonus",
+            "type": "int"
+        },
+        "playedCards": {
+            "id": 30,
+            "name": "Played cards",
+            "type": "int"
+        },
+        "skippedCards": {
+            "id": 31,
+            "name": "Skipped cards",
+            "type": "int"
+        },
+        "shootingStar1": {
+            "id": 32,
+            "name": "Shooting star placed (1 line)",
+            "type": "int"
+        },
+        "shootingStar2": {
+            "id": 33,
+            "name": "Shooting star placed (2 lines)",
+            "type": "int"
+        },
+        "shootingStar3": {
+            "id": 34,
+            "name": "Shooting star placed (3 lines)",
+            "type": "int"
+        },
+        "constellationsCount": {
+            "id": 35,
+            "name": "Constellations count (3 lines or more)",
+            "type": "int"
+        },
+        "validConstellationsCount": {
+            "id": 36,
+            "name": "Valid constellations count (validated on score board)",
+            "type": "int"
+        },
+        "constellationsPoints": {
+            "id": 37,
+            "name": "Constellations points",
+            "type": "int"
+        },
+        "planetsPoints": {
+            "id": 38,
+            "name": "Planets points",
+            "type": "int"
+        },
+        "shootingStarsPoints": {
+            "id": 39,
+            "name": "Shooting stars points",
+            "type": "int"
+        },
+        "star1count": {
+            "id": 40,
+            "name": "Point Bonus card scored",
+            "type": "int"
+        },
+        "star1points": {
+            "id": 41,
+            "name": "Point Bonus card points",
+            "type": "int"
+        },
+        "star2points": {
+            "id": 43,
+            "name": "Power Bonus card points",
+            "type": "int"
+        },
+        "placed2": {
+            "id": 44,
+            "name": "Placed planets",
+            "type": "int"
+        },
+        "placed4": {
+            "id": 45,
+            "name": "Placed bonus lines",
+            "type": "int"
+        },
+        "placed3": {
+            "id": 46,
+            "name": "Placed pair of stars",
+            "type": "int"
+        },
+        "placed5": {
+            "id": 47,
+            "name": "Placed galaxies",
+            "type": "int"
+        },
+        "placed8": {
+            "id": 48,
+            "name": "Placed twinkling stars",
+            "type": "int"
+        },
+        "placed7": {
+            "id": 49,
+            "name": "Placed novas",
+            "type": "int"
+        },
+        "placed1": {
+            "id": 50,
+            "name": "Placed luminous auras",
+            "type": "int"
+        },
+        "placed9": {
+            "id": 51,
+            "name": "Placed crescent moons",
+            "type": "int"
+        },
+        "placed6": {
+            "id": 52,
+            "name": "Placed black holes",
+            "type": "int"
+        }
+    }
+}

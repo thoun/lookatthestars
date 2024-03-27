@@ -16,6 +16,7 @@ class CardType {
     public static function linesAsString($cardOrCards) {
         if (gettype($cardOrCards) == 'array') {
             return array_map(fn($card) => self::linesAsString($card), $cardOrCards);
+            return array_map(fn($card) => self::linesAsString($card), $cardOrCards);
         }
         $newCard = self::clone($cardOrCards);
         $newCard->lines = array_map(fn($line) => dechex($line[0][0]).dechex($line[0][1]).dechex($line[1][0]).dechex($line[1][1]), $newCard->lines);
@@ -24,6 +25,7 @@ class CardType {
 
     public static function linesAsArray($cardOrCards) {
         if (gettype($cardOrCards) == 'array') {
+            return array_map(fn($card) => self::linesAsArray($card), $cardOrCards);
             return array_map(fn($card) => self::linesAsArray($card), $cardOrCards);
         }
         $newCard = self::clone($cardOrCards);
@@ -48,6 +50,7 @@ class ShootingStarType extends CardType {
     public static function linesAndHeadAsString($cardOrCards) {
         if (gettype($cardOrCards) == 'array') {
             return array_map(fn($card) => self::linesAndHeadAsString($card), $cardOrCards);
+            return array_map(fn($card) => self::linesAndHeadAsString($card), $cardOrCards);
         }
         $newCard = self::clone($cardOrCards);
         $newCard = self::linesAsString($newCard);
@@ -57,6 +60,7 @@ class ShootingStarType extends CardType {
 
     public static function linesAndHeadAsArrays($cardOrCards) {
         if (gettype($cardOrCards) == 'array') {
+            return array_map(fn($card) => self::linesAndHeadAsArrays($card), $cardOrCards);
             return array_map(fn($card) => self::linesAndHeadAsArrays($card), $cardOrCards);
         }
         $newCard = self::clone($cardOrCards);
@@ -120,6 +124,7 @@ class Card extends CardType {
 
     public static function linesAsString($cardOrCards) {
         if (gettype($cardOrCards) == 'array') {
+            return array_map(fn($card) => self::linesAsString($card), $cardOrCards);
             return array_map(fn($card) => self::linesAsString($card), $cardOrCards);
         }
         $newCard = self::clone($cardOrCards);

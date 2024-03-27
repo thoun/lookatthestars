@@ -1,4 +1,8 @@
 <?php
+namespace Bga\Games\LookAtTheStars;
+
+use Card;
+use Constellation;
 
 trait ArgsTrait {
     

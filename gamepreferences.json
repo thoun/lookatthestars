@@ -1,0 +1,54 @@
+{
+    "100": {
+        "name": "Countdown timer for confirmation",
+        "needReload": false,
+        "values": {
+            "1": {
+                "name": "Enabled"
+            },
+            "2": {
+                "name": "Disabled"
+            }
+        },
+        "default": 1
+    },
+    "201": {
+        "name": "Show constellations size",
+        "needReload": false,
+        "values": {
+            "1": {
+                "name": "Enabled"
+            },
+            "2": {
+                "name": "Disabled"
+            }
+        },
+        "default": 1
+    },
+    "202": {
+        "name": "Background",
+        "needReload": false,
+        "values": {
+            "1": {
+                "name": "Look at the Stars"
+            },
+            "2": {
+                "name": "BGA"
+            }
+        },
+        "default": 1
+    },
+    "299": {
+        "name": "",
+        "needReload": false,
+        "values": {
+            "1": {
+                "name": "Enabled"
+            },
+            "2": {
+                "name": "Disabled"
+            }
+        },
+        "default": 1
+    }
+}

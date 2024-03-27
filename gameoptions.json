@@ -1,0 +1,147 @@
+{
+    "100": {
+        "name": "Point Bonus card",
+        "values": {
+            "1": {
+                "name": "Default",
+                "description": "Recommended Bonus card for beginners",
+                "tmdisplay": "Beginner Point Bonus card"
+            },
+            "2": {
+                "name": "Random",
+                "description": "Random Bonus cards",
+                "tmdisplay": "Random Point Bonus card"
+            },
+            "3": {
+                "name": "Point Bonus card 1",
+                "description": "Point Bonus card 1",
+                "tmdisplay": "Point Bonus card 1"
+            },
+            "4": {
+                "name": "Point Bonus card 2",
+                "description": "Point Bonus card 2",
+                "tmdisplay": "Point Bonus card 2"
+            },
+            "5": {
+                "name": "Point Bonus card 3",
+                "description": "Point Bonus card 3",
+                "tmdisplay": "Point Bonus card 3"
+            },
+            "6": {
+                "name": "Point Bonus card 4",
+                "description": "Point Bonus card 4",
+                "tmdisplay": "Point Bonus card 4"
+            },
+            "7": {
+                "name": "Point Bonus card 5",
+                "description": "Point Bonus card 5",
+                "tmdisplay": "Point Bonus card 5"
+            },
+            "8": {
+                "name": "Point Bonus card 6",
+                "description": "Point Bonus card 6",
+                "tmdisplay": "Point Bonus card 6"
+            },
+            "9": {
+                "name": "Point Bonus card 7",
+                "description": "Point Bonus card 7",
+                "tmdisplay": "Point Bonus card 7"
+            },
+            "10": {
+                "name": "Point Bonus card 8",
+                "description": "Point Bonus card 8",
+                "tmdisplay": "Point Bonus card 8"
+            },
+            "11": {
+                "name": "Point Bonus card 9",
+                "description": "Point Bonus card 9",
+                "tmdisplay": "Point Bonus card 9"
+            },
+            "12": {
+                "name": "Point Bonus card 10",
+                "description": "Point Bonus card 10",
+                "tmdisplay": "Point Bonus card 10"
+            }
+        },
+        "default": 1
+    },
+    "101": {
+        "name": "Power Bonus card",
+        "values": {
+            "1": {
+                "name": "Default",
+                "description": "Recommended Bonus card for beginners",
+                "tmdisplay": "Beginner Power Bonus card"
+            },
+            "2": {
+                "name": "Random",
+                "description": "Random Bonus cards",
+                "tmdisplay": "Random Power Bonus card"
+            },
+            "3": {
+                "name": "Random (experienced)",
+                "description": "Random Bonus cards (include experienced Bonus cards)",
+                "tmdisplay": "Random Power Bonus card (include experienced Bonus cards)"
+            },
+            "4": {
+                "name": "Planet",
+                "description": "Planet",
+                "tmdisplay": "Planet"
+            },
+            "5": {
+                "name": "Line",
+                "description": "Line",
+                "tmdisplay": "Line"
+            },
+            "6": {
+                "name": "New stars",
+                "description": "New stars",
+                "tmdisplay": "New stars"
+            },
+            "7": {
+                "name": "Galaxy",
+                "description": "Galaxy",
+                "tmdisplay": "Galaxy"
+            },
+            "8": {
+                "name": "Twinkling star",
+                "description": "Twinkling star",
+                "tmdisplay": "Twinkling star"
+            },
+            "9": {
+                "name": "Nova (experienced)",
+                "description": "Nova (experienced)",
+                "tmdisplay": "Nova (experienced)"
+            },
+            "10": {
+                "name": "Luminous aura (experienced)",
+                "description": "Luminous aura (experienced)",
+                "tmdisplay": "Luminous aura (experienced)"
+            },
+            "11": {
+                "name": "Crescent moon (experienced)",
+                "description": "Crescent moon (experienced)",
+                "tmdisplay": "Crescent moon (experienced)"
+            },
+            "12": {
+                "name": "Black hole (experienced)",
+                "description": "Black hole (experienced)",
+                "tmdisplay": "Black hole (experienced)"
+            }
+        },
+        "default": 1
+    },
+    "102": {
+        "name": "Scoring",
+        "values": {
+            "1": {
+                "name": "Hidden"
+            },
+            "2": {
+                "name": "Visible",
+                "tmdisplay": "Visible scoring"
+            }
+        },
+        "default": 1
+    }
+}

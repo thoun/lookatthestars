@@ -19,10 +19,6 @@
  *
  */
 
-
-require_once('modules/php/objects/card.php');
-require_once('modules/php/objects/sheet.php');
-
 // [[x from, y from], [x to, y to]] lines coordinates, [0, 0] is left bottom
 $this->SHAPES = [
   new CardType([[[1, 1], [1, 2]], [[1, 1], [2, 1]]]),

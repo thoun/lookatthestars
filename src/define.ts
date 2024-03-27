@@ -1,9 +1,8 @@
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter",
-    "ebg/stock"
+    "ebg/counter"
 ],
-function (dojo, declare) {
+function (dojo, declare, gamegui, counter) {
     return declare("bgagame.lookatthestars", ebg.core.gamegui, new LookAtTheStars());
 });

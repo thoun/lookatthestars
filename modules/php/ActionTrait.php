@@ -1,4 +1,8 @@
 <?php
+namespace Bga\Games\LookAtTheStars;
+
+use Objects;
+use ShootingStarType;
 
 trait ActionTrait {
 

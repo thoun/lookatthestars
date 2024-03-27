@@ -1,9 +1,15 @@
 <?php
+namespace Bga\Games\LookAtTheStars;
 
-require_once(__DIR__.'/objects/shape.php');
-require_once(__DIR__.'/objects/objects.php');
-require_once(__DIR__.'/objects/player.php');
-require_once(__DIR__.'/objects/constellation.php');
+use Card;
+use Constellation;
+use LatsPlayer;
+use PlayerScore;
+
+require_once(__DIR__.'/Objects/shape.php');
+require_once(__DIR__.'/Objects/objects.php');
+require_once(__DIR__.'/Objects/player.php');
+require_once(__DIR__.'/Objects/constellation.php');
 
 trait UtilTrait {
 

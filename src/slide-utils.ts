@@ -1,4 +1,4 @@
-function slideToObjectAndAttach(game: Game, object: HTMLElement, destinationId: string, changeSide: boolean = false) {
+function slideToObjectAndAttach(game: LookAtTheStarsGame, object: HTMLElement, destinationId: string, changeSide: boolean = false) {
     const destination = document.getElementById(destinationId);
     if (destination.contains(object)) {
         return;
@@ -27,7 +27,7 @@ function slideToObjectAndAttach(game: Game, object: HTMLElement, destinationId: 
     }
 }
 
-function slideFromObject(game: Game, object: HTMLElement, fromId: string) {
+function slideFromObject(game: LookAtTheStarsGame, object: HTMLElement, fromId: string) {
     const from = document.getElementById(fromId);
     const originBR = from.getBoundingClientRect();
     

@@ -1,10 +1,3 @@
-declare const define;
-declare const ebg;
-declare const $;
-declare const dojo: Dojo;
-declare const _;
-declare const g_gamethemeurl;
-
 const ANIMATION_MS = 500;
 const SCORE_MS = 1500;
 
@@ -23,12 +16,18 @@ function formatTextIcons(rawText: string) {
         .replace(/\[Star7\]/ig, '<div class="icon star7"></div>')
 }
 
-class LookAtTheStars implements LookAtTheStarsGame {
+// @ts-ignore
+GameGui = (function () { // this hack required so we fake extend GameGui
+  function GameGui() {}
+  return GameGui;
+})();
+
+class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtTheStarsGame {
     public zoom: number = 0.75;
     public cards: Cards;
     public day: number = 0;
 
-    private gamedatas: LookAtTheStarsGamedatas;
+    public gamedatas: LookAtTheStarsGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private registeredTablesByPlayerId: PlayerTable[][] = [];
@@ -36,11 +35,12 @@ class LookAtTheStars implements LookAtTheStarsGame {
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
     constructor() {
+        super();
+
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
         }
-        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
     }
     
     /*
@@ -60,7 +60,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
         const players = Object.values(gamedatas.players);
         // ignore loading of some pictures
         [1,2,3,4,5,6,7,8].filter(i => !players.some(player => Number(player.sheetType) === i)).forEach(i => {
-            (this as any).dontPreloadImage(`sheet-${i}.png`);
+            this.dontPreloadImage(`sheet-${i}.png`);
         });
 
         log( "Starting game setup" );
@@ -94,6 +94,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
             this.day = 1;
         }
 
+        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
+
         this.cards = new Cards(this);
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
@@ -103,7 +105,6 @@ class LookAtTheStars implements LookAtTheStarsGame {
         document.getElementsByTagName('body')[0].addEventListener('keydown', e => this.getCurrentPlayerTable()?.onKeyPress(e));
 
         this.setupNotifications();
-        this.setupPreferences();
         this.addHelp();
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
@@ -116,7 +117,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
             this.onEnteringShowScore();
         }
 
-        (this as any).onScreenWidthChange = () => {
+        this.onScreenWidthChange = () => {
             this.updateTableHeight();
         };
 
@@ -196,7 +197,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     onEnteringShowScore() {
-        Object.keys(this.gamedatas.players).forEach(playerId => (this as any).scoreCtrl[playerId]?.setValue(0));
+        Object.keys(this.gamedatas.players).forEach(playerId => this.scoreCtrl[playerId]?.setValue(0));
     }
 
     public onLeavingState(stateName: string) {
@@ -247,28 +248,28 @@ class LookAtTheStars implements LookAtTheStarsGame {
     public onUpdateActionButtons(stateName: string, args: any) {
         log( 'onUpdateActionButtons: '+stateName, args );
 
-        if ((this as any).isCurrentPlayerActive()) {
+        if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
                     const placeCardArg = args as EnteringPlaceCardArgs;
                     if (placeCardArg.currentCard.type == 1) {
                         [1, 2, 3].forEach(size => {
-                            (this as any).addActionButton(`setShootingStarSize_button${size}`, _('${size}-line(s) shooting star').replace('${size}', size), () => this.getCurrentPlayerTable().setShootingStarSize(size), null, null, 'gray');
+                            this.statusBar.addActionButton(_('${size}-line(s) shooting star').replace('${size}', ''+size), () => this.getCurrentPlayerTable().setShootingStarSize(size), { id: `setShootingStarSize_button${size}`, color: 'secondary' });
                             const buttonDiv = document.getElementById(`setShootingStarSize_button${size}`);
                             buttonDiv.classList.add('setShootingStarSizeButton');
                             buttonDiv.dataset.shootingStarSize = ''+size;
                             buttonDiv.classList.toggle('current-size', size == 3);
                         });
-                        (this as any).addActionButton(`placeShootingStar_button`, _("Place shooting star"), () => this.placeShootingStar());
+                        this.statusBar.addActionButton(_("Place shooting star"), () => this.placeShootingStar(), { id: `placeShootingStar_button` });
                     } else if (placeCardArg.currentCard.type == 2) {
-                        (this as any).addActionButton(`placeShape_button`, _("Place shape"), () => this.placeShape());
+                        this.statusBar.addActionButton(_("Place shape"), () => this.placeShape(), { id: `placeShape_button` });
                     }
-                    (this as any).addActionButton(`skipCard_button`, _("Skip this card"), () => this.skipCard(), null, null, 'red');
+                    this.statusBar.addActionButton(_("Skip this card"), () => this.skipCard(), { color: 'alert' });
                     break;
                 case 'placeLine':
-                    (this as any).addActionButton(`placeLine_button`, _("Place line"), () => this.placeLine());
-                    (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
-                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+                    this.statusBar.addActionButton(_("Place line"), () => this.placeLine(), { id: `placeLine_button` });
+                    this.statusBar.addActionButton(_("Skip bonus"), () => this.skipBonus(), { color: 'alert' });
+                    this.statusBar.addActionButton(_("Cancel"), () => this.cancelPlaceShape(), { color: 'secondary' });
                     break;
                 case 'placePlanet':
                 case 'placeStar':
@@ -278,21 +279,20 @@ class LookAtTheStars implements LookAtTheStarsGame {
                 case 'placeTwinklingStar':
                 case 'placeNova':
                 case 'placeLuminousAura':
-                    (this as any).addActionButton(`skipBonus_button`, _("Skip bonus"), () => this.skipBonus(), null, null, 'red');
-                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+                    this.statusBar.addActionButton(_("Skip bonus"), () => this.skipBonus(), { color: 'alert' });
+                    this.statusBar.addActionButton(_("Cancel"), () => this.cancelPlaceShape(), { color: 'secondary' });
                     break;
                 case 'confirmTurn':
-                    (this as any).addActionButton(`confirmTurn_button`, _("Confirm turn"), () => this.confirmTurn());
-                    this.startActionTimer(`confirmTurn_button`, 10);
+                    this.statusBar.addActionButton(_("Confirm turn"), () => this.confirmTurn(), { autoclick: this.getGameUserPreference(100) === 1 });
                     const confirmTurnArgs = args as EnteringConfirmTurnArgs;
                     if (confirmTurnArgs.canCancelBonus) {
-                        (this as any).addActionButton(`cancelBonus_button`, _("Cancel bonus"), () => this.cancelBonus(), null, null, 'gray');
+                        this.statusBar.addActionButton(_("Cancel bonus"), () => this.cancelBonus(), { color: 'secondary' });
                     }
-                    (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel turn"), () => this.cancelPlaceShape(), null, null, 'gray');
+                    this.statusBar.addActionButton(_("Cancel turn"), () => this.cancelPlaceShape(), { color: 'secondary' });
                     break;
             }
         } else if (stateName == 'playCard') {
-            (this as any).addActionButton(`cancelPlaceShape_button`, _("Cancel"), () => this.cancelPlaceShape(), null, null, 'gray');
+            this.statusBar.addActionButton(_("Cancel"), () => this.cancelPlaceShape(), { color: 'secondary' });
             this.onLeavingPlaceShape();
             this.onLeavingPlaceLine();
             this.onLeavingStarSelection();
@@ -307,7 +307,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     ///////////////////////////////////////////////////
 
     public getPlayerId(): number {
-        return Number((this as any).player_id);
+        return Number(this.player_id);
     }
 
     public getPlayerColor(playerId: number): string {
@@ -331,7 +331,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     public setTooltip(id: string, html: string) {
-        (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
+        this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     }
 
     private setZoom(zoom: number = 1) {
@@ -372,35 +372,8 @@ class LookAtTheStars implements LookAtTheStarsGame {
         const newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
-
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_control_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
-
-        try {
-            (document.getElementById('preference_control_299').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
-        } catch (e) {}
-    }
       
-    private onPreferenceChange(prefId: number, prefValue: number) {
+    onGameUserPreferenceChanged = (prefId: number, prefValue: number) => {
         switch (prefId) {
             case 201:
                 document.getElementsByTagName('html')[0].dataset.noCounter = (prefValue == 2).toString();
@@ -443,7 +416,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
     private getOrderedPlayers(gamedatas: LookAtTheStarsGamedatas) {
         const players = Object.values(gamedatas.players).sort((a, b) => a.playerNo - b.playerNo);
-        const playerIndex = players.findIndex(player => Number(player.id) === Number((this as any).player_id));
+        const playerIndex = players.findIndex(player => Number(player.id) === Number(this.player_id));
         const orderedPlayers = playerIndex > 0 ? [...players.slice(playerIndex), ...players.slice(0, playerIndex)] : players;
         return orderedPlayers;
     }
@@ -497,7 +470,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
     
     private setPoints(playerId: number, points: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(points);
+        this.scoreCtrl[playerId]?.toValue(points);
         this.getPlayerTable(playerId).setFinalScore(points);
     }
 
@@ -600,7 +573,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeShape() {
-        if(!(this as any).checkAction('placeShape')) {
+        if(!this.checkAction('placeShape')) {
             return;
         }
 
@@ -609,7 +582,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeShootingStar() {
-        if(!(this as any).checkAction('placeShootingStar')) {
+        if(!this.checkAction('placeShootingStar')) {
             return;
         }
 
@@ -618,7 +591,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeLine() {
-        if(!(this as any).checkAction('placeLine')) {
+        if(!this.checkAction('placeLine')) {
             return;
         }
 
@@ -627,7 +600,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placePlanet(x: number, y: number) {
-        if(!(this as any).checkAction('placePlanet')) {
+        if(!this.checkAction('placePlanet')) {
             return;
         }
 
@@ -635,7 +608,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeStar(x: number, y: number) {
-        if(!(this as any).checkAction('placeStar')) {
+        if(!this.checkAction('placeStar')) {
             return;
         }
 
@@ -643,7 +616,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeBlackHole(x: number, y: number) {
-        if(!(this as any).checkAction('placeBlackHole')) {
+        if(!this.checkAction('placeBlackHole')) {
             return;
         }
 
@@ -651,7 +624,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeCrescentMoon(x: number, y: number) {
-        if(!(this as any).checkAction('placeCrescentMoon')) {
+        if(!this.checkAction('placeCrescentMoon')) {
             return;
         }
 
@@ -659,7 +632,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeGalaxy(x: number, y: number) {
-        if(!(this as any).checkAction('placeGalaxy')) {
+        if(!this.checkAction('placeGalaxy')) {
             return;
         }
 
@@ -667,7 +640,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeTwinklingStar(x: number, y: number) {
-        if(!(this as any).checkAction('placeTwinklingStar')) {
+        if(!this.checkAction('placeTwinklingStar')) {
             return;
         }
 
@@ -675,7 +648,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeNova(x: number, y: number) {
-        if(!(this as any).checkAction('placeNova')) {
+        if(!this.checkAction('placeNova')) {
             return;
         }
 
@@ -683,7 +656,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public placeLuminousAura(x: number, y: number) {
-        if(!(this as any).checkAction('placeLuminousAura')) {
+        if(!this.checkAction('placeLuminousAura')) {
             return;
         }
 
@@ -691,7 +664,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public cancelPlaceShape() {
-        /*if(!(this as any).checkAction('cancelPlaceShape')) {
+        /*if(!this.checkAction('cancelPlaceShape')) {
             return;
         }*/
 
@@ -699,7 +672,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public cancelBonus() {
-        if(!(this as any).checkAction('cancelBonus')) {
+        if(!this.checkAction('cancelBonus')) {
             return;
         }
 
@@ -707,7 +680,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public skipCard() {
-        if(!(this as any).checkAction('skipCard')) {
+        if(!this.checkAction('skipCard')) {
             return;
         }
 
@@ -715,7 +688,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public skipBonus() {
-        if(!(this as any).checkAction('skipBonus')) {
+        if(!this.checkAction('skipBonus')) {
             return;
         }
 
@@ -723,7 +696,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public confirmTurn() {
-        if(!(this as any).checkAction('confirmTurn')) {
+        if(!this.checkAction('confirmTurn')) {
             return;
         }
 
@@ -731,34 +704,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     public takeAction(action: string, data?: any) {
-        data = data || {};
-        data.lock = true;
-        (this as any).ajaxcall(`/lookatthestars/lookatthestars/${action}.html`, data, this, () => {});
-    }
-
-    private startActionTimer(buttonId: string, time: number) {
-        if (Number((this as any).prefs[200]?.value) === 2) {
-            return;
-        }
-
-        const button = document.getElementById(buttonId);
- 
-        let actionTimerId = null;
-        const _actionTimerLabel = button.innerHTML;
-        let _actionTimerSeconds = time;
-        const actionTimerFunction = () => {
-          const button = document.getElementById(buttonId);
-          if (button == null || button.classList.contains('disabled')) {
-            window.clearInterval(actionTimerId);
-          } else if (_actionTimerSeconds-- > 1) {
-            button.innerHTML = _actionTimerLabel + ' (' + _actionTimerSeconds + ')';
-          } else {
-            window.clearInterval(actionTimerId);
-            button.click();
-          }
-        };
-        actionTimerFunction();
-        actionTimerId = window.setInterval(() => actionTimerFunction(), 1000);
+        this.bgaPerformAction(action, data);
     }
 
     ///////////////////////////////////////////////////
@@ -810,7 +756,7 @@ class LookAtTheStars implements LookAtTheStarsGame {
     }
 
     notif_discardShape(notif: Notif<NotifCardArgs>) {
-        (this as any).slideToObjectAndDestroy(`card-${notif.args.card.id}`, 'topbar');
+        this.slideToObjectAndDestroy(`card-${notif.args.card.id}`, 'topbar');
         setTimeout(() => this.tableCenter.updateCounters(), 600);
     }
 

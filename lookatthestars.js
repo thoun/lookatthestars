@@ -215,7 +215,7 @@ var PlayerTable = /** @class */ (function () {
             html += "<div id=\"player-table-".concat(this.playerId, "-constellation").concat(i, "\" class=\"constellation score\" data-number=\"").concat(i, "\"></div>");
         }
         html += "    </div>\n            <div id=\"player-table-".concat(this.playerId, "-constellations\" class=\"constellations score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets\" class=\"planets score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars\" class=\"shooting-stars score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1\" class=\"star1 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2\" class=\"star2 score\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total\" class=\"total score\"></div>\n            \n            <div id=\"player-table-").concat(this.playerId, "-constellations-tooltip\" class=\"constellations tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-planets-tooltip\" class=\"planets tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-shooting-stars-tooltip\" class=\"shooting-stars tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star1-tooltip\" class=\"star1 tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-star2-tooltip\" class=\"star2 tooltip\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-total-tooltip\" class=\"total tooltip\"></div>\n        </div>\n        ");
-        dojo.place(html, document.getElementById('tables'));
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
         this.placeLines(player.lines);
         this.placeInitialObjects(player.objects);
         if (player.roundLines) {
@@ -796,6 +796,21 @@ var PlayerTable = /** @class */ (function () {
     };
     return PlayerTable;
 }());
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var ANIMATION_MS = 500;
 var SCORE_MS = 1500;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
@@ -811,18 +826,38 @@ function formatTextIcons(rawText) {
         .replace(/\[Star5\]/ig, '<div class="icon star5"></div>')
         .replace(/\[Star7\]/ig, '<div class="icon star7"></div>');
 }
-var LookAtTheStars = /** @class */ (function () {
+// @ts-ignore
+GameGui = (function () {
+    function GameGui() { }
+    return GameGui;
+})();
+var LookAtTheStars = /** @class */ (function (_super) {
+    __extends(LookAtTheStars, _super);
     function LookAtTheStars() {
-        this.zoom = 0.75;
-        this.day = 0;
-        this.playersTables = [];
-        this.registeredTablesByPlayerId = [];
-        this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        var _this = _super.call(this) || this;
+        _this.zoom = 0.75;
+        _this.day = 0;
+        _this.playersTables = [];
+        _this.registeredTablesByPlayerId = [];
+        _this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        _this.onGameUserPreferenceChanged = function (prefId, prefValue) {
+            switch (prefId) {
+                case 201:
+                    document.getElementsByTagName('html')[0].dataset.noCounter = (prefValue == 2).toString();
+                    break;
+                case 202:
+                    document.getElementsByTagName('html')[0].dataset.defaultBackground = (prefValue == 2).toString();
+                    break;
+                case 299:
+                    _this.toggleKeysNotice(prefValue == 1);
+                    break;
+            }
+        };
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
-            this.zoom = Number(zoomStr);
+            _this.zoom = Number(zoomStr);
         }
-        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
+        return _this;
     }
     /*
         setup:
@@ -853,6 +888,7 @@ var LookAtTheStars = /** @class */ (function () {
         else if (gamedatas.cards.length <= 12) {
             this.day = 1;
         }
+        document.getElementById('jump-controls').classList.toggle('folded', localStorage.getItem(LOCAL_STORAGE_JUMP_KEY) == 'true');
         this.cards = new Cards(this);
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
@@ -860,7 +896,6 @@ var LookAtTheStars = /** @class */ (function () {
         //document.addEventListener('keyup', e => this.getCurrentPlayerTable()?.onKeyPress(e));
         document.getElementsByTagName('body')[0].addEventListener('keydown', function (e) { var _a; return (_a = _this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.onKeyPress(e); });
         this.setupNotifications();
-        this.setupPreferences();
         this.addHelp();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
         document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
@@ -999,23 +1034,23 @@ var LookAtTheStars = /** @class */ (function () {
                     var placeCardArg = args;
                     if (placeCardArg.currentCard.type == 1) {
                         [1, 2, 3].forEach(function (size) {
-                            _this.addActionButton("setShootingStarSize_button".concat(size), _('${size}-line(s) shooting star').replace('${size}', size), function () { return _this.getCurrentPlayerTable().setShootingStarSize(size); }, null, null, 'gray');
+                            _this.statusBar.addActionButton(_('${size}-line(s) shooting star').replace('${size}', '' + size), function () { return _this.getCurrentPlayerTable().setShootingStarSize(size); }, { id: "setShootingStarSize_button".concat(size), color: 'secondary' });
                             var buttonDiv = document.getElementById("setShootingStarSize_button".concat(size));
                             buttonDiv.classList.add('setShootingStarSizeButton');
                             buttonDiv.dataset.shootingStarSize = '' + size;
                             buttonDiv.classList.toggle('current-size', size == 3);
                         });
-                        this.addActionButton("placeShootingStar_button", _("Place shooting star"), function () { return _this.placeShootingStar(); });
+                        this.statusBar.addActionButton(_("Place shooting star"), function () { return _this.placeShootingStar(); }, { id: "placeShootingStar_button" });
                     }
                     else if (placeCardArg.currentCard.type == 2) {
-                        this.addActionButton("placeShape_button", _("Place shape"), function () { return _this.placeShape(); });
+                        this.statusBar.addActionButton(_("Place shape"), function () { return _this.placeShape(); }, { id: "placeShape_button" });
                     }
-                    this.addActionButton("skipCard_button", _("Skip this card"), function () { return _this.skipCard(); }, null, null, 'red');
+                    this.statusBar.addActionButton(_("Skip this card"), function () { return _this.skipCard(); }, { color: 'alert' });
                     break;
                 case 'placeLine':
-                    this.addActionButton("placeLine_button", _("Place line"), function () { return _this.placeLine(); });
-                    this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
-                    this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                    this.statusBar.addActionButton(_("Place line"), function () { return _this.placeLine(); }, { id: "placeLine_button" });
+                    this.statusBar.addActionButton(_("Skip bonus"), function () { return _this.skipBonus(); }, { color: 'alert' });
+                    this.statusBar.addActionButton(_("Cancel"), function () { return _this.cancelPlaceShape(); }, { color: 'secondary' });
                     break;
                 case 'placePlanet':
                 case 'placeStar':
@@ -1025,22 +1060,21 @@ var LookAtTheStars = /** @class */ (function () {
                 case 'placeTwinklingStar':
                 case 'placeNova':
                 case 'placeLuminousAura':
-                    this.addActionButton("skipBonus_button", _("Skip bonus"), function () { return _this.skipBonus(); }, null, null, 'red');
-                    this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                    this.statusBar.addActionButton(_("Skip bonus"), function () { return _this.skipBonus(); }, { color: 'alert' });
+                    this.statusBar.addActionButton(_("Cancel"), function () { return _this.cancelPlaceShape(); }, { color: 'secondary' });
                     break;
                 case 'confirmTurn':
-                    this.addActionButton("confirmTurn_button", _("Confirm turn"), function () { return _this.confirmTurn(); });
-                    this.startActionTimer("confirmTurn_button", 10);
+                    this.statusBar.addActionButton(_("Confirm turn"), function () { return _this.confirmTurn(); }, { autoclick: this.getGameUserPreference(100) === 1 });
                     var confirmTurnArgs = args;
                     if (confirmTurnArgs.canCancelBonus) {
-                        this.addActionButton("cancelBonus_button", _("Cancel bonus"), function () { return _this.cancelBonus(); }, null, null, 'gray');
+                        this.statusBar.addActionButton(_("Cancel bonus"), function () { return _this.cancelBonus(); }, { color: 'secondary' });
                     }
-                    this.addActionButton("cancelPlaceShape_button", _("Cancel turn"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+                    this.statusBar.addActionButton(_("Cancel turn"), function () { return _this.cancelPlaceShape(); }, { color: 'secondary' });
                     break;
             }
         }
         else if (stateName == 'playCard') {
-            this.addActionButton("cancelPlaceShape_button", _("Cancel"), function () { return _this.cancelPlaceShape(); }, null, null, 'gray');
+            this.statusBar.addActionButton(_("Cancel"), function () { return _this.cancelPlaceShape(); }, { color: 'secondary' });
             this.onLeavingPlaceShape();
             this.onLeavingPlaceLine();
             this.onLeavingStarSelection();
@@ -1106,41 +1140,6 @@ var LookAtTheStars = /** @class */ (function () {
         }
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
-    };
-    LookAtTheStars.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_control_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-            _this.onPreferenceChange(prefId, prefValue);
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
-        try {
-            document.getElementById('preference_control_299').closest(".preference_choice").style.display = 'none';
-        }
-        catch (e) { }
-    };
-    LookAtTheStars.prototype.onPreferenceChange = function (prefId, prefValue) {
-        switch (prefId) {
-            case 201:
-                document.getElementsByTagName('html')[0].dataset.noCounter = (prefValue == 2).toString();
-                break;
-            case 202:
-                document.getElementsByTagName('html')[0].dataset.defaultBackground = (prefValue == 2).toString();
-                break;
-            case 299:
-                this.toggleKeysNotice(prefValue == 1);
-                break;
-        }
     };
     LookAtTheStars.prototype.toggleKeysNotice = function (visible) {
         var elem = document.getElementById('keys-notice');
@@ -1346,7 +1345,7 @@ var LookAtTheStars = /** @class */ (function () {
         this.takeAction('placeLuminousAura', { x: x, y: y });
     };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
-        /*if(!(this as any).checkAction('cancelPlaceShape')) {
+        /*if(!this.checkAction('cancelPlaceShape')) {
             return;
         }*/
         this.takeAction('cancelPlaceShape');
@@ -1376,34 +1375,7 @@ var LookAtTheStars = /** @class */ (function () {
         this.takeAction('confirmTurn');
     };
     LookAtTheStars.prototype.takeAction = function (action, data) {
-        data = data || {};
-        data.lock = true;
-        this.ajaxcall("/lookatthestars/lookatthestars/".concat(action, ".html"), data, this, function () { });
-    };
-    LookAtTheStars.prototype.startActionTimer = function (buttonId, time) {
-        var _a;
-        if (Number((_a = this.prefs[200]) === null || _a === void 0 ? void 0 : _a.value) === 2) {
-            return;
-        }
-        var button = document.getElementById(buttonId);
-        var actionTimerId = null;
-        var _actionTimerLabel = button.innerHTML;
-        var _actionTimerSeconds = time;
-        var actionTimerFunction = function () {
-            var button = document.getElementById(buttonId);
-            if (button == null || button.classList.contains('disabled')) {
-                window.clearInterval(actionTimerId);
-            }
-            else if (_actionTimerSeconds-- > 1) {
-                button.innerHTML = _actionTimerLabel + ' (' + _actionTimerSeconds + ')';
-            }
-            else {
-                window.clearInterval(actionTimerId);
-                button.click();
-            }
-        };
-        actionTimerFunction();
-        actionTimerId = window.setInterval(function () { return actionTimerFunction(); }, 1000);
+        this.bgaPerformAction(action, data);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -1558,12 +1530,11 @@ var LookAtTheStars = /** @class */ (function () {
         return this.inherited(arguments);
     };
     return LookAtTheStars;
-}());
+}(GameGui));
 define([
     "dojo", "dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter",
-    "ebg/stock"
-], function (dojo, declare) {
+    "ebg/counter"
+], function (dojo, declare, gamegui, counter) {
     return declare("bgagame.lookatthestars", ebg.core.gamegui, new LookAtTheStars());
 });

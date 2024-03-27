@@ -1,6 +1,10 @@
 <?php
+namespace Bga\Games\LookAtTheStars;
 
-require_once(__DIR__.'/objects/player-score.php');
+use LatsPlayer;
+use PlayerScore;
+
+require_once(__DIR__.'/Objects/player-score.php');
 
 trait StateTrait {
 
@@ -199,6 +203,6 @@ trait StateTrait {
         $this->setStat($star2 + 1, 'star2');
         $this->setStat((float)$tableTotalScore / count($players), 'avgScore');
 
-        $this->gamestate->nextState('endGame');
+        $this->gamestate->nextState('');
     }
 }

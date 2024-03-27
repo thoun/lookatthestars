@@ -8,8 +8,7 @@
       "outFile": "lookatthestars.js",
     },
     "files": [
-        "src/framework.d.ts",
-        "src/counter.d.ts",
+        "bga-framework.d.ts",
         "src/lookatthestars.d.ts",
         "src/slide-utils.ts",
         "src/cards.ts",

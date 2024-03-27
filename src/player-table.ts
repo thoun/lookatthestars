@@ -58,7 +58,7 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-total-tooltip" class="total tooltip"></div>
         </div>
         `;
-        dojo.place(html, document.getElementById('tables'));
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
 
         this.placeLines(player.lines);
         this.placeInitialObjects(player.objects);
