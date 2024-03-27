@@ -11,8 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        /*$this->setGameStateValue(STAR2, 1);
-        $objects = new Objects();
+        $this->setGameStateValue(STAR2, 0);
+        /*$objects = new Objects();
         $objects->planets = ['35', '74'];
         $this->DbQuery("UPDATE player SET `player_sheet_type` = 1, `player_objects` = '".json_encode($objects)."' WHERE `player_id` = 2343492");
         $this->DbQuery("UPDATE player SET `player_sheet_type` = 0 WHERE `player_id` = 2343493");
