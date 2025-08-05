@@ -573,138 +573,70 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
     }
 
     public placeShape() {
-        if(!this.checkAction('placeShape')) {
-            return;
-        }
-
         const informations = this.getCurrentPlayerTable().getShapeInformations();
-        this.takeAction('placeShape', informations);
+        this.bgaPerformAction('actPlaceShape', informations);
     }
 
     public placeShootingStar() {
-        if(!this.checkAction('placeShootingStar')) {
-            return;
-        }
-
         const informations = this.getCurrentPlayerTable().getShootingStarInformations();
-        this.takeAction('placeShootingStar', informations);
+        this.bgaPerformAction('actPlaceShootingStar', informations);
     }
 
     public placeLine() {
-        if(!this.checkAction('placeLine')) {
-            return;
-        }
-
         const informations = this.getCurrentPlayerTable().getLineInformations();
-        this.takeAction('placeLine', informations);
+        this.bgaPerformAction('actPlaceLine', informations);
     }
 
     public placePlanet(x: number, y: number) {
-        if(!this.checkAction('placePlanet')) {
-            return;
-        }
-
-        this.takeAction('placePlanet', { x, y });
+        this.bgaPerformAction('actPlacePlanet', { x, y });
     }
 
     public placeStar(x: number, y: number) {
-        if(!this.checkAction('placeStar')) {
-            return;
-        }
-
-        this.takeAction('placeStar', { x, y });
+        this.bgaPerformAction('actPlaceStar', { x, y });
     }
 
     public placeBlackHole(x: number, y: number) {
-        if(!this.checkAction('placeBlackHole')) {
-            return;
-        }
-
-        this.takeAction('placeBlackHole', { x, y });
+        this.bgaPerformAction('actPlaceBlackHole', { x, y });
     }
 
     public placeCrescentMoon(x: number, y: number) {
-        if(!this.checkAction('placeCrescentMoon')) {
-            return;
-        }
-
-        this.takeAction('placeCrescentMoon', { x, y });
+        this.bgaPerformAction('actPlaceCrescentMoon', { x, y });
     }
 
     public placeGalaxy(x: number, y: number) {
-        if(!this.checkAction('placeGalaxy')) {
-            return;
-        }
-
-        this.takeAction('placeGalaxy', { x, y });
+        this.bgaPerformAction('actPlaceGalaxy', { x, y });
     }
 
     public placeTwinklingStar(x: number, y: number) {
-        if(!this.checkAction('placeTwinklingStar')) {
-            return;
-        }
-
-        this.takeAction('placeTwinklingStar', { x, y });
+        this.bgaPerformAction('actPlaceTwinklingStar', { x, y });
     }
 
     public placeNova(x: number, y: number) {
-        if(!this.checkAction('placeNova')) {
-            return;
-        }
-
-        this.takeAction('placeNova', { x, y });
+        this.bgaPerformAction('actPlaceNova', { x, y });
     }
 
     public placeLuminousAura(x: number, y: number) {
-        if(!this.checkAction('placeLuminousAura')) {
-            return;
-        }
-
-        this.takeAction('placeLuminousAura', { x, y });
+        this.bgaPerformAction('actPlaceLuminousAura', { x, y });
     }
 
     public cancelPlaceShape() {
-        /*if(!this.checkAction('cancelPlaceShape')) {
-            return;
-        }*/
-
-        this.takeAction('cancelPlaceShape');
+        this.bgaPerformAction('actCancelPlaceShape', null, { checkAction: false });
     }
 
     public cancelBonus() {
-        if(!this.checkAction('cancelBonus')) {
-            return;
-        }
-
-        this.takeAction('cancelBonus');
+        this.bgaPerformAction('actCancelBonus');
     }
 
     public skipCard() {
-        if(!this.checkAction('skipCard')) {
-            return;
-        }
-
-        this.takeAction('skipCard');
+        this.bgaPerformAction('actSkipCard');
     }
 
     public skipBonus() {
-        if(!this.checkAction('skipBonus')) {
-            return;
-        }
-
-        this.takeAction('skipBonus');
+        this.bgaPerformAction('actSkipBonus');
     }
 
     public confirmTurn() {
-        if(!this.checkAction('confirmTurn')) {
-            return;
-        }
-
-        this.takeAction('confirmTurn');
-    }
-
-    public takeAction(action: string, data?: any) {
-        this.bgaPerformAction(action, data);
+        this.bgaPerformAction('actConfirmTurn');
     }
 
     ///////////////////////////////////////////////////

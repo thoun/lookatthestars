@@ -1,6 +1,7 @@
 <?php
 namespace Bga\Games\LookAtTheStars;
 
+use Bga\GameFramework\Actions\CheckAction;
 use Objects;
 use ShootingStarType;
 
@@ -15,8 +16,7 @@ trait ActionTrait {
         (note: each method below must match an input method in lookatthestars.action.php)
     */
 
-    public function placeShape(int $x, int $y, int $rotation) {
-        self::checkAction('placeShape'); 
+    public function actPlaceShape(int $x, int $y, int $rotation) {
         
         $playerId = intval($this->getCurrentPlayerId());
 
@@ -61,8 +61,7 @@ trait ActionTrait {
         }
     }
 
-    public function placeShootingStar(int $x, int $y, int $rotation, int $size) {
-        self::checkAction('placeShootingStar'); 
+    public function actPlaceShootingStar(int $x, int $y, int $rotation, int $size) {
         
         $playerId = intval($this->getCurrentPlayerId());
 
@@ -108,8 +107,7 @@ trait ActionTrait {
         $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
-    public function placeLine(int $xFrom, int $yFrom, int $xTo, int $yTo) {
-        self::checkAction('placeLine'); 
+    public function actPlaceLine(int $xFrom, int $yFrom, int $xTo, int $yTo) {
         
         $playerId = intval($this->getCurrentPlayerId());
 
@@ -150,8 +148,7 @@ trait ActionTrait {
         }
     }
     
-    public function placePlanet(int $x, int $y) {
-        self::checkAction('placePlanet'); 
+    public function actPlacePlanet(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -186,8 +183,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeStar(int $x, int $y) {
-        self::checkAction('placeStar'); 
+    public function actPlaceStar(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -228,8 +224,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeBlackHole(int $x, int $y) {
-        self::checkAction('placeBlackHole'); 
+    public function actPlaceBlackHole(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -264,8 +259,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeCrescentMoon(int $x, int $y) {
-        self::checkAction('placeCrescentMoon'); 
+    public function actPlaceCrescentMoon(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -300,8 +294,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeTwinklingStar(int $x, int $y) {
-        self::checkAction('placeTwinklingStar'); 
+    public function actPlaceTwinklingStar(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -336,8 +329,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeGalaxy(int $x, int $y) {
-        self::checkAction('placeGalaxy'); 
+    public function actPlaceGalaxy(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -372,8 +364,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeNova(int $x, int $y) {
-        self::checkAction('placeNova'); 
+    public function actPlaceNova(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -408,8 +399,7 @@ trait ActionTrait {
         }
     }
     
-    public function placeLuminousAura(int $x, int $y) {
-        self::checkAction('placeLuminousAura'); 
+    public function actPlaceLuminousAura(int $x, int $y) {
         
         $playerId = intval($this->getCurrentPlayerId());
         $player = $this->getPlayer($playerId);
@@ -444,7 +434,8 @@ trait ActionTrait {
         }
     }
 
-    public function cancelPlaceShape() {
+    #[CheckAction(false)]
+    public function actCancelPlaceShape() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->DbQuery("UPDATE player SET `player_round_lines` = NULL, `player_round_objects` = NULL WHERE `player_id` = $playerId");
@@ -460,9 +451,7 @@ trait ActionTrait {
         $this->gamestate->initializePrivateState($playerId);
     }
 
-    public function cancelBonus() {
-        self::checkAction('cancelBonus'); 
-
+    public function actCancelBonus() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->DbQuery("UPDATE player SET `player_round_objects` = NULL WHERE `player_id` = $playerId");
@@ -478,17 +467,13 @@ trait ActionTrait {
         $this->gamestate->nextPrivateState($playerId, 'place'.$objective->power);
     }
 
-    public function skipCard() {
-        self::checkAction('skipCard'); 
-
+    public function actSkipCard() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->gamestate->nextPrivateState($playerId, 'confirm');
     }
 
-    public function skipBonus() {
-        self::checkAction('skipBonus'); 
-
+    public function actSkipBonus() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $player = $this->getPlayer($playerId);
@@ -498,9 +483,7 @@ trait ActionTrait {
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
 
-    public function confirmTurn() {
-        self::checkAction('confirmTurn'); 
-
+    public function actConfirmTurn() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');

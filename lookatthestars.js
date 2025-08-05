@@ -1276,106 +1276,55 @@ var LookAtTheStars = /** @class */ (function (_super) {
         helpDialog.show();
     };
     LookAtTheStars.prototype.placeShape = function () {
-        if (!this.checkAction('placeShape')) {
-            return;
-        }
         var informations = this.getCurrentPlayerTable().getShapeInformations();
-        this.takeAction('placeShape', informations);
+        this.bgaPerformAction('actPlaceShape', informations);
     };
     LookAtTheStars.prototype.placeShootingStar = function () {
-        if (!this.checkAction('placeShootingStar')) {
-            return;
-        }
         var informations = this.getCurrentPlayerTable().getShootingStarInformations();
-        this.takeAction('placeShootingStar', informations);
+        this.bgaPerformAction('actPlaceShootingStar', informations);
     };
     LookAtTheStars.prototype.placeLine = function () {
-        if (!this.checkAction('placeLine')) {
-            return;
-        }
         var informations = this.getCurrentPlayerTable().getLineInformations();
-        this.takeAction('placeLine', informations);
+        this.bgaPerformAction('actPlaceLine', informations);
     };
     LookAtTheStars.prototype.placePlanet = function (x, y) {
-        if (!this.checkAction('placePlanet')) {
-            return;
-        }
-        this.takeAction('placePlanet', { x: x, y: y });
+        this.bgaPerformAction('actPlacePlanet', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeStar = function (x, y) {
-        if (!this.checkAction('placeStar')) {
-            return;
-        }
-        this.takeAction('placeStar', { x: x, y: y });
+        this.bgaPerformAction('actPlaceStar', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeBlackHole = function (x, y) {
-        if (!this.checkAction('placeBlackHole')) {
-            return;
-        }
-        this.takeAction('placeBlackHole', { x: x, y: y });
+        this.bgaPerformAction('actPlaceBlackHole', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeCrescentMoon = function (x, y) {
-        if (!this.checkAction('placeCrescentMoon')) {
-            return;
-        }
-        this.takeAction('placeCrescentMoon', { x: x, y: y });
+        this.bgaPerformAction('actPlaceCrescentMoon', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeGalaxy = function (x, y) {
-        if (!this.checkAction('placeGalaxy')) {
-            return;
-        }
-        this.takeAction('placeGalaxy', { x: x, y: y });
+        this.bgaPerformAction('actPlaceGalaxy', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeTwinklingStar = function (x, y) {
-        if (!this.checkAction('placeTwinklingStar')) {
-            return;
-        }
-        this.takeAction('placeTwinklingStar', { x: x, y: y });
+        this.bgaPerformAction('actPlaceTwinklingStar', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeNova = function (x, y) {
-        if (!this.checkAction('placeNova')) {
-            return;
-        }
-        this.takeAction('placeNova', { x: x, y: y });
+        this.bgaPerformAction('actPlaceNova', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeLuminousAura = function (x, y) {
-        if (!this.checkAction('placeLuminousAura')) {
-            return;
-        }
-        this.takeAction('placeLuminousAura', { x: x, y: y });
+        this.bgaPerformAction('actPlaceLuminousAura', { x: x, y: y });
     };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
-        /*if(!this.checkAction('cancelPlaceShape')) {
-            return;
-        }*/
-        this.takeAction('cancelPlaceShape');
+        this.bgaPerformAction('actCancelPlaceShape', null, { checkAction: false });
     };
     LookAtTheStars.prototype.cancelBonus = function () {
-        if (!this.checkAction('cancelBonus')) {
-            return;
-        }
-        this.takeAction('cancelBonus');
+        this.bgaPerformAction('actCancelBonus');
     };
     LookAtTheStars.prototype.skipCard = function () {
-        if (!this.checkAction('skipCard')) {
-            return;
-        }
-        this.takeAction('skipCard');
+        this.bgaPerformAction('actSkipCard');
     };
     LookAtTheStars.prototype.skipBonus = function () {
-        if (!this.checkAction('skipBonus')) {
-            return;
-        }
-        this.takeAction('skipBonus');
+        this.bgaPerformAction('actSkipBonus');
     };
     LookAtTheStars.prototype.confirmTurn = function () {
-        if (!this.checkAction('confirmTurn')) {
-            return;
-        }
-        this.takeAction('confirmTurn');
-    };
-    LookAtTheStars.prototype.takeAction = function (action, data) {
-        this.bgaPerformAction(action, data);
+        this.bgaPerformAction('actConfirmTurn');
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

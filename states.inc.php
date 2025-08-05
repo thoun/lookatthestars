@@ -77,7 +77,7 @@ $playerActionsGameStates = [
         ->type(StateType::MULTIPLE_ACTIVE_PLAYER)
         ->initialprivate(ST_PRIVATE_PLACE_SHAPE)
         ->action("stPlayCard")
-        ->possibleactions([ "cancelPlaceShape" ])
+        ->possibleactions([ "actCancelPlaceShape" ])
         ->transitions([
             "next" => ST_NEXT_SHAPE,
         ])
@@ -88,7 +88,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} must place the shape'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceShape")
-        ->possibleactions([ "placeShape", "placeShootingStar", "skipCard", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceShape", "actPlaceShootingStar", "actSkipCard", "actCancelPlaceShape" ])
         ->transitions($transitionsToPower + [
           'confirm' => ST_PRIVATE_CONFIRM_TURN,
         ])
@@ -99,7 +99,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} must confirm your turn'))
         ->type(StateType::PRIVATE)
         ->args("argConfirmTurn")
-        ->possibleactions([ "confirmTurn", "cancelBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actConfirmTurn", "actCancelBonus", "actCancelPlaceShape" ])
         ->transitions($transitionsToPower)
         ->build(),
 
@@ -108,7 +108,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a new planet on an unused star'))
         ->type(StateType::PRIVATE)
         ->args("argPlacePlanet")
-        ->possibleactions([ "placePlanet", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlacePlanet", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_PLANET,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -120,7 +120,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a new star (${number}/2)'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceStar")
-        ->possibleactions([ "placeStar", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceStar", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_STAR,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -132,7 +132,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a black hole'))
         ->type(StateType::PRIVATE)
         ->args("argPlacePlanet")
-        ->possibleactions([ "placeBlackHole", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceBlackHole", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_BLACK_HOLE,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -144,7 +144,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a crescent moon'))
         ->type(StateType::PRIVATE)
         ->args("argPlacePlanet")
-        ->possibleactions([ "placeCrescentMoon", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceCrescentMoon", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_CRESCENT_MOON,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -156,7 +156,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a luminous aura'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceLuminousAura")
-        ->possibleactions([ "placeLuminousAura", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceLuminousAura", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_LUMINOUS_AURA,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -168,7 +168,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a galaxy'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceGalaxy")
-        ->possibleactions([ "placeGalaxy", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceGalaxy", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_GALAXY,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -180,7 +180,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a nova'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceNova")
-        ->possibleactions([ "placeNova", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceNova", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_NOVA,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -192,7 +192,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a twinkling star'))
         ->type(StateType::PRIVATE)
         ->args("argPlacePlanet")
-        ->possibleactions([ "placeTwinklingStar", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceTwinklingStar", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_TWINKLING_STAR,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
@@ -204,7 +204,7 @@ $playerActionsGameStates = [
         ->descriptionmyturn(clienttranslate('${you} can place a new line between 2 adjacent stars'))
         ->type(StateType::PRIVATE)
         ->args("argPlaceLine")
-        ->possibleactions([ "placeLine", "skipBonus", "cancelPlaceShape" ])
+        ->possibleactions([ "actPlaceLine", "actSkipBonus", "actCancelPlaceShape" ])
         ->transitions([
             'next' => ST_PRIVATE_PLACE_LINE,
             'confirm' => ST_PRIVATE_CONFIRM_TURN,
