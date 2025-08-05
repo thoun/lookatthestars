@@ -846,6 +846,7 @@ var LookAtTheStars = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
+        this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n            <div id=\"zoom-wrapper\">\n                <div id=\"full-table\">\n                    <div id=\"cards\">\n                        <div id=\"objectives\"></div>\n                        <div id=\"shapes\"></div>\n                    </div>\n                    <div id=\"tables\">\n                    </div>\n                </div>\n                <div id=\"zoom-controls\">\n                    <button id=\"zoom-out\"></button>\n                    <button id=\"zoom-in\"></button>\n                </div>\n                <div id=\"jump-controls\">\n                </div>\n            </div>\n        ");
         if (gamedatas.cards.length <= 6) {
             this.day = 2;
         }

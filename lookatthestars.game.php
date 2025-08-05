@@ -16,6 +16,7 @@
   *
   */
 
+use Bga\GameFramework\Components\Deck;
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
@@ -32,6 +33,13 @@ class LookAtTheStars extends Table {
     use StateTrait;
     use ArgsTrait;
     use DebugUtilTrait;
+
+    public Deck $shapes;
+
+    // from material
+    public array $STAR2;
+    public array $SHOOTING_STAR_SIZES;
+
 
 	function __construct() {
         // Your global variables labels:
@@ -51,14 +59,9 @@ class LookAtTheStars extends Table {
             SCORING_OPTION => 102,
         ]); 
 
-        $this->shapes = self::getNew("module.common.deck");
+        $this->shapes = $this->getNew("module.common.deck");
         $this->shapes->init("shape");       
 	}
-	
-    protected function getGameName() {
-		// Used for translations and stuff. Please do not modify.
-        return "lookatthestars";
-    }	
 
     /*
         setupNewGame:

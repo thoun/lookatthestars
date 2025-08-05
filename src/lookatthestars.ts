@@ -69,6 +69,25 @@ class LookAtTheStars implements LookAtTheStarsGame {
 
         log('gamedatas', gamedatas);
 
+        this.getGameAreaElement().insertAdjacentHTML('beforeend', `
+            <div id="zoom-wrapper">
+                <div id="full-table">
+                    <div id="cards">
+                        <div id="objectives"></div>
+                        <div id="shapes"></div>
+                    </div>
+                    <div id="tables">
+                    </div>
+                </div>
+                <div id="zoom-controls">
+                    <button id="zoom-out"></button>
+                    <button id="zoom-in"></button>
+                </div>
+                <div id="jump-controls">
+                </div>
+            </div>
+        `);
+
         if (gamedatas.cards.length <= 6) {
             this.day = 2;
         } else if (gamedatas.cards.length <= 12) {
