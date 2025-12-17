@@ -19,6 +19,7 @@ namespace Bga\Games\LookAtTheStars;
 
 use Bga\GameFramework\Components\Deck;
 use Bga\GameFramework\Table;
+use Bga\GameFramework\VisibleSystemException;
 use Card;
 
 require_once('constants.inc.php');
@@ -60,8 +61,7 @@ class Game extends Table {
             SCORING_OPTION => 102,
         ]); 
 
-        $this->shapes = $this->getNew("module.common.deck");
-        $this->shapes->init("shape");       
+        $this->shapes = $this->deckFactory->createDeck("shape");
 	}
 
     /*
@@ -105,37 +105,35 @@ class Game extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        $this->initStat('table', 'shootingStars', 0); 
-        $this->initStat('table', 'placedLines', 0); 
-        $this->initStat('player', 'placedLines', 0);  
-        $this->initStat('table', 'usedBonus', 0); 
-        $this->initStat('player', 'usedBonus', 0); 
+        $this->tableStats->init('shootingStars', 0); 
+        $this->tableStats->init('placedLines', 0); 
+        $this->playerStats->init('placedLines', 0);  
+        $this->tableStats->init('usedBonus', 0); 
+        $this->playerStats->init('usedBonus', 0); 
 
-        $this->initStat('player', 'playedCards', 0); 
-        $this->initStat('player', 'skippedCards', 0);  
-        foreach([1, 2, 3] as $number) { $this->initStat('player', 'shootingStar'.$number, 0); }
-        $this->initStat('player', 'constellationsCount', 0);  
-        $this->initStat('player', 'validConstellationsCount', 0);  
-        $this->initStat('player', 'constellationsPoints', 0);  
-        $this->initStat('player', 'planetsPoints', 0);  
-        $this->initStat('player', 'shootingStarsPoints', 0);  
-        $this->initStat('player', 'star1count', 0);  
-        $this->initStat('player', 'star1points', 0);  
-        $this->initStat('player', 'star2points', 0);
+        $this->playerStats->init('playedCards', 0); 
+        $this->playerStats->init('skippedCards', 0);  
+        foreach([1, 2, 3] as $number) { $this->playerStats->init('shootingStar'.$number, 0); }
+        $this->playerStats->init('constellationsCount', 0);  
+        $this->playerStats->init('validConstellationsCount', 0);  
+        $this->playerStats->init('constellationsPoints', 0);  
+        $this->playerStats->init('planetsPoints', 0);  
+        $this->playerStats->init('shootingStarsPoints', 0);  
+        $this->playerStats->init('star1count', 0);  
+        $this->playerStats->init('star1points', 0);  
+        $this->playerStats->init('star2points', 0);
 
         $this->setupObjectives();
         $this->setupCards();
 
         $objective = $this->STAR2[intval($this->getGameStateValue(STAR2))];
-        $this->initStat('player', 'placed'.$objective->power, 0);
+        $this->playerStats->init('placed'.$objective->power, 0);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
-        // TODO TEMP to test
-        $this->debugSetup();
-
         /************ End of the game initialization *****/
+        return \ST_MULTIPLAYER_PLAY_CARD;
     }
 
     /*
@@ -150,7 +148,7 @@ class Game extends Table {
     protected function getAllDatas(): array {
         $result = [];
         //$isEndScore = true;
-        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        $isEndScore = $this->gamestate->getCurrentMainStateId() >= ST_END_SCORE;
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
@@ -239,7 +237,7 @@ class Game extends Table {
             return;
         }
 
-        throw new \feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new VisibleSystemException( "Zombie mode not supported at this game state: ".$statename );
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:

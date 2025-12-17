@@ -52,10 +52,6 @@ use Bga\GameFramework\StateType;
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
-$basicGameStates = [
-    ST_BGA_GAME_SETUP => GameStateBuilder::gameSetup(ST_MULTIPLAYER_PLAY_CARD)->build(),
-];
-
 $transitionsToPower = [
     'place'.POWER_PLANET => ST_PRIVATE_PLACE_PLANET,
     'place'.POWER_NEW_LINE => ST_PRIVATE_PLACE_LINE,
@@ -230,7 +226,7 @@ $gameGameStates = [
     ST_END_SCORE => GameStateBuilder::endScore()->build(),
 ];
  
-$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
+$machinestates = $playerActionsGameStates + $gameGameStates;
 
 
 

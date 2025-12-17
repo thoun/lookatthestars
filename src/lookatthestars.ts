@@ -34,8 +34,21 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
+    public gameui: GameGui<LookAtTheStarsGamedatas>;
+    public statusBar: StatusBar;
+    public images: Images;
+    public sounds: Sounds;
+    public userPreferences: UserPreferences;
+    public players: Players;
+    public actions: Actions;
+    public notifications: Notifications;
+    public gameArea: GameArea;
+    public playerPanels: PlayerPanels;
+    public dialogs: Dialogs;
+
     constructor() {
         super();
+        Object.assign(this, this.bga);
 
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -60,7 +73,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
         const players = Object.values(gamedatas.players);
         // ignore loading of some pictures
         [1,2,3,4,5,6,7,8].filter(i => !players.some(player => Number(player.sheetType) === i)).forEach(i => {
-            this.dontPreloadImage(`sheet-${i}.png`);
+            this.images.dontPreloadImage(`sheet-${i}.png`);
         });
 
         log( "Starting game setup" );
@@ -69,7 +82,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
 
         log('gamedatas', gamedatas);
 
-        this.getGameAreaElement().insertAdjacentHTML('beforeend', `
+        this.gameArea.getElement().insertAdjacentHTML('beforeend', `
             <div id="zoom-wrapper">
                 <div id="full-table">
                     <div id="cards">
@@ -248,7 +261,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
     public onUpdateActionButtons(stateName: string, args: any) {
         log( 'onUpdateActionButtons: '+stateName, args );
 
-        if (this.isCurrentPlayerActive()) {
+        if (this.players.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
                     const placeCardArg = args as EnteringPlaceCardArgs;
@@ -283,7 +296,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
                     this.statusBar.addActionButton(_("Cancel"), () => this.cancelPlaceShape(), { color: 'secondary' });
                     break;
                 case 'confirmTurn':
-                    this.statusBar.addActionButton(_("Confirm turn"), () => this.confirmTurn(), { autoclick: this.getGameUserPreference(100) === 1 });
+                    this.statusBar.addActionButton(_("Confirm turn"), () => this.confirmTurn(), { autoclick: this.userPreferences.get(100) === 1 });
                     const confirmTurnArgs = args as EnteringConfirmTurnArgs;
                     if (confirmTurnArgs.canCancelBonus) {
                         this.statusBar.addActionButton(_("Cancel bonus"), () => this.cancelBonus(), { color: 'secondary' });
@@ -312,10 +325,6 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
 
     public getPlayerColor(playerId: number): string {
         return this.gamedatas.players[playerId].color;
-    }    
-
-    private getPlayer(playerId: number): LookAtTheStarsPlayer {
-        return Object.values(this.gamedatas.players).find(player => Number(player.id) == playerId);
     }
 
     private getPlayerTable(playerId: number): PlayerTable {
@@ -400,13 +409,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
                     </div>
                     `, `player-table-${table.playerId}`);
 
-                    document.getElementById('hide-keys-notice').addEventListener('click', () => {
-                        const select = document.getElementById('preference_control_299') as HTMLSelectElement;
-                        select.value = '2';
-        
-                        var event = new Event('change');
-                        select.dispatchEvent(event);
-                    });
+                    document.getElementById('hide-keys-notice').addEventListener('click', () => this.userPreferences.set(299, 2));
                 }
             }
         } else if (elem) {
@@ -574,69 +577,69 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
 
     public placeShape() {
         const informations = this.getCurrentPlayerTable().getShapeInformations();
-        this.bgaPerformAction('actPlaceShape', informations);
+        this.actions.performAction('actPlaceShape', informations);
     }
 
     public placeShootingStar() {
         const informations = this.getCurrentPlayerTable().getShootingStarInformations();
-        this.bgaPerformAction('actPlaceShootingStar', informations);
+        this.actions.performAction('actPlaceShootingStar', informations);
     }
 
     public placeLine() {
         const informations = this.getCurrentPlayerTable().getLineInformations();
-        this.bgaPerformAction('actPlaceLine', informations);
+        this.actions.performAction('actPlaceLine', informations);
     }
 
     public placePlanet(x: number, y: number) {
-        this.bgaPerformAction('actPlacePlanet', { x, y });
+        this.actions.performAction('actPlacePlanet', { x, y });
     }
 
     public placeStar(x: number, y: number) {
-        this.bgaPerformAction('actPlaceStar', { x, y });
+        this.actions.performAction('actPlaceStar', { x, y });
     }
 
     public placeBlackHole(x: number, y: number) {
-        this.bgaPerformAction('actPlaceBlackHole', { x, y });
+        this.actions.performAction('actPlaceBlackHole', { x, y });
     }
 
     public placeCrescentMoon(x: number, y: number) {
-        this.bgaPerformAction('actPlaceCrescentMoon', { x, y });
+        this.actions.performAction('actPlaceCrescentMoon', { x, y });
     }
 
     public placeGalaxy(x: number, y: number) {
-        this.bgaPerformAction('actPlaceGalaxy', { x, y });
+        this.actions.performAction('actPlaceGalaxy', { x, y });
     }
 
     public placeTwinklingStar(x: number, y: number) {
-        this.bgaPerformAction('actPlaceTwinklingStar', { x, y });
+        this.actions.performAction('actPlaceTwinklingStar', { x, y });
     }
 
     public placeNova(x: number, y: number) {
-        this.bgaPerformAction('actPlaceNova', { x, y });
+        this.actions.performAction('actPlaceNova', { x, y });
     }
 
     public placeLuminousAura(x: number, y: number) {
-        this.bgaPerformAction('actPlaceLuminousAura', { x, y });
+        this.actions.performAction('actPlaceLuminousAura', { x, y });
     }
 
     public cancelPlaceShape() {
-        this.bgaPerformAction('actCancelPlaceShape', null, { checkAction: false });
+        this.actions.performAction('actCancelPlaceShape', null, { checkAction: false });
     }
 
     public cancelBonus() {
-        this.bgaPerformAction('actCancelBonus');
+        this.actions.performAction('actCancelBonus');
     }
 
     public skipCard() {
-        this.bgaPerformAction('actSkipCard');
+        this.actions.performAction('actSkipCard');
     }
 
     public skipBonus() {
-        this.bgaPerformAction('actSkipBonus');
+        this.actions.performAction('actSkipBonus');
     }
 
     public confirmTurn() {
-        this.bgaPerformAction('actConfirmTurn');
+        this.actions.performAction('actConfirmTurn');
     }
 
     ///////////////////////////////////////////////////
@@ -784,7 +787,7 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
-    public format_string_recursive(log: string, args: any) {
+    public bgaFormatText(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
                 ['points', 'scoring'].forEach(field => {
@@ -804,6 +807,6 @@ class LookAtTheStars extends GameGui<LookAtTheStarsGamedatas> implements LookAtT
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);
         }
-        return (this as any).inherited(arguments);
+        return { log, args };
     }
 }

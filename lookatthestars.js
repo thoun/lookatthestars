@@ -853,6 +853,7 @@ var LookAtTheStars = /** @class */ (function (_super) {
                     break;
             }
         };
+        Object.assign(_this, _this.bga);
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             _this.zoom = Number(zoomStr);
@@ -876,12 +877,12 @@ var LookAtTheStars = /** @class */ (function (_super) {
         var players = Object.values(gamedatas.players);
         // ignore loading of some pictures
         [1, 2, 3, 4, 5, 6, 7, 8].filter(function (i) { return !players.some(function (player) { return Number(player.sheetType) === i; }); }).forEach(function (i) {
-            _this.dontPreloadImage("sheet-".concat(i, ".png"));
+            _this.images.dontPreloadImage("sheet-".concat(i, ".png"));
         });
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n            <div id=\"zoom-wrapper\">\n                <div id=\"full-table\">\n                    <div id=\"cards\">\n                        <div id=\"objectives\"></div>\n                        <div id=\"shapes\"></div>\n                    </div>\n                    <div id=\"tables\">\n                    </div>\n                </div>\n                <div id=\"zoom-controls\">\n                    <button id=\"zoom-out\"></button>\n                    <button id=\"zoom-in\"></button>\n                </div>\n                <div id=\"jump-controls\">\n                </div>\n            </div>\n        ");
+        this.gameArea.getElement().insertAdjacentHTML('beforeend', "\n            <div id=\"zoom-wrapper\">\n                <div id=\"full-table\">\n                    <div id=\"cards\">\n                        <div id=\"objectives\"></div>\n                        <div id=\"shapes\"></div>\n                    </div>\n                    <div id=\"tables\">\n                    </div>\n                </div>\n                <div id=\"zoom-controls\">\n                    <button id=\"zoom-out\"></button>\n                    <button id=\"zoom-in\"></button>\n                </div>\n                <div id=\"jump-controls\">\n                </div>\n            </div>\n        ");
         if (gamedatas.cards.length <= 6) {
             this.day = 2;
         }
@@ -1028,7 +1029,7 @@ var LookAtTheStars = /** @class */ (function (_super) {
     LookAtTheStars.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
         log('onUpdateActionButtons: ' + stateName, args);
-        if (this.isCurrentPlayerActive()) {
+        if (this.players.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeShape':
                     var placeCardArg = args;
@@ -1064,7 +1065,7 @@ var LookAtTheStars = /** @class */ (function (_super) {
                     this.statusBar.addActionButton(_("Cancel"), function () { return _this.cancelPlaceShape(); }, { color: 'secondary' });
                     break;
                 case 'confirmTurn':
-                    this.statusBar.addActionButton(_("Confirm turn"), function () { return _this.confirmTurn(); }, { autoclick: this.getGameUserPreference(100) === 1 });
+                    this.statusBar.addActionButton(_("Confirm turn"), function () { return _this.confirmTurn(); }, { autoclick: this.userPreferences.get(100) === 1 });
                     var confirmTurnArgs = args;
                     if (confirmTurnArgs.canCancelBonus) {
                         this.statusBar.addActionButton(_("Cancel bonus"), function () { return _this.cancelBonus(); }, { color: 'secondary' });
@@ -1088,9 +1089,6 @@ var LookAtTheStars = /** @class */ (function (_super) {
     };
     LookAtTheStars.prototype.getPlayerColor = function (playerId) {
         return this.gamedatas.players[playerId].color;
-    };
-    LookAtTheStars.prototype.getPlayer = function (playerId) {
-        return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
     };
     LookAtTheStars.prototype.getPlayerTable = function (playerId) {
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === playerId; });
@@ -1142,18 +1140,14 @@ var LookAtTheStars = /** @class */ (function (_super) {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     };
     LookAtTheStars.prototype.toggleKeysNotice = function (visible) {
+        var _this = this;
         var elem = document.getElementById('keys-notice');
         if (visible) {
             if (!elem) {
                 var table = this.getCurrentPlayerTable();
                 if (table) {
                     dojo.place("\n                    <div id=\"keys-notice\">\n                        ".concat(_("If you have a keyboard, you can use Arrows to move the shape, Space to turn it, and Enter to validate."), "\n                        <div style=\"text-align: center; margin-top: 10px;\"><a id=\"hide-keys-notice\">").concat(_("Got it!"), "</a></div>\n                    </div>\n                    "), "player-table-".concat(table.playerId));
-                    document.getElementById('hide-keys-notice').addEventListener('click', function () {
-                        var select = document.getElementById('preference_control_299');
-                        select.value = '2';
-                        var event = new Event('change');
-                        select.dispatchEvent(event);
-                    });
+                    document.getElementById('hide-keys-notice').addEventListener('click', function () { return _this.userPreferences.set(299, 2); });
                 }
             }
         }
@@ -1277,54 +1271,54 @@ var LookAtTheStars = /** @class */ (function (_super) {
     };
     LookAtTheStars.prototype.placeShape = function () {
         var informations = this.getCurrentPlayerTable().getShapeInformations();
-        this.bgaPerformAction('actPlaceShape', informations);
+        this.actions.performAction('actPlaceShape', informations);
     };
     LookAtTheStars.prototype.placeShootingStar = function () {
         var informations = this.getCurrentPlayerTable().getShootingStarInformations();
-        this.bgaPerformAction('actPlaceShootingStar', informations);
+        this.actions.performAction('actPlaceShootingStar', informations);
     };
     LookAtTheStars.prototype.placeLine = function () {
         var informations = this.getCurrentPlayerTable().getLineInformations();
-        this.bgaPerformAction('actPlaceLine', informations);
+        this.actions.performAction('actPlaceLine', informations);
     };
     LookAtTheStars.prototype.placePlanet = function (x, y) {
-        this.bgaPerformAction('actPlacePlanet', { x: x, y: y });
+        this.actions.performAction('actPlacePlanet', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeStar = function (x, y) {
-        this.bgaPerformAction('actPlaceStar', { x: x, y: y });
+        this.actions.performAction('actPlaceStar', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeBlackHole = function (x, y) {
-        this.bgaPerformAction('actPlaceBlackHole', { x: x, y: y });
+        this.actions.performAction('actPlaceBlackHole', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeCrescentMoon = function (x, y) {
-        this.bgaPerformAction('actPlaceCrescentMoon', { x: x, y: y });
+        this.actions.performAction('actPlaceCrescentMoon', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeGalaxy = function (x, y) {
-        this.bgaPerformAction('actPlaceGalaxy', { x: x, y: y });
+        this.actions.performAction('actPlaceGalaxy', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeTwinklingStar = function (x, y) {
-        this.bgaPerformAction('actPlaceTwinklingStar', { x: x, y: y });
+        this.actions.performAction('actPlaceTwinklingStar', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeNova = function (x, y) {
-        this.bgaPerformAction('actPlaceNova', { x: x, y: y });
+        this.actions.performAction('actPlaceNova', { x: x, y: y });
     };
     LookAtTheStars.prototype.placeLuminousAura = function (x, y) {
-        this.bgaPerformAction('actPlaceLuminousAura', { x: x, y: y });
+        this.actions.performAction('actPlaceLuminousAura', { x: x, y: y });
     };
     LookAtTheStars.prototype.cancelPlaceShape = function () {
-        this.bgaPerformAction('actCancelPlaceShape', null, { checkAction: false });
+        this.actions.performAction('actCancelPlaceShape', null, { checkAction: false });
     };
     LookAtTheStars.prototype.cancelBonus = function () {
-        this.bgaPerformAction('actCancelBonus');
+        this.actions.performAction('actCancelBonus');
     };
     LookAtTheStars.prototype.skipCard = function () {
-        this.bgaPerformAction('actSkipCard');
+        this.actions.performAction('actSkipCard');
     };
     LookAtTheStars.prototype.skipBonus = function () {
-        this.bgaPerformAction('actSkipBonus');
+        this.actions.performAction('actSkipBonus');
     };
     LookAtTheStars.prototype.confirmTurn = function () {
-        this.bgaPerformAction('actConfirmTurn');
+        this.actions.performAction('actConfirmTurn');
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -1456,7 +1450,7 @@ var LookAtTheStars = /** @class */ (function (_super) {
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
-    LookAtTheStars.prototype.format_string_recursive = function (log, args) {
+    LookAtTheStars.prototype.bgaFormatText = function (log, args) {
         var _a, _b;
         try {
             if (log && args && !args.processed) {
@@ -1476,7 +1470,7 @@ var LookAtTheStars = /** @class */ (function (_super) {
         catch (e) {
             console.error(log, args, "Exception thrown", e.stack);
         }
-        return this.inherited(arguments);
+        return { log: log, args: args };
     };
     return LookAtTheStars;
 }(GameGui));
